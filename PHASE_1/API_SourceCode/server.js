@@ -54,6 +54,26 @@ app.get('/articles', async (req, res) => {
     res.send(articles);
 });
 
+app.get('/admin/reset', async (req, res) => {
+    _conn = _conn || (await db.createConnectionPool());
+
+    try {
+        await _conn.schema.dropTableIfExists('article');
+        await _conn.schema.createTable('article', table => {
+            table.increments('id');
+            table.string('title');
+            table.string('body');
+            table.date("publication_date");
+        });
+
+        res.send({ status: "success" });
+    }
+    catch (error) {
+        console.log(error);
+        res.send(error);
+    }
+})
+
 const PORT = parseInt(process.env.PORT) || 8080;
 const server = app.listen(PORT, () => {
     console.log(`App listening on port ${PORT}`);
