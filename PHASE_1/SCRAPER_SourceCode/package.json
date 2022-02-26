@@ -1,0 +1,22 @@
+{
+  "name": "seng3011-qq-scraper",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "start": "npx functions-framework --target=scrape --signature-type=cloudevent",
+    "scrape": "curl localhost:8080 -X POST -H 'Content-Type: application/json' -H 'ce-id: 123451234512345' -H 'ce-specversion: 1.0' -H 'ce-time: 2020-01-02T12:34:56.789Z' -H 'ce-type: google.cloud.pubsub.topic.v1.messagePublished' -H 'ce-source: //pubsub.googleapis.com/projects/seng3011-qq-342402/topics/scrape' -d '{ \"message\": \"local\", \"subscription\": \"projects/seng3011-qq-342402/subscriptions/gcf-scrape-us-central1-scrape\" }'"
+  },
+  "author": "Team QQ",
+  "license": "ISC",
+  "devDependencies": {
+    "@google-cloud/functions-framework": "^3.0.0",
+    "eslint": "^8.10.0"
+  },
+  "dependencies": {
+    "axios": "^0.26.0",
+    "cheerio": "^1.0.0-rc.10",
+    "knex": "^1.0.3",
+    "pg": "^8.7.3"
+  }
+}
