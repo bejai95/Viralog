@@ -28,9 +28,6 @@ const logger = winston.createLogger({
     transports: [new winston.transports.Console(), loggingWinston],
 });
 
-// Set up a variable to hold our connection pool. It would be safe to
-// initialize this right away, but we defer its instantiation to ease
-// testing different configurations.
 let _conn;
 
 app.use(async (req, res, next) => {
@@ -60,10 +57,12 @@ app.get('/admin/reset', async (req, res) => {
     try {
         await _conn.schema.dropTableIfExists('article');
         await _conn.schema.createTable('article', table => {
-            table.increments('id');
-            table.string('title');
-            table.string('body');
-            table.date("publication_date");
+            table.string('url')             .primary();
+            table.string('title')           .notNullable();
+            table.string('author')          .notNullable();
+            table.date  ("publication_date").notNullable();
+            table.string('body')            .notNullable();
+            table.string('hash')            .notNullable();
         });
 
         res.send({ status: "success" });
