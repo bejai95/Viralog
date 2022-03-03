@@ -46,7 +46,68 @@ app.use(async (req, res, next) => {
 app.get("/articles", async (req, res) => {
     _conn = _conn || (await db.createConnectionPool());
 
+    if (!req.query)
+        return res.status(400).send({ error: "Missing query parameters" });
+    if (!req.query.period_of_interest_start)
+        return res
+            .status(400)
+            .send({ error: "Missing parameter period_of_interest_start" });
+    if (!req.query.period_of_interest_end)
+        return res
+            .status(400)
+            .send({ error: "Missing parameter period_of_interest_end" });
+    if (!req.query.location)
+        return res.status(400).send({ error: "Missing parameter location" });
+
+    let {
+        period_of_interest_start,
+        period_of_interest_end,
+        key_terms,
+        location,
+        sources,
+    } = req.query;
+
+    // Search query here, key_terms and sources may be empty
     const articles = await _conn.select("*").from("article");
+
+    res.send(articles);
+});
+
+app.get("/reports", async (req, res) => {
+    _conn = _conn || (await db.createConnectionPool());
+
+    if (!req.query)
+        return res.status(400).send({ error: "Missing query parameters" });
+    if (!req.query.period_of_interest_start)
+        return res
+            .status(400)
+            .send({ error: "Missing parameter period_of_interest_start" });
+    if (!req.query.period_of_interest_end)
+        return res
+            .status(400)
+            .send({ error: "Missing parameter period_of_interest_end" });
+    if (!req.query.location)
+        return res.status(400).send({ error: "Missing parameter location" });
+
+    let {
+        period_of_interest_start,
+        period_of_interest_end,
+        key_terms,
+        location,
+        sources,
+        diseases,
+    } = req.query;
+
+    // Search query here, key_terms and sources may be empty
+    const articles = await _conn.select("*").from("report");
+
+    res.send(articles);
+});
+
+app.get("/predictions", async (req, res) => {
+    let threshold = req.query.threshold || 0;
+
+    let articles = [];
 
     res.send(articles);
 });
@@ -61,6 +122,7 @@ app.get("/admin/reset", async (req, res) => {
             table.string("headline").notNullable();
             table.string("main_text").notNullable();
             table.string("category");
+            table.string("source");
             table.string("author").notNullable();
             table.string("date_of_publication").notNullable();
         });
@@ -71,7 +133,6 @@ app.get("/admin/reset", async (req, res) => {
             table.date("event_date").notNullable();
             table.string("syndrome").notNullable();
             table.string("disease").notNullable();
-            table.string("source");
             table.string("url").references("url").inTable("article");
             table.string("country").notNullable();
             table.string("city");
