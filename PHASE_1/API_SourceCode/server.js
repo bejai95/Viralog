@@ -47,17 +47,17 @@ app.get("/articles", async (req, res) => {
     _conn = _conn || (await db.createConnectionPool());
 
     if (!req.query)
-        return res.status(400).send({ error: "Missing query parameters" });
+        return res.status(400).send({ message: "Missing query parameters" });
     if (!req.query.period_of_interest_start)
         return res
             .status(400)
-            .send({ error: "Missing parameter period_of_interest_start" });
+            .send({ message: "Missing parameter period_of_interest_start" });
     if (!req.query.period_of_interest_end)
         return res
             .status(400)
-            .send({ error: "Missing parameter period_of_interest_end" });
+            .send({ message: "Missing parameter period_of_interest_end" });
     if (!req.query.location)
-        return res.status(400).send({ error: "Missing parameter location" });
+        return res.status(400).send({ message: "Missing parameter location" });
 
     let {
         period_of_interest_start,
@@ -77,17 +77,17 @@ app.get("/reports", async (req, res) => {
     _conn = _conn || (await db.createConnectionPool());
 
     if (!req.query)
-        return res.status(400).send({ error: "Missing query parameters" });
+        return res.status(400).send({ message: "Missing query parameters" });
     if (!req.query.period_of_interest_start)
         return res
             .status(400)
-            .send({ error: "Missing parameter period_of_interest_start" });
+            .send({ message: "Missing parameter period_of_interest_start" });
     if (!req.query.period_of_interest_end)
         return res
             .status(400)
-            .send({ error: "Missing parameter period_of_interest_end" });
+            .send({ message: "Missing parameter period_of_interest_end" });
     if (!req.query.location)
-        return res.status(400).send({ error: "Missing parameter location" });
+        return res.status(400).send({ message: "Missing parameter location" });
 
     let {
         period_of_interest_start,
