@@ -127,6 +127,34 @@ app.get("/admin/reset", async (req, res) => {
             table.string("date_of_publication").notNullable();
         });
 
+        await _conn.schema.dropTableIfExists("disease");
+        await _conn.schema.createTable("disease", (table) => {
+            table.string("id").primary();
+            table.string("disease_id").notNullable();
+        });
+
+        await _conn.schema.dropTableIfExists("symptom");
+        await _conn.scheam.createTable("symptom", (table) => {
+            table.string("symptom").notNullable();
+            table
+                .string("disease_id")
+                .references("disease_id")
+                .inTable("disease")
+                .notNullable();
+            table.primary(["symptom", "disease_id"]);
+        });
+
+        await _conn.schema.dropTableIfExists("diseaseAlias");
+        await _conn.schema.createTable("diseaseAlias", (table) => {
+            table
+                .string("disease_id")
+                .references("disease_id")
+                .inTable("disease")
+                .notNullable();
+            table.string("name").notNullable();
+            table.primary(["disease_id", "name"]);
+        });
+
         await _conn.schema.dropTableIfExists("report");
         await _conn.schema.createTable("report", (table) => {
             table.string("id").primary();
@@ -134,7 +162,7 @@ app.get("/admin/reset", async (req, res) => {
             table
                 .string("disease_id")
                 .references("disease_id")
-                .inTable("diseases")
+                .inTable("disease")
                 .notNullable();
             table
                 .string("url")
@@ -145,20 +173,11 @@ app.get("/admin/reset", async (req, res) => {
             table.string("city");
         });
 
-        await _conn.schema.dropTableIfExists("diseases");
-        await _conn.schema.createTable("diseases", (table) => {
-            table.string("id").primary();
-            table.string("disease_id").notNullable();
-            table.string("symptom").notNullable();
-            table.string("name").notNullable();
-        });
-
         await _conn.schema.dropTableIfExists("logs");
         await _conn.schema.createTable("logs", (table) => {
             table.string("id").primary();
             table.integer("status").notNullable();
             table.string("req_params").notNullable();
-            table.string("res_body").notNullable();
             table.date("timestamp").notNullable();
             table.string("err_msg");
         });
