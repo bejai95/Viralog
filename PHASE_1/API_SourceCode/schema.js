@@ -40,7 +40,7 @@ async function resetSchema(conn) {
                 .inTable("Disease")
                 .notNullable();
             table.string("alias").notNullable();
-            table.primary(["disease_id", "name"]);
+            table.primary(["disease_id", "alias"]);
         });
 
         await conn.schema.createTable("Report", (table) => {
