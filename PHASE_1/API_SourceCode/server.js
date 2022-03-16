@@ -131,11 +131,36 @@ app.get("/admin/reset", async (req, res) => {
         await _conn.schema.createTable("report", (table) => {
             table.string("id").primary();
             table.date("event_date").notNullable();
-            table.string("syndrome").notNullable();
-            table.string("disease").notNullable();
-            table.string("url").references("url").inTable("article");
+            table
+                .string("disease_id")
+                .references("disease_id")
+                .inTable("diseases")
+                .notNullable();
+            table
+                .string("url")
+                .references("url")
+                .inTable("article")
+                .notNullable();
             table.string("country").notNullable();
             table.string("city");
+        });
+
+        await _conn.schema.dropTableIfExists("diseases");
+        await _conn.schema.createTable("diseases", (table) => {
+            table.string("id").primary();
+            table.string("disease_id").notNullable();
+            table.string("symptom").notNullable();
+            table.string("name").notNullable();
+        });
+
+        await _conn.schema.dropTableIfExists("logs");
+        await _conn.schema.createTable("logs", (table) => {
+            table.string("id").primary();
+            table.integer("status").notNullable();
+            table.string("req_params").notNullable();
+            table.string("res_body").notNullable();
+            table.date("timestamp").notNullable();
+            table.string("err_msg");
         });
         res.send({ status: "success" });
     } catch (error) {
