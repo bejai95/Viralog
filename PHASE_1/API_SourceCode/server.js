@@ -4,6 +4,7 @@
 const process = require("process");
 const express = require("express");
 const db = require("./database");
+const schema = require("./schema");
 
 const app = express();
 app.enable("trust proxy");
@@ -116,72 +117,7 @@ app.get("/admin/reset", async (req, res) => {
     _conn = _conn || (await db.createConnectionPool());
 
     try {
-        await _conn.schema.dropTableIfExists("Symptom");
-        await _conn.schema.dropTableIfExists("DiseaseAlias");
-        await _conn.schema.dropTableIfExists("Log");
-        await _conn.schema.dropTableIfExists("Report");
-        await _conn.schema.dropTableIfExists("Disease");
-        await _conn.schema.dropTableIfExists("Article");
-
-        await _conn.schema.createTable("Article", (table) => {
-            table.string("article_url").primary();
-            table.string("headline").notNullable();
-            table.string("main_text").notNullable();
-            table.string("category");
-            table.string("source");
-            table.string("author").notNullable();
-            table.string("date_of_publication").notNullable();
-        });
-
-        await _conn.schema.createTable("Disease", (table) => {
-            table.string("disease_id").primary();
-            table.string("name").notNullable();
-        });
-
-        await _conn.schema.createTable("Symptom", (table) => {
-            table.string("symptom").notNullable();
-            table
-                .string("disease_id")
-                .references("disease_id")
-                .inTable("Disease")
-                .notNullable();
-            table.primary(["symptom", "disease_id"]);
-        });
-
-        await _conn.schema.createTable("DiseaseAlias", (table) => {
-            table
-                .string("disease_id")
-                .references("disease_id")
-                .inTable("Disease")
-                .notNullable();
-            table.string("name").notNullable();
-            table.primary(["disease_id", "name"]);
-        });
-
-        await _conn.schema.createTable("Report", (table) => {
-            table.string("id").primary();
-            table.date("event_date").notNullable();
-            table
-                .string("disease_id")
-                .references("disease_id")
-                .inTable("Disease")
-                .notNullable();
-            table
-                .string("article_url")
-                .references("article_url")
-                .inTable("Article")
-                .notNullable();
-            table.string("country").notNullable();
-            table.string("city");
-        });
-
-        await _conn.schema.createTable("Log", (table) => {
-            table.string("id").primary();
-            table.integer("status").notNullable();
-            table.string("req_params").notNullable();
-            table.date("timestamp").notNullable();
-            table.string("err_msg");
-        });
+        schema.resetSchema(_conn);
         res.send({ status: "success" });
     } catch (error) {
         console.log(error);
