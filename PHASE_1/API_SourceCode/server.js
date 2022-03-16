@@ -116,7 +116,13 @@ app.get("/admin/reset", async (req, res) => {
     _conn = _conn || (await db.createConnectionPool());
 
     try {
+        await _conn.schema.dropTableIfExists("symptom");
+        await _conn.schema.dropTableIfExists("diseaseAlias");
+        await _conn.schema.dropTableIfExists("logs");
+        await _conn.schema.dropTableIfExists("report");
+        await _conn.schema.dropTableIfExists("disease");
         await _conn.schema.dropTableIfExists("article");
+
         await _conn.schema.createTable("article", (table) => {
             table.string("url").primary();
             table.string("headline").notNullable();
@@ -127,14 +133,12 @@ app.get("/admin/reset", async (req, res) => {
             table.string("date_of_publication").notNullable();
         });
 
-        await _conn.schema.dropTableIfExists("disease");
         await _conn.schema.createTable("disease", (table) => {
             table.string("id").primary();
             table.string("disease_id").notNullable();
         });
 
-        await _conn.schema.dropTableIfExists("symptom");
-        await _conn.scheam.createTable("symptom", (table) => {
+        await _conn.schema.createTable("symptom", (table) => {
             table.string("symptom").notNullable();
             table
                 .string("disease_id")
@@ -144,7 +148,6 @@ app.get("/admin/reset", async (req, res) => {
             table.primary(["symptom", "disease_id"]);
         });
 
-        await _conn.schema.dropTableIfExists("diseaseAlias");
         await _conn.schema.createTable("diseaseAlias", (table) => {
             table
                 .string("disease_id")
@@ -155,7 +158,6 @@ app.get("/admin/reset", async (req, res) => {
             table.primary(["disease_id", "name"]);
         });
 
-        await _conn.schema.dropTableIfExists("report");
         await _conn.schema.createTable("report", (table) => {
             table.string("id").primary();
             table.date("event_date").notNullable();
@@ -173,7 +175,6 @@ app.get("/admin/reset", async (req, res) => {
             table.string("city");
         });
 
-        await _conn.schema.dropTableIfExists("logs");
         await _conn.schema.createTable("logs", (table) => {
             table.string("id").primary();
             table.integer("status").notNullable();
