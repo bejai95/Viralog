@@ -5,11 +5,10 @@ const cheerio = require("cheerio");
 
 const CIDRAP_URL = "https://www.cidrap.umn.edu";
 const ARTICLES_URL = "https://www.cidrap.umn.edu/news-perspective?f%5B0%5D=type%3Ass_news";
-const LIST_PAGE_COUNT = 1;
 
-exports.scrape = async (processFn) => {
+exports.scrape = async (pageCount, processFn) => {
     const promises = [];
-    for (let i = 0; i < LIST_PAGE_COUNT; i++) {
+    for (let i = 0; i < pageCount; i++) {
         promises.push(scrapeArticleList(processFn, i));
     }
     await Promise.all(promises);
