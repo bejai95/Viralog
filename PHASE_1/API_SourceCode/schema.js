@@ -39,7 +39,7 @@ async function resetSchema(conn) {
                 .references("disease_id")
                 .inTable("Disease")
                 .notNullable();
-            table.string("name").notNullable();
+            table.string("alias").notNullable();
             table.primary(["disease_id", "name"]);
         });
 
