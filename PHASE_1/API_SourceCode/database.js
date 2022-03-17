@@ -8,25 +8,24 @@ async function createTcpPoolSslCerts(config) {
         throw "Please specify environment variables DB_HOST, DB_USER, DB_PASS and DB_NAME.";
     }
 
-    // Extract host and port from socket address
-    const dbSocketAddr = process.env.DB_HOST.split(':'); // e.g. '127.0.0.1:5432'
-
     try {
+        console.log("Creating db connection");
         // Establish a connection to the database
         return Knex({
             client: 'pg',
             connection: {
-                user: process.env.DB_USER,        // e.g. 'my-user'
-                password: process.env.DB_PASS,    // e.g. 'my-user-password'
-                database: process.env.DB_NAME,    // e.g. 'my-database'
-                host: dbSocketAddr[0],            // e.g. '127.0.0.1'
-                port: dbSocketAddr[1],            // e.g. '5432'
+                user: process.env.DB_USER,
+                password: process.env.DB_PASS,
+                database: process.env.DB_NAME,
+                host: process.env.DB_HOST,
+                port: 5432,
                 ssl: { rejectUnauthorized: false },
             },
             ...config,
         });
     }
     catch (error) {
+        console.log("Error connecting to database");
         console.log(error);
     }
 };
