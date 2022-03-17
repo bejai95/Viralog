@@ -67,13 +67,43 @@ app.get("/articles", async (req, res) => {
         location = req.params.location,
     } = req.query;
 
-    const articles = await _conn.select("*").from("Article")
-        .whereIn();
+    let diseases = key_terms.split(",");
+    let locations = location.split(",");
 
-    // Search query here, key_terms and sources may be empty
+    const articles = await _conn.select("Article.article_url", "Article.date_of_publication", "Article.headline", "Article.main_text").from("Article");
+    const results = [];
+
+    for (let i = 0; i < articles.length; i++) {
+        const article = articles[i];
+
+        const reports = await _conn.select("Disease.name as disease", "Report.event_date as date", "Report.location").from("Report")
+            .whereIn("Report.disease_id", diseases)
+            .whereIn("location", locations)
+            .where('event_date', '>=', period_of_interest_start)
+            .where('event_date', '<=', period_of_interest_end)
+            .join('Disease', 'Report.disease_id', '=', 'Disease.disease_id')
+            .join('Symptom', 'Report.disease_id', '=', 'Symptom.disease_id');
+
+    }
+
+    /*
+        .whereIn("Report.disease_id", diseases)
+        .whereIn("location", locations)
+        .where('event_date', '>=', period_of_interest_start)
+        .where('event_date', '<=', period_of_interest_end)
+        .join('Disease', 'Report.disease_id', '=', 'Disease.disease_id')
+        .join('Symptom', 'Report.disease_id', '=', 'Symptom.disease_id');
+    */
 
     const diseaseSymptoms = getDiseaseSymptoms(_conn);
-    
+
+    /*
+    { articles }
+    Where articles is a list of { url, date_of_publication, headline, main_text, reports }
+    { reports }
+    Where reports is a list of { diseases, syndromes, event_date, locations }
+    */
+
 
 
     res.send(result);
