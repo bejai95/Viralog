@@ -118,7 +118,7 @@ app.get("/reports", async (req, res) => {
     let locations = location.split(",");
 
     // Search query here, key_terms and sources may be empty
-    const articles = await _conn.select("Disease.name as disease", "Report.event_date as date", "Report.location").from("Report")
+    const articles = await _conn.select("Report.disease_id", "Disease.name as disease", "Report.event_date as date", "Report.location").from("Report")
         .whereIn("Report.disease_id", diseases)
         .whereIn("location", locations)
         .where('event_date', '>=', period_of_interest_start)
@@ -126,7 +126,11 @@ app.get("/reports", async (req, res) => {
         .join('Disease', 'Report.disease_id', '=', 'Disease.disease_id')
         .join('Symptom', 'Report.disease_id', '=', 'Symptom.disease_id');
 
-    console.log(articles);
+    const sympts = await getDiseaseSymptoms(_conn);
+
+    for (var article in articles) {
+        article["symptom"] = sympts[article.disease_id];
+    }
 
     res.send(articles);
 });
