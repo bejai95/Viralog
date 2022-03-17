@@ -73,41 +73,40 @@ app.get("/articles", async (req, res) => {
     const articles = await _conn.select("Article.article_url", "Article.date_of_publication", "Article.headline", "Article.main_text").from("Article");
     const results = [];
 
+    const symptoms = await getDiseaseSymptoms(_conn);
+
     for (let i = 0; i < articles.length; i++) {
         const article = articles[i];
-
-        const reports = await _conn.select("Disease.name as disease", "Report.event_date as date", "Report.location").from("Report")
+        const reportsResult = [];
+        
+        const reportRecords = await _conn.select("Report.disease_id", "Disease.name as disease", "Report.event_date as date", "Report.location").from("Report")
+            .where("Report.article_url", "=", article.article_url)
             .whereIn("Report.disease_id", diseases)
             .whereIn("location", locations)
             .where('event_date', '>=', period_of_interest_start)
             .where('event_date', '<=', period_of_interest_end)
-            .join('Disease', 'Report.disease_id', '=', 'Disease.disease_id')
-            .join('Symptom', 'Report.disease_id', '=', 'Symptom.disease_id');
+            .join('Disease', 'Report.disease_id', '=', 'Disease.disease_id');
 
+        for (let i = 0; i < reportRecords.length; i++) {
+            const reportRecord = reportRecords[i];
+            reportsResult.push({
+                diseases: [reportRecord.disease],
+                syndromes: symptoms[reportRecord.disease_id],
+                event_date: reportRecord.date,
+                location: reportRecord.location
+            });
+        }
+
+        results.push({
+            url: article.article_url,
+            date_of_publication: article.date_of_publication,
+            headline: article.headline,
+            main_text: article.main_text,
+            reports: reportsResult
+        });
     }
 
-    /*
-        .whereIn("Report.disease_id", diseases)
-        .whereIn("location", locations)
-        .where('event_date', '>=', period_of_interest_start)
-        .where('event_date', '<=', period_of_interest_end)
-        .join('Disease', 'Report.disease_id', '=', 'Disease.disease_id')
-        .join('Symptom', 'Report.disease_id', '=', 'Symptom.disease_id');
-    */
-
-    const diseaseSymptoms = getDiseaseSymptoms(_conn);
-
-    /*
-    { articles }
-    Where articles is a list of { url, date_of_publication, headline, main_text, reports }
-    { reports }
-    Where reports is a list of { diseases, syndromes, event_date, locations }
-    */
-
-
-
-    res.send(result);
-    // res.send(articles);
+    res.send(results);
 });
 
 async function getDiseaseSymptoms(conn) {
@@ -115,7 +114,11 @@ async function getDiseaseSymptoms(conn) {
     const diseaseSymptoms = {};
     for (let i = 0; i < symptomRecords.length; i++) {
         const record = symptomRecords[i];
-        diseaseSymptoms[record.disease_id] = record.symptom;
+        if (diseaseSymptoms[record.disease_id] == null) {
+            diseaseSymptoms[record.disease_id] = [];
+        }
+
+        diseaseSymptoms[record.disease_id].push(record.symptom);
     }
     return diseaseSymptoms;
 }
@@ -148,21 +151,27 @@ app.get("/reports", async (req, res) => {
     let locations = location.split(",");
 
     // Search query here, key_terms and sources may be empty
-    const articles = await _conn.select("Report.disease_id", "Disease.name as disease", "Report.event_date as date", "Report.location").from("Report")
+    const reportRecords = await _conn.select("Report.disease_id", "Disease.name as disease", "Report.event_date as date", "Report.location").from("Report")
         .whereIn("Report.disease_id", diseases)
         .whereIn("location", locations)
         .where('event_date', '>=', period_of_interest_start)
         .where('event_date', '<=', period_of_interest_end)
-        .join('Disease', 'Report.disease_id', '=', 'Disease.disease_id')
-        .join('Symptom', 'Report.disease_id', '=', 'Symptom.disease_id');
+        .join('Disease', 'Report.disease_id', '=', 'Disease.disease_id');
 
-    const sympts = await getDiseaseSymptoms(_conn);
+    const symptoms = await getDiseaseSymptoms(_conn);
 
-    for (var article in articles) {
-        article["symptom"] = sympts[article.disease_id];
+    const results = [];
+    for (let i = 0; i < reportRecords.length; i++) {
+        const reportRecord = reportRecords[i];
+        results.push({
+            diseases: [reportRecord.disease],
+            syndromes: symptoms[reportRecord.disease_id],
+            event_date: reportRecord.date,
+            location: reportRecord.location
+        });
     }
 
-    res.send(articles);
+    res.send(results);
 });
 
 app.get("/predictions", async (req, res) => {
