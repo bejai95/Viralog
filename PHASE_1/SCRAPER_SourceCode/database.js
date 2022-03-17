@@ -1,13 +1,17 @@
 "use strict";
 
 const process = require("process");
+require("dotenv").config();
+
 const Knex = require("knex");
 
 async function createTcpPoolSslCerts(config) {
-    if (process.env.DB_HOST == null
-	 || process.env.DB_USER == null
-	 || process.env.DB_PASS == null
-	 || process.env.DB_NAME == null) {
+    if (
+        process.env.DB_HOST == null ||
+        process.env.DB_USER == null ||
+        process.env.DB_PASS == null ||
+        process.env.DB_NAME == null
+    ) {
         throw "Please specify environment variables DB_HOST, DB_USER, DB_PASS and DB_NAME.";
     }
 
@@ -19,17 +23,16 @@ async function createTcpPoolSslCerts(config) {
         return Knex({
             client: "pg",
             connection: {
-                user: process.env.DB_USER,        // e.g. "my-user"
-                password: process.env.DB_PASS,    // e.g. "my-user-password"
-                database: process.env.DB_NAME,    // e.g. "my-database"
-                host: dbSocketAddr[0],            // e.g. "127.0.0.1"
-                port: dbSocketAddr[1],            // e.g. "5432"
+                user: process.env.DB_USER, // e.g. "my-user"
+                password: process.env.DB_PASS, // e.g. "my-user-password"
+                database: process.env.DB_NAME, // e.g. "my-database"
+                host: dbSocketAddr[0], // e.g. "127.0.0.1"
+                port: dbSocketAddr[1], // e.g. "5432"
                 ssl: { rejectUnauthorized: false },
             },
             ...config,
         });
-    }
-    catch (error) {
+    } catch (error) {
         console.log(error);
     }
 }
