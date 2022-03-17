@@ -69,10 +69,25 @@ app.get("/articles", async (req, res) => {
     } = req.query;
 
     // Search query here, key_terms and sources may be empty
-    const articles = await _conn.select("*").from("article");
+    // const articles = await _conn.select("*").from("article");
 
-    res.send(articles);
+    const diseaseSymptoms = getDiseaseSymptoms(_conn);
+    
+
+
+    res.send(result);
+    // res.send(articles);
 });
+
+async function getDiseaseSymptoms(conn) {
+    const symptomRecords = await conn.select("Disease.disease_id", "symptom").from("Disease").innerJoin("Symptom", "Symptom.disease_id", "Disease.disease_id");
+    const diseaseSymptoms = {};
+    for (let i = 0; i < symptomRecords.length; i++) {
+        const record = symptomRecords[i];
+        diseaseSymptoms[record.disease_id] = record.symptom;
+    }
+    return diseaseSymptoms;
+}
 
 app.get("/reports", async (req, res) => {
     _conn = _conn || (await db.createConnectionPool());
@@ -132,6 +147,12 @@ app.get("/admin/reset", async (req, res) => {
         res.send(error);
     }
 });
+
+async function createLog(reqParams, status, errMsg) {
+    const time = (new Date().toISOString());
+    // yyyy-MM-ddTHH:mm:ss
+
+}
 
 const PORT = parseInt(process.env.PORT) || 8080;
 const server = app.listen(PORT, () => {
