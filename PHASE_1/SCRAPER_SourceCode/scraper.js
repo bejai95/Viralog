@@ -45,9 +45,12 @@ async function scrapeArticle(processFn, urlStub) {
     const res = await axios.get(CIDRAP_URL + urlStub);
     const $ = cheerio.load(res.data);
 
+    const date = $("span.date-display-single").first().text();
+    const formattedDate = new Date(date).toISOString();
+
     const data = {
         headline:  $("#page-title").first().text(),
-        date_of_publication:   $("span.date-display-single").first().text(),
+        date_of_publication:   formattedDate,
         author: $("a[href$='/ongoing-programs/news-publishing/news-publishing-staff']").first().text(),
         main_text:   $("div.field.field-name-field-body.field-type-text-long.field-label-hidden").first().text(),
         article_url: CIDRAP_URL + urlStub,

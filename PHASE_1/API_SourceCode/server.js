@@ -70,7 +70,9 @@ app.get("/articles", async (req, res) => {
     let diseases = key_terms.split(",");
     let locations = location.split(",");
 
-    const articles = await _conn.select("Article.article_url", "Article.date_of_publication", "Article.headline", "Article.main_text").from("Article");
+    const articles = await _conn.select("Article.article_url", "Article.date_of_publication", "Article.headline", "Article.main_text").from("Article")
+        .where('date_of_publication', '>=', period_of_interest_start)
+        .where('date_of_publication', '<=', period_of_interest_end);
     const results = [];
 
     const symptoms = await getDiseaseSymptoms(_conn);
@@ -83,8 +85,6 @@ app.get("/articles", async (req, res) => {
             .where("Report.article_url", "=", article.article_url)
             .whereIn("Report.disease_id", diseases)
             .whereIn("location", locations)
-            .where('event_date', '>=', period_of_interest_start)
-            .where('event_date', '<=', period_of_interest_end)
             .join('Disease', 'Report.disease_id', '=', 'Disease.disease_id');
 
         for (let i = 0; i < reportRecords.length; i++) {
@@ -154,8 +154,8 @@ app.get("/reports", async (req, res) => {
     const reportRecords = await _conn.select("Report.disease_id", "Disease.name as disease", "Report.event_date as date", "Report.location").from("Report")
         .whereIn("Report.disease_id", diseases)
         .whereIn("location", locations)
-        .where('event_date', '>=', period_of_interest_start)
-        .where('event_date', '<=', period_of_interest_end)
+        .where('Report.event_date', '>=', period_of_interest_start)
+        .where('Report.event_date', '<=', period_of_interest_end)
         .join('Disease', 'Report.disease_id', '=', 'Disease.disease_id');
 
     const symptoms = await getDiseaseSymptoms(_conn);

@@ -15,7 +15,7 @@ async function resetSchema(conn) {
             table.text("category");
             table.text("source");
             table.text("author").notNullable();
-            table.text("date_of_publication").notNullable();
+            table.string("date_of_publication").notNullable();
         });
 
         await conn.schema.createTable("Disease", (table) => {
@@ -45,7 +45,7 @@ async function resetSchema(conn) {
 
         await conn.schema.createTable("Report", (table) => {
             table.increments("report_id");
-            table.date("event_date").notNullable();
+            table.string("event_date").notNullable();
             table
                 .text("disease_id")
                 .references("disease_id")
@@ -63,7 +63,7 @@ async function resetSchema(conn) {
             table.increments("id");
             table.integer("status").notNullable();
             table.text("req_params").notNullable();
-            table.date("timestamp").notNullable();
+            table.string("timestamp").notNullable();
             table.text("err_msg");
         });
 }
