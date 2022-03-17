@@ -61,15 +61,16 @@ app.get("/articles", async (req, res) => {
         return res.status(400).send({ message: "Missing parameter location" });
 
     let {
-        period_of_interest_start,
-        period_of_interest_end,
-        key_terms,
-        location,
-        sources,
+        period_of_interest_start = req.params.period_of_interest_start,
+        period_of_interest_end = req.params.period_of_interest_end,
+        key_terms = req.params.key_terms,
+        location = req.params.location,
     } = req.query;
 
+    const articles = await _conn.select("*").from("Article")
+        .whereIn();
+
     // Search query here, key_terms and sources may be empty
-    // const articles = await _conn.select("*").from("article");
 
     const diseaseSymptoms = getDiseaseSymptoms(_conn);
     
@@ -113,18 +114,20 @@ app.get("/reports", async (req, res) => {
         sources = req.params.sources,
     } = req.query;
 
-    var diseases = key_terms.split(",");
-    var locations = location.split(",");
-    console.log(locations);
+    let diseases = key_terms.split(",");
+    let locations = location.split(",");
 
     // Search query here, key_terms and sources may be empty
-    const articles = await _conn.select("*").from("Report")
-        .whereIn("disease_id", diseases)
+    const articles = await _conn.select("Disease.name as disease", "Report.event_date as date", "Report.location").from("Report")
+        .whereIn("Report.disease_id", diseases)
         .whereIn("location", locations)
         .where('event_date', '>=', period_of_interest_start)
-        .where('event_date', '<=', period_of_interest_end);
+        .where('event_date', '<=', period_of_interest_end)
+        .join('Disease', 'Report.disease_id', '=', 'Disease.disease_id')
+        .join('Symptom', 'Report.disease_id', '=', 'Symptom.disease_id');
 
     console.log(articles);
+
     res.send(articles);
 });
 
