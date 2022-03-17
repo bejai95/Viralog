@@ -6,8 +6,8 @@ const cheerio = require("cheerio");
 const CIDRAP_URL = "https://www.cidrap.umn.edu";
 const ARTICLES_URL = "https://www.cidrap.umn.edu/news-perspective?f%5B0%5D=type%3Ass_news";
 
-exports.scrape = async (conn, pageCount, processFn) => {
-    for (let i = 0; i < pageCount; i++) {
+exports.scrape = async (conn, startPage, endPage, processFn) => {
+    for (let i = startPage-1; i < endPage; i++) {
         console.log(`Scraping list page ${i+1}`);
         await scrapeArticleList(conn, processFn, i);
     }
@@ -54,5 +54,7 @@ async function scrapeArticle(processFn, urlStub) {
         source: "CIDRAP",
         category: $("div.fieldlayout-inline.fieldlayout.node-field-filed_under div div:nth-child(2)").first().text()
     };
-    processFn(data);
+    await processFn(data);
 }
+
+// delete from "Article" where "Article".article_url in (SELECT "Article".article_url from "Article" left outer join "Report" ON "Article".article_url = "Report".article_url GROUP BY "Article".article_url having COUNT(report_id) = 0);
