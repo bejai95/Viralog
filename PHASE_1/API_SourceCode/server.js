@@ -91,17 +91,25 @@ app.get("/reports", async (req, res) => {
         return res.status(400).send({ message: "Missing parameter location" });
 
     let {
-        period_of_interest_start,
-        period_of_interest_end,
-        key_terms,
-        location,
-        sources,
-        diseases,
+        period_of_interest_start = req.params.period_of_interest_start,
+        period_of_interest_end = req.params.period_of_interest_end,
+        key_terms = req.params.key_terms,
+        location = req.params.location,
+        sources = req.params.sources,
     } = req.query;
 
-    // Search query here, key_terms and sources may be empty
-    const articles = await _conn.select("*").from("report");
+    var diseases = key_terms.split(",");
+    var locations = location.split(",");
+    console.log(locations);
 
+    // Search query here, key_terms and sources may be empty
+    const articles = await _conn.select("*").from("Report")
+        .whereIn("disease_id", diseases)
+        .whereIn("location", locations)
+        .where('event_date', '>=', period_of_interest_start)
+        .where('event_date', '<=', period_of_interest_end);
+
+    console.log(articles);
     res.send(articles);
 });
 
