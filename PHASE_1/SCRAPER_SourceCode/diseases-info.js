@@ -24,7 +24,7 @@ const diseases = {
         symptoms: ["cough", "shortness of breath", "fever", "muscle ache", "headache", "chills"]
     },
     measles: {
-        aliases: ["measles", "rubeola"],
+        aliases: ["measles", "rubeola", "rubella"],
         symptoms: ["fever", "cough", "runny nose", "watery eyes"]
     },
     anthrax: {
@@ -55,8 +55,64 @@ const diseases = {
         symptoms: ["skin ulcers", "swollen and painful lymph glands", "inflamed eyes", "sore throat", "mouth sores", "diarrhea", "pneumonia"]
     },
     avian_flu: {
-        aliases: ["avian flu", "avianflu"],
+        aliases: ["avian flu", "avianflu", "H5N1", "avian influenza"],
+        symptoms: ["cough", "fever", "sore throat", "muscle aches", "headache", "shortness of breath"]
+    },
+    tuberculosis: {
+        aliases: ["tuberculosis", "TB", "consumption"],
+        symptoms: ["cough", "weight loss", "night sweats", "fever"]
+    },
+    cholera: {
+        aliases: ["cholera"],
+        symptoms: ["diarrhea", "dehydration", "vomiting"]
+    },
+    cwd: {
+        aliases: ["chronic wasting disease", "cwd"],
         symptoms: []
+    },
+    e_coli: {
+        aliases: ["E coli", "Ecoli", "E-Coli", "E. Coli"],
+        symptoms: []
+    },
+    ebola: {
+        aliases: ["ebola", "ebola hemorrhagic fever"],
+        symptoms: ["fever", "headache", "muscle pain", "chills", "internal bleeding", "vomiting"]
+    },
+    malaria: {
+        aliases: ["malaria", "plasmodium infection"],
+        symptoms: ["chills", "fever", "sweating"]
+    },
+    swine_flu: {
+        aliases: ["swine flu", "pig influenza", "h1n1", "swine influenza"],
+        symptoms: ["pain", "fever", "cough", "sore throat", "chills", "body aches"]
+    },
+    hpv: {
+        aliases: ["hpv", "human papillomavirus infection"],
+        symptoms: ["genital warts"]
+    },
+    listeria: {
+        aliases: ["listeria"],
+        symptoms: []
+    },
+    meningitis: {
+        aliases: ["meningitis"],
+        symptoms: ["headache", "fever", "stiff neck"]
+    },
+    polio: {
+        aliases: ["polio", "poliomyelitis"],
+        symptoms: ["paralysis"]
+    },
+    rotavirus: {
+        aliases: ["rotavirus", "rotaviral enteritis"],
+        symptoms: ["diarrhoea", "fever", "vomiting"]
+    },
+    west_nile_virus: {
+        aliases: ["west nile", "west nile virus", "wnv"],
+        symptoms: ["headache", "body aches", "joint pains", "vomiting", "diarrhea", "rash"]
+    },
+    mumps: {
+        aliases: ["mumps", "parotitis"],
+        symptoms: ["swollen, painful salivary glands", "fever", "headache", "fatigue", "appetite loss"]
     }
 };
 

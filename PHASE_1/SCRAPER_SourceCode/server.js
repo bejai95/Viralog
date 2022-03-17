@@ -21,11 +21,9 @@ async function scrape() {
 
     const articles = [];
     try {
-        await scraper.scrape(conn, parseInt(process.argv[2]) || 1,
-            article => articles.push(article)
+        await scraper.scrape(conn, parseInt(process.argv[2]) || 1, parseInt(process.argv[3]) || 1,
+            async article => processArticle(conn, article)
         );
-
-        console.log(`${articles.length} CIDRAP pages will be processed...`);
     }
     catch (error) {
         console.log("Failed to scrape CIDRAP.");
@@ -33,23 +31,22 @@ async function scrape() {
         return;
     }
 
-    for (let i = 0; i < articles.length; i++) {
-        let reports = await processor.processArticle(conn, articles[i]);
-        console.log(`Article "${articles[i].headline}": ${reports.length} reports`);
-
-        try {
-            await conn("Article").insert(articles[i]);
-
-            await conn.batchInsert("Report", reports);
-        }
-        catch (error) {
-            console.log(error);
-            return;
-        }
-    }
-
     conn.destroy();
     console.log("Done!");
+}
+
+async function processArticle(conn, article) {
+    let reports = await processor.processArticle(conn, article);
+    console.log(`Article "${article.headline}": ${reports.length} reports`);
+
+    try {
+        await conn("Article").insert(article);
+
+        await conn.batchInsert("Report", reports);
+    }
+    catch (error) {
+        console.log(error);
+    }
 }
 
 scrape();
