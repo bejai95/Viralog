@@ -53,24 +53,12 @@ const diseases = {
     tularemia: {
         aliases: ["tularemia", "rabbit fever"],
         symptoms: ["skin ulcers", "swollen and painful lymph glands", "inflamed eyes", "sore throat", "mouth sores", "diarrhea", "pneumonia"]
+    },
+    avian_flu: {
+        aliases: ["avian flu", "avianflu"],
+        symptoms: []
     }
 };
-
-// async function scrapeWiki() {
-//     const res = await axios.get("https://en.wikipedia.org/wiki/List_of_infectious_diseases");
-//     const $ = cheerio.load(res.data);
-
-//     $("table>tbody>tr>td:nth-child(2)").each((_idx, el) => {
-//         console.log($(el).html());
-//     });
-
-//     // const data = {
-//     //     title:  $("#page-title").first().text(),
-//     //     date:   $("span.date-display-single").first().text(),
-//     //     author: $("a[href$='/ongoing-programs/news-publishing/news-publishing-staff']").first().text(),
-//     //     body:   $("div.field.field-name-field-body.field-type-text-long.field-label-hidden").first().text()
-//     // };
-// }
 
 async function uploadDiseases() {
     let conn;
@@ -97,15 +85,11 @@ async function uploadDiseases() {
                 let symptoms = diseases[key].symptoms || [];
 
                 for (let i = 0; i < aliases.length; i++) {
-                    process.stdout.write(aliases[i]);
                     await conn("DiseaseAlias").insert({disease_id: key, alias: aliases[i]});
                 }
-                process.stdout.write("\n");
                 for (let i = 0; i < symptoms.length; i++) {
-                    process.stdout.write(symptoms[i]);
                     await conn("Symptom").insert({disease_id: key, symptom: symptoms[i]});
                 }
-                process.stdout.write("\n");
             }
         }
     }

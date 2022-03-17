@@ -1,90 +1,77 @@
 "use strict";
 
-const csv = require("csv-parser");
-const fs = require("fs");
 const nlp = require("compromise");
 
-let countries;
-let cities;
-
-// function loadLocationData() {
-//     // const results = [];
-//     countries = {};
-//     cities = {};
-
-//     fs.createReadStream("data/worldcities.csv")
-//         .pipe(csv())
-//         .on("data", (data) => {
-//             countries[data.country] = true;
-//             cities[data.city] = data;
-//         })
-//         .on("end", () => {
-//             console.log("Loaded data/worldcities.csv");
-//         });
-// }
-
 async function processArticle(conn, article) {
-    console.log(article);
-
-    if (countries == null || cities == null) {
-        // loadLocationData();
-    }
-    
-    
-    
+    // Generate disease alias table for "compromise".
     const records = await conn.select("*").from("DiseaseAlias");
     const diseases = {};
     for (let i = 0; i < records.length; i++) {
+        const diseaseId = records[i].disease_id;
         const alias = records[i].alias;
-        diseases[alias] = "Disease";
+        
+        if (diseases[diseaseId] == null) {
+            diseases[diseaseId] = {};
+        }
+        
+        diseases[diseaseId][alias] = diseaseId;
 
         if (alias.indexOf("-") > -1) {
             const modifiedAlias = alias.replace(/-/g, " ");
-            diseases[modifiedAlias] = "Disease";
+            diseases[diseaseId][modifiedAlias] = diseaseId;
         }
     }
 
-    console.log(diseases);
+    return findReports(article, diseases);
+}
 
-    const text = article.title + ". " + article.body;
-    const doc = nlp(text, diseases);
+async function findReports(article, diseases) {
+    const text = article.headline + ". " + article.main_text;
+    const reports = [];
 
-    // console.log(doc.match("#Disease+").out("array"));
-    // console.log(doc.match("#Place+").out("array"));
-    console.log(doc.match("#Disease").lookBehind("#Place").out("array"));
-    console.log(doc.match("#Disease").lookAhead("#Place").out("array"));
+    for (let diseaseId in diseases) {
+        if (!diseases.hasOwnProperty(diseaseId)) continue;
 
+        const doc = nlp(text, diseases[diseaseId]);
+        const behindPlaces = doc.match("#" + diseaseId + "+").lookBehind("#Place+").out("array");
+        const aheadPlaces = doc.match("#" + diseaseId + "+").lookAhead("#Place+").out("array");
 
+        // Interleave arrays.
+        const places = [];
+        const maxLen = behindPlaces.length > aheadPlaces.length ? behindPlaces.length : aheadPlaces.length;
+        for (let idx = 0; idx < maxLen; idx++) {
+            // Remove trailing "'s"
+            if (idx < behindPlaces.length) {
+                places.push(behindPlaces[idx]);
+            }
+            if (idx < aheadPlaces.length) {
+                places.push(aheadPlaces[idx]);
+            }
+        }
 
-    //     let alias = records[i].alias;
+        if (places.length > 0) {
+            const location = places[0];
 
-    //     console.log(alias);
-    //     const behindPlaces = doc.match(alias).lookBehind("#Place").out("array");
-    //     const aheadPlaces = doc.match(alias).lookAhead("#Place").out("array");
+            reports.push({
+                article_url: article.article_url,
+                disease_id: diseaseId,
+                event_date: article.date_of_publication,
+                location: processLocation(location)
+            });
+        }
+    }
+    return reports;
+}
 
-    //     // Interleave arrays.
-    //     const places = [];
-    //     const maxLen = behindPlaces.length > aheadPlaces.length ? behindPlaces.length : aheadPlaces.length;
-    //     for (let idx = 0; idx < maxLen; idx++) {
-    //         if (idx < behindPlaces.length) {
-    //             places.push(behindPlaces[idx]);
-    //         }
-    //         if (idx < aheadPlaces.length) {
-    //             places.push(aheadPlaces[idx]);
-    //         }
-    //     }
-
-
-
-    // }
-
-    // let places = doc.places();
-
-
-
-
-
-    // console.log(places);
+/**
+ * Strips bad characters from location names.
+ * @param {string} location 
+ */
+function processLocation(location) {
+    location = location.replace(/[.,!#"]/gi, "");
+    location = location.replace(/'s?$/i, "");
+    location = location.replace(/'/gi, "");
+    return location;
 }
 
 exports.processArticle = processArticle;

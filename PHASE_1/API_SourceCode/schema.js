@@ -9,24 +9,24 @@ async function resetSchema(conn) {
         await conn.schema.dropTableIfExists("Article");
 
         await conn.schema.createTable("Article", (table) => {
-            table.string("article_url").primary();
-            table.string("headline").notNullable();
-            table.string("main_text").notNullable();
-            table.string("category");
-            table.string("source");
-            table.string("author").notNullable();
-            table.string("date_of_publication").notNullable();
+            table.text("article_url").primary();
+            table.text("headline").notNullable();
+            table.text("main_text").notNullable();
+            table.text("category");
+            table.text("source");
+            table.text("author").notNullable();
+            table.text("date_of_publication").notNullable();
         });
 
         await conn.schema.createTable("Disease", (table) => {
-            table.string("disease_id").primary();
-            table.string("name").notNullable();
+            table.text("disease_id").primary();
+            table.text("name").notNullable();
         });
 
         await conn.schema.createTable("Symptom", (table) => {
-            table.string("symptom").notNullable();
+            table.text("symptom").notNullable();
             table
-                .string("disease_id")
+                .text("disease_id")
                 .references("disease_id")
                 .inTable("Disease")
                 .notNullable();
@@ -35,37 +35,36 @@ async function resetSchema(conn) {
 
         await conn.schema.createTable("DiseaseAlias", (table) => {
             table
-                .string("disease_id")
+                .text("disease_id")
                 .references("disease_id")
                 .inTable("Disease")
                 .notNullable();
-            table.string("alias").notNullable();
+            table.text("alias").notNullable();
             table.primary(["disease_id", "alias"]);
         });
 
         await conn.schema.createTable("Report", (table) => {
-            table.string("id").primary();
+            table.increments("report_id");
             table.date("event_date").notNullable();
             table
-                .string("disease_id")
+                .text("disease_id")
                 .references("disease_id")
                 .inTable("Disease")
                 .notNullable();
             table
-                .string("article_url")
+                .text("article_url")
                 .references("article_url")
                 .inTable("Article")
                 .notNullable();
-            table.string("country").notNullable();
-            table.string("city");
+            table.text("location").notNullable();
         });
 
         await conn.schema.createTable("Log", (table) => {
-            table.string("id").primary();
+            table.increments("id");
             table.integer("status").notNullable();
-            table.string("req_params").notNullable();
+            table.text("req_params").notNullable();
             table.date("timestamp").notNullable();
-            table.string("err_msg");
+            table.text("err_msg");
         });
 }
 
