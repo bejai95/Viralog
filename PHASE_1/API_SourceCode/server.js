@@ -182,20 +182,9 @@ app.get("/predictions", async (req, res) => {
     res.send(articles);
 });
 
-app.get("/admin/reset", async (req, res) => {
-    _conn = _conn || (await db.createConnectionPool());
-
-    try {
-        schema.resetSchema(_conn);
-        res.send({ status: "success" });
-    } catch (error) {
-        console.log(error);
-        res.send(error);
-    }
-});
-
 async function createLog(reqParams, status, errMsg) {
-    const time = (new Date().toISOString());
+    let time = (new Date().toISOString());
+    time = time.replace(/\.[0-9]{3}Z$/, "");
     // yyyy-MM-ddTHH:mm:ss
 
 }
