@@ -114,7 +114,7 @@ app.get("/predictions", async (req, res) => {
     let threshold = req.query.threshold || 0;
 
     try {
-        const predictions = res.send(await routes.predictions(_conn, threshold));
+        const predictions = await routes.predictions(_conn, threshold);
         createLog(_conn, ip, "/predictions", req.query, 200, "success", req.query.team);
         res.send(predictions);
     }
@@ -129,7 +129,7 @@ app.get("/logs", async (req, res) => {
     const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
 
     try {
-        const logs = routes.logs(_conn, ip);
+        const logs = await routes.logs(_conn, ip);
         createLog(_conn, ip, "/logs", req.query, 200, "success");
         res.send(logs);
     }
