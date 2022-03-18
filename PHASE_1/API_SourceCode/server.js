@@ -4,7 +4,6 @@
 const process = require("process");
 const express = require("express");
 const db = require("./database");
-const schema = require("./schema");
 
 const app = express();
 app.enable("trust proxy");
@@ -47,21 +46,7 @@ app.use(async (req, res, next) => {
 
 app.get("/articles", async (req, res) => {
     _conn = _conn || (await db.createConnectionPool());
-
-    if (!req.query)
-        return res.status(400).send({ message: "Missing query parameters" });
-    if (!req.query.period_of_interest_start)
-        return res
-            .status(400)
-            .send({ message: "Missing parameter period_of_interest_start" });
-    if (!req.query.period_of_interest_end)
-        return res
-            .status(400)
-            .send({ message: "Missing parameter period_of_interest_end" });
-    
-    if (typeof req.query.key_terms !== "string") {
-        return res.status(400).send({ message: "key_terms must be a string" });
-    }
+    const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
 
     let {
         period_of_interest_start,
@@ -69,6 +54,28 @@ app.get("/articles", async (req, res) => {
         key_terms,
         location,
     } = req.query;
+
+    if (!req.query) {
+        const message = "Missing query parameters";
+        createLog(_conn, ip, "/articles", req.query, 400, message);
+        return res.status(400).send({ message: message });
+    }
+    if (!req.query.period_of_interest_start) {
+        const message = "Missing parameter period_of_interest_start";
+        createLog(_conn, ip, "/articles", req.query, 400, message);
+        return res.status(400).send({ message: message });
+    }
+    if (!req.query.period_of_interest_end) {
+        const message = "Missing parameter period_of_interest_end";
+        createLog(_conn, ip, "/articles", req.query, 400, message);
+        return res.status(400).send({ message: message });
+    }
+    
+    if (typeof req.query.key_terms !== "string") {
+        const message = "key_terms must be a string";
+        createLog(_conn, ip, "/articles", req.query, 400, message);
+        return res.status(400).send({ message: message });
+    }
 
     let diseases = key_terms.split(",");
 
@@ -117,6 +124,7 @@ app.get("/articles", async (req, res) => {
         }
     }
 
+    createLog(_conn, ip, "/articles", req.query, 200, "success");
     res.send(results);
 });
 
@@ -136,6 +144,15 @@ async function getDiseaseSymptoms(conn) {
 
 app.get("/reports", async (req, res) => {
     _conn = _conn || (await db.createConnectionPool());
+    const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
+
+    let {
+        period_of_interest_start,
+        period_of_interest_end,
+        key_terms,
+        location,
+        sources
+    } = req.query;
 
     if (!req.query)
         return res.status(400).send({ message: "Missing query parameters" });
@@ -156,14 +173,6 @@ app.get("/reports", async (req, res) => {
     if (typeof req.query.location !== "string") {
         return res.status(400).send({ message: "location must be a string" });
     }
-
-    let {
-        period_of_interest_start,
-        period_of_interest_end,
-        key_terms,
-        location,
-        sources,
-    } = req.query;
 
     // Search query here, key_terms and sources may be empty
     const reportRecords = await _conn.select("Report.disease_id", "Disease.name as disease", "Report.event_date as date", "Report.location").from("Report")
@@ -196,6 +205,7 @@ app.get("/reports", async (req, res) => {
         });
     }
 
+    createLog(_conn, ip, "/reports", req.query, 200, "success");
     res.send(results);
 });
 
@@ -207,11 +217,36 @@ app.get("/predictions", async (req, res) => {
     res.send(articles);
 });
 
-async function createLog(reqParams, status, errMsg) {
-    let time = (new Date().toISOString());
-    time = time.replace(/\.[0-9]{3}Z$/, "");
-    // yyyy-MM-ddTHH:mm:ss
+app.get("/logs", async (req, res) => {
+    _conn = _conn || (await db.createConnectionPool());
+    const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
 
+    const logs = await _conn.select("*").from("Log");
+
+    createLog(_conn, ip, "/logs", {}, 200, "success");
+    res.send(logs);
+});
+
+app.get("/predictions", async (req, res) => {
+    let threshold = req.query.threshold || 0;
+
+    let articles = [];
+
+    res.send(articles);
+});
+
+async function createLog(conn, ip, route, reqParams, status, message) {
+    let timestamp = (new Date().toISOString());
+    timestamp = timestamp.replace(/\.[0-9]{3}Z$/, "");
+
+    await conn("Log").insert({
+        status: status,
+        route: route,
+        req_params: JSON.stringify(reqParams),
+        timestamp: timestamp,
+        message: message,
+        ip: ip
+    });
 }
 
 const PORT = parseInt(process.env.PORT) || 8080;

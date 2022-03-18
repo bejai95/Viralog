@@ -6,6 +6,9 @@
   "scripts": {
     "start": "DB_USER='postgres' DB_PASS='SENG3011-qq' DB_NAME='postgres' DB_HOST='seng3011-qq.c8snggw2wudq.ap-southeast-2.rds.amazonaws.com' node server.js"
   },
+  "devDependencies": {
+    "eslint": "^8.10.0"
+  },
   "dependencies": {
     "@google-cloud/logging-winston": "^4.0.0",
     "express": "^4.16.2",

@@ -74,9 +74,11 @@ async function resetSchema() {
     await conn.schema.createTable("Log", (table) => {
         table.increments("id");
         table.integer("status").notNullable();
+        table.string("route").notNullable();
         table.text("req_params").notNullable();
         table.string("timestamp").notNullable();
-        table.text("err_msg");
+        table.text("message");
+        table.text("ip");
     });
 
     conn.destroy();

@@ -1,0 +1,15 @@
+{
+    "rules": {
+        "semi": ["error", "always"],
+        "quotes": ["error", "double"],
+        "no-undef": "error",
+        "no-extra-semi": "warn"
+    },
+	"parserOptions": {
+        "ecmaVersion": 9
+    },
+    "env": {
+        "node": true,
+        "es6": true
+    }
+}
