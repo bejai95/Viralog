@@ -33,11 +33,24 @@ app.get("/articles", async (req, res) => {
     if (nullValue) {
         return performError(res, "/articles", 400, `Missing parameter ${nullValue}`, req.query, ip);
     }
-    if (typeof req.query.key_terms !== "string") {
-        return performError(res, "/articles", 400, "key_terms must be a string", req.query, ip);
+
+    const notString = findNotString(req.query, 
+        "period_of_interest_start", "period_of_interest_end", "key_terms", "location", "sources"
+    );
+    if (notString) {
+        return performError(res, "/articles", 400, `${notString} must be a string`, req.query, ip);
     }
 
-    // /\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d([+-][0-2]\d:[0-5]\d|Z)/
+    if (req.query.period_of_interest_start && !timeFormatCorrect(req.query.period_of_interest_start)) {
+        return performError(res, "/reports", 400,
+            "Invalid timestamp for 'period_of_interest_start', must be in format 'yyyy-MM-ddTHH:mm:ss'",
+            req.query, ip);
+    }
+    if (req.query.period_of_interest_end && !timeFormatCorrect(req.query.period_of_interest_end)) {
+        return performError(res, "/reports", 400,
+            "Invalid timestamp for 'period_of_interest_end', must be in format 'yyyy-MM-ddTHH:mm:ss'",
+            req.query, ip);
+    }
 
     try {
         const results = await routes.articles(_conn,
@@ -68,11 +81,22 @@ app.get("/reports", async (req, res) => {
         return performError(res, "/reports", 400, `Missing parameter ${nullValue}`, req.query, ip);
     }
 
-    if (typeof req.query.key_terms !== "string") {
-        return performError(res, "/reports", 400, "key_terms must be a string", req.query, ip);
+    const notString = findNotString(req.query, 
+        "period_of_interest_start", "period_of_interest_end", "key_terms", "location", "sources"
+    );
+    if (notString) {
+        return performError(res, "/reports", 400, `${notString} must be a string`, req.query, ip);
     }
-    if (typeof req.query.location !== "string") {
-        return performError(res, "/reports", 400, "location must be a string", req.query, ip);
+
+    if (req.query.period_of_interest_start && !timeFormatCorrect(req.query.period_of_interest_start)) {
+        return performError(res, "/reports", 400,
+            "Invalid timestamp for 'period_of_interest_start', must be in format 'yyyy-MM-ddTHH:mm:ss'",
+            req.query, ip);
+    }
+    if (req.query.period_of_interest_end && !timeFormatCorrect(req.query.period_of_interest_end)) {
+        return performError(res, "/reports", 400,
+            "Invalid timestamp for 'period_of_interest_end', must be in format 'yyyy-MM-ddTHH:mm:ss'",
+            req.query, ip);
     }
 
     try {
@@ -113,11 +137,22 @@ app.get("/logs", async (req, res) => {
     if (!req.query) {
         return performError(res, "/logs", 400, "Missing query parameters", req.query, ip);
     }
-    
-    if (req.query.routes && typeof req.query.routes !== "string") {
-        return performError(res, "/logs", 400, "routes must be a string", req.query, ip);
+
+    const notString = findNotString(req.query, "routes", "period_of_interest_start", "period_of_interest_end");
+    if (notString) {
+        return performError(res, "/logs", 400, `${notString} must be a string`, req.query, ip);
     }
-    // const timeFormat = /\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d([+-][0-2]\d:[0-5]\d|Z)/;
+
+    if (req.query.period_of_interest_start && !timeFormatCorrect(req.query.period_of_interest_start)) {
+        return performError(res, "/logs", 400,
+            "Invalid timestamp for 'period_of_interest_start', must be in format 'yyyy-MM-ddTHH:mm:ss'",
+            req.query, ip);
+    }
+    if (req.query.period_of_interest_end && !timeFormatCorrect(req.query.period_of_interest_end)) {
+        return performError(res, "/logs", 400,
+            "Invalid timestamp for 'period_of_interest_end', must be in format 'yyyy-MM-ddTHH:mm:ss'",
+            req.query, ip);
+    }
 
     try {
         const logs = await routes.logs(_conn, ip);
@@ -134,6 +169,16 @@ function findNull(obj, keys) {
     for (let i = 0; i < keys.length; i++) {
         const key = keys[i];
         if (!(key in obj) || obj[key] == null) {
+            return key;
+        }
+    }
+    return null;
+}
+
+function findNotString(obj, keys) {
+    for (let i = 0; i < keys.length; i++) {
+        const key = keys[i];
+        if ((key in obj) && typeof obj[key] !== "string") {
             return key;
         }
     }
@@ -158,6 +203,11 @@ async function createLog(conn, ip, route, queryParams, status, message) {
         ip: ip,
         team: queryParams.team || "Team QQ"
     });
+}
+
+function timeFormatCorrect(timestamp) {
+    const timeFormat = /\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d/;
+    return timeFormat.test(timestamp);
 }
 
 const PORT = parseInt(process.env.PORT) || 8080;
