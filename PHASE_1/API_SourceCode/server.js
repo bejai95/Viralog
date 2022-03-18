@@ -138,9 +138,20 @@ app.get("/logs", async (req, res) => {
         return performError(res, "/logs", 400, "Missing query parameters", req.query, ip);
     }
 
-    const notString = findNotString(req.query, "routes", "period_of_interest_start", "period_of_interest_end", "team");
+    const notString = findNotString(req.query, "routes", "period_of_interest_start", "period_of_interest_end", "routes", "team");
     if (notString) {
         return performError(res, "/logs", 400, `${notString} must be a string`, req.query, ip);
+    }
+
+    let routesList;
+    if (req.query.routes && req.query.routes != "") {
+        routesList = req.query.routes.split(",");
+        for (let i = 0; i < routesList.length; i++) {
+            const routesRegex = /^\/[a-z0-9\/]+$/i;
+            if (!routesRegex.test(routesList[i])) {
+                return performError(res, "/logs", 400, "invalid route list", req.query, ip);
+            }
+        }
     }
 
     let status = req.query.status;
@@ -169,6 +180,7 @@ app.get("/logs", async (req, res) => {
         const logs = await routes.logs(_conn,
             req.query.period_of_interest_start,
             req.query.period_of_interest_end,
+            routesList,
             status,
             req.query.team
         );
