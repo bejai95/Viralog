@@ -143,6 +143,17 @@ app.get("/logs", async (req, res) => {
         return performError(res, "/logs", 400, `${notString} must be a string`, req.query, ip);
     }
 
+    let status = req.query.status;
+    if (status === "") {
+        status = null;
+    }
+    if (status) {
+        status = parseInt(status);
+        if (isNaN(status) || !Number.isSafeInteger(status)) {
+            return performError(res, "/logs", 400, "status must be an integer", req.query, ip);
+        }
+    }
+
     if (req.query.period_of_interest_start && !timeFormatCorrect(req.query.period_of_interest_start)) {
         return performError(res, "/logs", 400,
             "Invalid timestamp for 'period_of_interest_start', must be in format 'yyyy-MM-ddTHH:mm:ss'",
@@ -158,6 +169,7 @@ app.get("/logs", async (req, res) => {
         const logs = await routes.logs(_conn,
             req.query.period_of_interest_start,
             req.query.period_of_interest_end,
+            status,
             req.query.team
         );
         createLog(_conn, ip, "/logs", req.query, 200, "success");
