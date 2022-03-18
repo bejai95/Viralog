@@ -44,6 +44,7 @@ app.use(async (req, res, next) => {
     }
 });
 
+
 app.get("/articles", async (req, res) => {
     _conn = _conn || (await db.createConnectionPool());
 
@@ -57,22 +58,25 @@ app.get("/articles", async (req, res) => {
         return res
             .status(400)
             .send({ message: "Missing parameter period_of_interest_end" });
-    if (!req.query.location)
-        return res.status(400).send({ message: "Missing parameter location" });
+    
+    if (typeof req.query.key_terms !== "string") {
+        return res.status(400).send({ message: "key_terms must be a string" });
+    }
 
     let {
-        period_of_interest_start = req.params.period_of_interest_start,
-        period_of_interest_end = req.params.period_of_interest_end,
-        key_terms = req.params.key_terms,
-        location = req.params.location,
+        period_of_interest_start,
+        period_of_interest_end,
+        key_terms,
+        location,
     } = req.query;
 
     let diseases = key_terms.split(",");
-    let locations = location.split(",");
 
     const articles = await _conn.select("Article.article_url", "Article.date_of_publication", "Article.headline", "Article.main_text").from("Article")
-        .where('date_of_publication', '>=', period_of_interest_start)
-        .where('date_of_publication', '<=', period_of_interest_end);
+        .where("date_of_publication", ">=", period_of_interest_start)
+        .where("date_of_publication", "<=", period_of_interest_end)
+        .innerJoin("Report", "Report.article_url", "=", "Article.article_url")
+        .whereIn("Report.disease_id", diseases);
     const results = [];
 
     const symptoms = await getDiseaseSymptoms(_conn);
@@ -83,9 +87,13 @@ app.get("/articles", async (req, res) => {
         
         const reportRecords = await _conn.select("Report.disease_id", "Disease.name as disease", "Report.event_date as date", "Report.location").from("Report")
             .where("Report.article_url", "=", article.article_url)
-            .whereIn("Report.disease_id", diseases)
-            .whereIn("location", locations)
-            .join('Disease', 'Report.disease_id', '=', 'Disease.disease_id');
+            .modify(queryBuilder => {
+                if (location && location != "") {
+                    const locations = location.split(",");
+                    queryBuilder.whereIn("location", locations);
+                }
+            })
+            .join("Disease", "Report.disease_id", "=", "Disease.disease_id");
 
         for (let i = 0; i < reportRecords.length; i++) {
             const reportRecord = reportRecords[i];
@@ -96,14 +104,17 @@ app.get("/articles", async (req, res) => {
                 location: reportRecord.location
             });
         }
-
-        results.push({
-            url: article.article_url,
-            date_of_publication: article.date_of_publication,
-            headline: article.headline,
-            main_text: article.main_text,
-            reports: reportsResult
-        });
+        
+        // Only show article if it has 1 or more reports.
+        if (reportRecords.length > 0) {
+            results.push({
+                url: article.article_url,
+                date_of_publication: article.date_of_publication,
+                headline: article.headline,
+                main_text: article.main_text,
+                reports: reportsResult
+            });
+        }
     }
 
     res.send(results);
@@ -128,35 +139,49 @@ app.get("/reports", async (req, res) => {
 
     if (!req.query)
         return res.status(400).send({ message: "Missing query parameters" });
-    if (!req.query.period_of_interest_start)
+    if (!req.query.period_of_interest_start) {
         return res
             .status(400)
             .send({ message: "Missing parameter period_of_interest_start" });
-    if (!req.query.period_of_interest_end)
+    }
+    if (!req.query.period_of_interest_end) {
         return res
             .status(400)
             .send({ message: "Missing parameter period_of_interest_end" });
-    if (!req.query.location)
-        return res.status(400).send({ message: "Missing parameter location" });
+    }
+    
+    if (typeof req.query.key_terms !== "string") {
+        return res.status(400).send({ message: "key_terms must be a string" });
+    }
+    if (typeof req.query.location !== "string") {
+        return res.status(400).send({ message: "location must be a string" });
+    }
 
     let {
-        period_of_interest_start = req.params.period_of_interest_start,
-        period_of_interest_end = req.params.period_of_interest_end,
-        key_terms = req.params.key_terms,
-        location = req.params.location,
-        sources = req.params.sources,
+        period_of_interest_start,
+        period_of_interest_end,
+        key_terms,
+        location,
+        sources,
     } = req.query;
-
-    let diseases = key_terms.split(",");
-    let locations = location.split(",");
 
     // Search query here, key_terms and sources may be empty
     const reportRecords = await _conn.select("Report.disease_id", "Disease.name as disease", "Report.event_date as date", "Report.location").from("Report")
-        .whereIn("Report.disease_id", diseases)
-        .whereIn("location", locations)
-        .where('Report.event_date', '>=', period_of_interest_start)
-        .where('Report.event_date', '<=', period_of_interest_end)
-        .join('Disease', 'Report.disease_id', '=', 'Disease.disease_id');
+        .modify(queryBuilder => {
+            if (key_terms && key_terms != "") {
+                const diseases = key_terms.split(",");
+                queryBuilder.whereIn("Report.disease_id", diseases);
+            }
+        })
+        .modify(queryBuilder => {
+            if (location && location != "") {
+                const locations = location.split(",");
+                queryBuilder.whereIn("location", locations);
+            }
+        })
+        .where("Report.event_date", ">=", period_of_interest_start)
+        .where("Report.event_date", "<=", period_of_interest_end)
+        .join("Disease", "Report.disease_id", "=", "Disease.disease_id");
 
     const symptoms = await getDiseaseSymptoms(_conn);
 
