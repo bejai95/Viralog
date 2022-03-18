@@ -155,7 +155,10 @@ app.get("/logs", async (req, res) => {
     }
 
     try {
-        const logs = await routes.logs(_conn, ip);
+        const logs = await routes.logs(_conn,
+            req.query.period_of_interest_start,
+            req.query.period_of_interest_end
+        );
         createLog(_conn, ip, "/logs", req.query, 200, "success");
         res.send(logs);
     }
@@ -206,7 +209,7 @@ async function createLog(conn, ip, route, queryParams, status, message) {
 }
 
 function timeFormatCorrect(timestamp) {
-    const timeFormat = /\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d/;
+    const timeFormat = /^\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d$/;
     return timeFormat.test(timestamp);
 }
 
