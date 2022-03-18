@@ -77,6 +77,8 @@ app.get("/articles", async (req, res) => {
         return res.status(400).send({ message: message });
     }
 
+    // /\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d([+-][0-2]\d:[0-5]\d|Z)/
+
     let diseases = key_terms.split(",");
 
     const articles = await _conn.select("Article.article_url", "Article.date_of_publication", "Article.headline", "Article.main_text").from("Article")
