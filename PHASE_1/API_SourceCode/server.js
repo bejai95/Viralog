@@ -212,8 +212,28 @@ app.get("/reports", async (req, res) => {
 app.get("/predictions", async (req, res) => {
     let threshold = req.query.threshold || 0;
 
-    let articles = [];
-
+    // dummy data - todo
+    let articles = [{disease: "COVID-19",
+	             syndromes: ["fever", "cough", "fatigue", "shortness of breath", "vomiting", "loss of taste", "loss of smell"],
+                     reports: [
+			       [{
+			         "diseases": [
+		                      "COVID-19"
+				 ],
+			     "syndromes":[
+			     "fever",
+			     "cough",
+			     "fatigue",
+			     "shortness of breath",
+			     "vomiting",
+			     "loss of taste",
+			     "loss of smell"
+			     ],
+			     "event_date":"2022-03-14T13:00:00",
+			     "location":"China"
+				     }]],
+	    	       threshold: 0.92}];
+    
     res.send(articles);
 });
 
