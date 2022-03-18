@@ -93,13 +93,16 @@ exports.predictions = async function(conn, threshold) {
     return [];
 };
 
-exports.logs = async function(conn, period_of_interest_start, period_of_interest_end) {
+exports.logs = async function(conn, period_of_interest_start, period_of_interest_end, team) {
     const logs = await conn.select("*").from("Log")
         .modify(queryBuilder => period_of_interest_start &&
             queryBuilder.where("timestamp", ">=", period_of_interest_start)
         )
         .modify(queryBuilder => period_of_interest_end &&
             queryBuilder.where("timestamp", "<=", period_of_interest_end)
+        )
+        .modify(queryBuilder => team && team != "" &&
+            queryBuilder.where("team", "=", team)
         );
     return logs;
 };

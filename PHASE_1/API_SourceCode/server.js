@@ -138,7 +138,7 @@ app.get("/logs", async (req, res) => {
         return performError(res, "/logs", 400, "Missing query parameters", req.query, ip);
     }
 
-    const notString = findNotString(req.query, "routes", "period_of_interest_start", "period_of_interest_end");
+    const notString = findNotString(req.query, "routes", "period_of_interest_start", "period_of_interest_end", "team");
     if (notString) {
         return performError(res, "/logs", 400, `${notString} must be a string`, req.query, ip);
     }
@@ -157,7 +157,8 @@ app.get("/logs", async (req, res) => {
     try {
         const logs = await routes.logs(_conn,
             req.query.period_of_interest_start,
-            req.query.period_of_interest_end
+            req.query.period_of_interest_end,
+            req.query.team
         );
         createLog(_conn, ip, "/logs", req.query, 200, "success");
         res.send(logs);
