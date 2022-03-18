@@ -4,6 +4,7 @@
 const process = require("process");
 const express = require("express");
 const db = require("./database");
+const routes = require("./routes");
 
 const app = express();
 app.enable("trust proxy");
@@ -19,245 +20,126 @@ app.use((req, res, next) => {
     next();
 });
 
-// Create a Winston logger that streams to Stackdriver Logging.
-const winston = require("winston");
-const { LoggingWinston } = require("@google-cloud/logging-winston");
-const loggingWinston = new LoggingWinston();
-const logger = winston.createLogger({
-    level: "info",
-    transports: [new winston.transports.Console(), loggingWinston],
-});
-
 let _conn;
-
-app.use(async (req, res, next) => {
-    if (_conn) {
-        return next();
-    }
-    try {
-        _conn = await db.createConnectionPool();
-        next();
-    } catch (err) {
-        logger.error(err);
-        return next(err);
-    }
-});
-
 
 app.get("/articles", async (req, res) => {
     _conn = _conn || (await db.createConnectionPool());
     const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
 
-    let {
-        period_of_interest_start,
-        period_of_interest_end,
-        key_terms,
-        location,
-    } = req.query;
-
     if (!req.query) {
         const message = "Missing query parameters";
         createLog(_conn, ip, "/articles", req.query, 400, message);
-        return res.status(400).send({ message: message });
+        return res.status(400).send({ status: 400, message: message });
     }
     if (!req.query.period_of_interest_start) {
         const message = "Missing parameter period_of_interest_start";
         createLog(_conn, ip, "/articles", req.query, 400, message);
-        return res.status(400).send({ message: message });
+        return res.status(400).send({ status: 400, message: message });
     }
     if (!req.query.period_of_interest_end) {
         const message = "Missing parameter period_of_interest_end";
         createLog(_conn, ip, "/articles", req.query, 400, message);
-        return res.status(400).send({ message: message });
+        return res.status(400).send({ status: 400, message: message });
     }
     
     if (typeof req.query.key_terms !== "string") {
         const message = "key_terms must be a string";
         createLog(_conn, ip, "/articles", req.query, 400, message);
-        return res.status(400).send({ message: message });
+        return res.status(400).send({ status: 400, message: message });
     }
 
     // /\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d([+-][0-2]\d:[0-5]\d|Z)/
 
-    let diseases = key_terms.split(",");
+    try {
+        const results = await routes.articles(_conn,
+            req.query.period_of_interest_start,
+            req.query.period_of_interest_end,
+            req.query.key_terms,
+            req.query.location
+        );
 
-    const articles = await _conn.select("Article.article_url", "Article.date_of_publication", "Article.headline", "Article.main_text").from("Article")
-        .where("date_of_publication", ">=", period_of_interest_start)
-        .where("date_of_publication", "<=", period_of_interest_end)
-        .innerJoin("Report", "Report.article_url", "=", "Article.article_url")
-        .whereIn("Report.disease_id", diseases);
-    const results = [];
-
-    const symptoms = await getDiseaseSymptoms(_conn);
-
-    for (let i = 0; i < articles.length; i++) {
-        const article = articles[i];
-        const reportsResult = [];
-        
-        const reportRecords = await _conn.select("Report.disease_id", "Disease.name as disease", "Report.event_date as date", "Report.location").from("Report")
-            .where("Report.article_url", "=", article.article_url)
-            .modify(queryBuilder => {
-                if (location && location != "") {
-                    const locations = location.split(",");
-                    queryBuilder.whereIn("location", locations);
-                }
-            })
-            .join("Disease", "Report.disease_id", "=", "Disease.disease_id");
-
-        for (let i = 0; i < reportRecords.length; i++) {
-            const reportRecord = reportRecords[i];
-            reportsResult.push({
-                diseases: [reportRecord.disease],
-                syndromes: symptoms[reportRecord.disease_id],
-                event_date: reportRecord.date,
-                location: reportRecord.location
-            });
-        }
-        
-        // Only show article if it has 1 or more reports.
-        if (reportRecords.length > 0) {
-            results.push({
-                url: article.article_url,
-                date_of_publication: article.date_of_publication,
-                headline: article.headline,
-                main_text: article.main_text,
-                reports: reportsResult
-            });
-        }
+        createLog(_conn, ip, "/articles", req.query, 200, "success");
+        res.send(results);
     }
-
-    createLog(_conn, ip, "/articles", req.query, 200, "success");
-    res.send(results);
+    catch (error) {
+        console.log(error);
+        res.status(500).send({ status: 500, message: "An internal server error occurred. " + error });
+    }
 });
-
-async function getDiseaseSymptoms(conn) {
-    const symptomRecords = await conn.select("Disease.disease_id", "symptom").from("Disease").innerJoin("Symptom", "Symptom.disease_id", "Disease.disease_id");
-    const diseaseSymptoms = {};
-    for (let i = 0; i < symptomRecords.length; i++) {
-        const record = symptomRecords[i];
-        if (diseaseSymptoms[record.disease_id] == null) {
-            diseaseSymptoms[record.disease_id] = [];
-        }
-
-        diseaseSymptoms[record.disease_id].push(record.symptom);
-    }
-    return diseaseSymptoms;
-}
 
 app.get("/reports", async (req, res) => {
     _conn = _conn || (await db.createConnectionPool());
     const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
 
-    let {
-        period_of_interest_start,
-        period_of_interest_end,
-        key_terms,
-        location,
-        sources
-    } = req.query;
-
     if (!req.query)
-        return res.status(400).send({ message: "Missing query parameters" });
+        return res.status(400).send({ status: 400, message: "Missing query parameters" });
     if (!req.query.period_of_interest_start) {
         return res
             .status(400)
-            .send({ message: "Missing parameter period_of_interest_start" });
+            .send({ status: 400, message: "Missing parameter period_of_interest_start" });
     }
     if (!req.query.period_of_interest_end) {
         return res
             .status(400)
-            .send({ message: "Missing parameter period_of_interest_end" });
+            .send({ status: 400, message: "Missing parameter period_of_interest_end" });
     }
     
     if (typeof req.query.key_terms !== "string") {
-        return res.status(400).send({ message: "key_terms must be a string" });
+        return res.status(400).send({ status: 400, message: "key_terms must be a string" });
     }
     if (typeof req.query.location !== "string") {
-        return res.status(400).send({ message: "location must be a string" });
+        const message = "location must be a string";
+        createLog(_conn, ip, "/reports", req.query, 400, message, req.query.team);
+        return res.status(400).send({ status: 400, message: message });
     }
 
-    // Search query here, key_terms and sources may be empty
-    const reportRecords = await _conn.select("Report.disease_id", "Disease.name as disease", "Report.event_date as date", "Report.location").from("Report")
-        .modify(queryBuilder => {
-            if (key_terms && key_terms != "") {
-                const diseases = key_terms.split(",");
-                queryBuilder.whereIn("Report.disease_id", diseases);
-            }
-        })
-        .modify(queryBuilder => {
-            if (location && location != "") {
-                const locations = location.split(",");
-                queryBuilder.whereIn("location", locations);
-            }
-        })
-        .where("Report.event_date", ">=", period_of_interest_start)
-        .where("Report.event_date", "<=", period_of_interest_end)
-        .join("Disease", "Report.disease_id", "=", "Disease.disease_id");
-
-    const symptoms = await getDiseaseSymptoms(_conn);
-
-    const results = [];
-    for (let i = 0; i < reportRecords.length; i++) {
-        const reportRecord = reportRecords[i];
-        results.push({
-            diseases: [reportRecord.disease],
-            syndromes: symptoms[reportRecord.disease_id],
-            event_date: reportRecord.date,
-            location: reportRecord.location
-        });
+    try {
+        const results = await routes.reports(_conn, 
+            req.query.period_of_interest_start,
+            req.query.period_of_interest_end,
+            req.query.key_terms,
+            req.query.location,
+        );
+        createLog(_conn, ip, "/reports", req.query, 200, "success", req.query.team);
+        res.send(results);
     }
-
-    createLog(_conn, ip, "/reports", req.query, 200, "success");
-    res.send(results);
+    catch (error) {
+        console.log(error);
+        res.status(500).send({ status: 500, message: "An internal server error occurred. " + error });
+    }
 });
 
 app.get("/predictions", async (req, res) => {
+    const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
     let threshold = req.query.threshold || 0;
 
-    // dummy data - todo
-    let articles = [{disease: "COVID-19",
-	             syndromes: ["fever", "cough", "fatigue", "shortness of breath", "vomiting", "loss of taste", "loss of smell"],
-                     reports: [
-			       [{
-			         "diseases": [
-		                      "COVID-19"
-				 ],
-			     "syndromes":[
-			     "fever",
-			     "cough",
-			     "fatigue",
-			     "shortness of breath",
-			     "vomiting",
-			     "loss of taste",
-			     "loss of smell"
-			     ],
-			     "event_date":"2022-03-14T13:00:00",
-			     "location":"China"
-				     }]],
-	    	       threshold: 0.92}];
-    
-    res.send(articles);
+    try {
+        const predictions = res.send(await routes.predictions(_conn, threshold));
+        createLog(_conn, ip, "/predictions", req.query, 200, "success", req.query.team);
+        res.send(predictions);
+    }
+    catch(error) {
+        console.log(error);
+        res.status(500).send({ status: 500, message: "An internal server error occurred. " + error });
+    }
 });
 
 app.get("/logs", async (req, res) => {
     _conn = _conn || (await db.createConnectionPool());
     const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
 
-    const logs = await _conn.select("*").from("Log");
-
-    createLog(_conn, ip, "/logs", {}, 200, "success");
-    res.send(logs);
+    try {
+        const logs = routes.logs(_conn, ip);
+        createLog(_conn, ip, "/logs", req.query, 200, "success");
+        res.send(logs);
+    }
+    catch (error) {
+        console.log(error);
+        res.status(500).send({ status: 500, message: "An internal server error occurred. " + error });
+    }
 });
 
-app.get("/predictions", async (req, res) => {
-    let threshold = req.query.threshold || 0;
-
-    let articles = [];
-
-    res.send(articles);
-});
-
-async function createLog(conn, ip, route, reqParams, status, message) {
+async function createLog(conn, ip, route, reqParams, status, message, team) {
     let timestamp = (new Date().toISOString());
     timestamp = timestamp.replace(/\.[0-9]{3}Z$/, "");
 
@@ -267,7 +149,8 @@ async function createLog(conn, ip, route, reqParams, status, message) {
         req_params: JSON.stringify(reqParams),
         timestamp: timestamp,
         message: message,
-        ip: ip
+        ip: ip,
+        team: team || "Team QQ"
     });
 }
 

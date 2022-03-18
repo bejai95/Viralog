@@ -79,6 +79,7 @@ async function resetSchema() {
         table.string("timestamp").notNullable();
         table.text("message");
         table.text("ip");
+        table.text("team");
     });
 
     conn.destroy();
