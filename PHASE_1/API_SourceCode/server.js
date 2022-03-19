@@ -233,6 +233,26 @@ app.get("/predictions", async (req, res) => {
     let recentcaserange = parseInt(req.query.recentcaserange) || 30;
     _conn = _conn || (await db.createConnectionPool());
 
+    if (recentcaserange < 0) {
+        return performError(
+            res,
+            "/predictions",
+            400,
+            "Parameter 'recentcaserange' must be greater than 0.",
+            req.query,
+            ip
+        );
+    } else if (threshold < 0 || threshold > 1) {
+        return performError(
+            res,
+            "/predictions",
+            400,
+            "Parameter threshold must be between 0 and 1",
+            req.query,
+            ip
+        );
+    }
+
     try {
         const predictions = await routes.predictions(
             _conn,
