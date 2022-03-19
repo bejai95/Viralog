@@ -1,5 +1,5 @@
 
-exports.articles = async function(conn, period_of_interest_start, period_of_interest_end, key_terms, location) {
+exports.articles = async function(conn, period_of_interest_start, period_of_interest_end, key_terms, location, sources) {
 
     const articles = await conn.select("Article.article_url", "Article.date_of_publication", "Article.headline", "Article.main_text").from("Article")
         .where("date_of_publication", ">=", period_of_interest_start)
@@ -9,6 +9,12 @@ exports.articles = async function(conn, period_of_interest_start, period_of_inte
             if (key_terms && key_terms != "") {
                 const diseases = key_terms.split(",");
                 queryBuilder.whereIn("Report.disease_id", diseases);
+            }
+        })
+        .modify(queryBuilder => {
+            if (sources && sources != "") {
+                const sourcesList = sources.split(",");
+                queryBuilder.whereIn("Article.source", sourcesList);
             }
         });
     const results = [];

@@ -57,7 +57,8 @@ app.get("/articles", async (req, res) => {
             req.query.period_of_interest_start,
             req.query.period_of_interest_end,
             req.query.key_terms,
-            req.query.location
+            req.query.location,
+            req.query.sources
         );
 
         createLog(_conn, ip, "/articles", req.query, 200, "success");
@@ -215,8 +216,8 @@ function findNotString(obj, keys) {
 }
 
 function performError(res, route, status, message, query, ip) {
-    createLog(_conn, ip, route, query, 400, message, query.team);
-    return res.status(400).send({ status: 400, message: message });
+    createLog(_conn, ip, route, query, status, message, query.team);
+    return res.status(400).send({ status: status, message: message });
 }
 
 async function createLog(conn, ip, route, queryParams, status, message) {
