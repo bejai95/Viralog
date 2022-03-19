@@ -59,6 +59,17 @@ app.get("/articles", async (req, res) => {
             req.query, ip);
     }
 
+    // check that all key terms exist within the list of diseases in the database
+    // note - doesn't work :(
+    // const diseases = await conn.select("string_agg(disease_id::text, ', ')").from("Disease");
+    // for (term in key_terms) {
+    //     if (!diseases.includes(term)) {
+    //         return performError(res, "/reports", 400,
+    //             `Invalid term '${term}' inside of key_terms argument - must be within the list of allowed key_terms`,
+    //             req.query, ip);
+    //     }
+    // }
+
     try {
         const results = await routes.articles(_conn,
             req.query.period_of_interest_start,
