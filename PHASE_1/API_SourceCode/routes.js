@@ -127,9 +127,9 @@ exports.reports = async function (
     return results;
 };
 
-exports.predictions = async function (conn, threshold) {
+exports.predictions = async function (conn, threshold, dayLimit) {
     let currDate = new Date();
-    currDate.setDate(currDate.getDate() - 30);
+    currDate.setDate(currDate.getDate() - dayLimit);
 
     let results = await conn
         .select("*")
@@ -153,7 +153,7 @@ exports.predictions = async function (conn, threshold) {
     let returnRes = [];
     for (let key in collatedResults) {
         let item = collatedResults[key];
-        let thisThresh = item.reports.length / (item.reports.length + 30);
+        let thisThresh = item.reports.length / (item.reports.length + dayLimit);
         if (thisThresh > threshold) {
             item.threshold = thisThresh;
             returnRes.push(item);

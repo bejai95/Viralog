@@ -229,11 +229,16 @@ app.get("/reports", async (req, res) => {
 
 app.get("/predictions", async (req, res) => {
     const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
-    let threshold = req.query.threshold || 0;
+    let threshold = parseFloat(req.query.threshold) || 0;
+    let recentcaserange = parseInt(req.query.recentcaserange) || 30;
     _conn = _conn || (await db.createConnectionPool());
 
     try {
-        const predictions = await routes.predictions(_conn, threshold);
+        const predictions = await routes.predictions(
+            _conn,
+            threshold,
+            recentcaserange
+        );
         createLog(
             _conn,
             ip,
