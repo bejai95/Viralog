@@ -127,14 +127,14 @@ exports.reports = async function (
     return results;
 };
 
-exports.predictions = async function (conn, threshold, dayLimit) {
+exports.predictions = async function (conn, minReportCount, dayCount) {
     let currDate = new Date();
-    currDate.setDate(currDate.getDate() - dayLimit);
+    currDate.setDate(currDate.getDate() - dayCount);
 
     let results = await conn
         .select("*")
         .from("Report")
-        .where("event_date", ">", currDate.toISOString())
+        .where("event_date", ">", formatDate(currDate))
         .orderBy(["disease_id", "location"]);
 
     // Put results into an object indexed by disease name
@@ -153,23 +153,23 @@ exports.predictions = async function (conn, threshold, dayLimit) {
     let returnRes = [];
     for (let key in collatedResults) {
         let item = collatedResults[key];
-        let thisThresh = item.reports.length / (item.reports.length + dayLimit);
-        if (thisThresh > threshold) {
-            item.threshold = thisThresh;
+        if (item.reports.length > minReportCount) {
+            item.report_count = item.reports.length;
             returnRes.push(item);
         }
     }
     return returnRes;
 };
 
+function formatDate(date) {
+    return date.toISOString().replace(/\.[0-9]{3}Z$/, "");
+}
+
 exports.logs = async function (
     conn,
     period_of_interest_start,
     period_of_interest_end,
-    routes,
-    status,
-    team,
-    ip
+    routes, status, team, ip
 ) {
     const logs = await conn
         .select("*")
