@@ -98,7 +98,8 @@ exports.reports = async function (
             "Report.disease_id",
             "Disease.name as disease",
             "Report.event_date as date",
-            "Report.location"
+            "Report.location",
+            "Report.article_url"
         )
         .from("Report")
         .modify((queryBuilder) => {
@@ -127,6 +128,7 @@ exports.reports = async function (
             syndromes: symptoms[reportRecord.disease_id],
             event_date: reportRecord.date,
             location: reportRecord.location,
+            url: reportRecord.article_url
         });
     }
 
