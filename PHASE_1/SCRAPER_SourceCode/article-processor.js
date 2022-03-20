@@ -74,4 +74,4 @@ function processLocation(location) {
     return location;
 }
 
-exports.processArticle = processArticle;
+exports.findReports = findReports;
