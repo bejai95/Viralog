@@ -5,7 +5,7 @@ const scraper = require("./scraper");
 const processor = require("./article-processor");
 const { default: knex } = require("knex");
 
-async function scrape() {
+async function scrape(message, context) {
     let conn;
 
     try {
@@ -49,4 +49,8 @@ async function processArticle(conn, article) {
     }
 }
 
-scrape();
+if (process.argv[2]) {
+    scrape();
+}
+
+exports.scrape = scrape;
