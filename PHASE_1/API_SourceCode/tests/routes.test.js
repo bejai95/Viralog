@@ -1,4 +1,4 @@
-import request from "supertest";
+var supertest = require('supertest');
 
 const { app } = require("../server");
 
