@@ -481,8 +481,8 @@ function timeFormatCorrect(timestamp) {
 
 const PORT = parseInt(process.env.PORT) || 8080;
 const server = app.listen(PORT, () => {
-    console.log(`App listening on port ${PORT}`);
-    console.log("Press Ctrl+C to quit.");
+    // console.log(`App listening on port ${PORT}`);
+    // console.log("Press Ctrl+C to quit.");
 });
 
 module.exports = server;
