@@ -36,7 +36,13 @@ async function scrape(message, context) {
 }
 
 async function processArticle(conn, article) {
-    let reports = await processor.processArticle(conn, article);
+    let reports;
+    try {
+        reports = await processor.processArticle(conn, article);
+    } catch (e) {
+        console.log(error);
+        return;
+    }
     console.log(`Article "${article.headline}": ${reports.length} reports`);
 
     try {

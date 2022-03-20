@@ -3,6 +3,10 @@
 const nlp = require("compromise");
 
 async function processArticle(conn, article) {
+    if (!article.article_url || !article.disease_id || !article.event_date || !article.location) {
+        throw "Missing a field from parameter 'article'"
+    }
+
     // Generate disease alias table for "compromise".
     const records = await conn.select("*").from("DiseaseAlias");
     const diseases = {};
@@ -74,4 +78,4 @@ function processLocation(location) {
     return location;
 }
 
-exports.findReports = findReports;
+exports.processArticle = processArticle;
