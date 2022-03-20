@@ -1,14 +1,17 @@
 const request = require('supertest');
-const { handleReports } = require("../server.js");
+const { handleReports, handleArticles, handlePredictions, handleLogs } = require("../server.js");
 const express = require('express');
 
 const app = new express();
+app.get("/reports", handleReports);
+app.get("/articles", handleArticles);
+app.get("/predictions", handlePredictions);
+app.get("/logs", handleLogs);
 
-test('responds to /', async () => {
+describe("aaa", () => {
+test("/routes test", async () => {
     
-    const res = await request(app).get('/reports').set({
-        "Content-Type": "application/octet-stream"
-    })
+    const res = await request(app).get('/reports').set("Content-Type", "application/json")
     .query({
         "period_of_interest_start": "2019-12-01T17:21:21",
         "period_of_interest_end": "2022-12-01T17:21:21",
@@ -16,9 +19,9 @@ test('responds to /', async () => {
         "location": "China"
     });
     expect(res.statusCode).toBe(200);
-    expect(res.text).toEqual('hello world!');
+    expect(res.text).toEqual("[{\"diseases\":[\"COVID-19\"],\"syndromes\":[\"Acute respiratory syndrome\",\"fever\",\"cough\",\"fatigue\",\"shortness of breath\",\"vomiting\",\"loss of taste\",\"loss of smell\"],\"event_date\":\"2022-03-13T13:00:00\",\"location\":\"China\"},{\"diseases\":[\"COVID-19\"],\"syndromes\":[\"Acute respiratory syndrome\",\"fever\",\"cough\",\"fatigue\",\"shortness of breath\",\"vomiting\",\"loss of taste\",\"loss of smell\"],\"event_date\":\"2022-03-14T13:00:00\",\"location\":\"China\"},{\"diseases\":[\"COVID-19\"],\"syndromes\":[\"Acute respiratory syndrome\",\"fever\",\"cough\",\"fatigue\",\"shortness of breath\",\"vomiting\",\"loss of taste\",\"loss of smell\"],\"event_date\":\"2021-10-12T13:00:00\",\"location\":\"China\"},{\"diseases\":[\"COVID-19\"],\"syndromes\":[\"Acute respiratory syndrome\",\"fever\",\"cough\",\"fatigue\",\"shortness of breath\",\"vomiting\",\"loss of taste\",\"loss of smell\"],\"event_date\":\"2022-03-10T13:00:00\",\"location\":\"China\"},{\"diseases\":[\"COVID-19\"],\"syndromes\":[\"Acute respiratory syndrome\",\"fever\",\"cough\",\"fatigue\",\"shortness of breath\",\"vomiting\",\"loss of taste\",\"loss of smell\"],\"event_date\":\"2022-03-06T13:00:00\",\"location\":\"China\"},{\"diseases\":[\"COVID-19\"],\"syndromes\":[\"Acute respiratory syndrome\",\"fever\",\"cough\",\"fatigue\",\"shortness of breath\",\"vomiting\",\"loss of taste\",\"loss of smell\"],\"event_date\":\"2022-01-30T13:00:00\",\"location\":\"China\"},{\"diseases\":[\"COVID-19\"],\"syndromes\":[\"Acute respiratory syndrome\",\"fever\",\"cough\",\"fatigue\",\"shortness of breath\",\"vomiting\",\"loss of taste\",\"loss of smell\"],\"event_date\":\"2022-01-19T13:00:00\",\"location\":\"China\"},{\"diseases\":[\"COVID-19\"],\"syndromes\":[\"Acute respiratory syndrome\",\"fever\",\"cough\",\"fatigue\",\"shortness of breath\",\"vomiting\",\"loss of taste\",\"loss of smell\"],\"event_date\":\"2021-09-28T14:00:00\",\"location\":\"China\"},{\"diseases\":[\"COVID-19\"],\"syndromes\":[\"Acute respiratory syndrome\",\"fever\",\"cough\",\"fatigue\",\"shortness of breath\",\"vomiting\",\"loss of taste\",\"loss of smell\"],\"event_date\":\"2021-03-28T13:00:00\",\"location\":\"China\"},{\"diseases\":[\"COVID-19\"],\"syndromes\":[\"Acute respiratory syndrome\",\"fever\",\"cough\",\"fatigue\",\"shortness of breath\",\"vomiting\",\"loss of taste\",\"loss of smell\"],\"event_date\":\"2021-05-31T14:00:00\",\"location\":\"China\"},{\"diseases\":[\"COVID-19\"],\"syndromes\":[\"Acute respiratory syndrome\",\"fever\",\"cough\",\"fatigue\",\"shortness of breath\",\"vomiting\",\"loss of taste\",\"loss of smell\"],\"event_date\":\"2021-02-11T13:00:00\",\"location\":\"China\"},{\"diseases\":[\"COVID-19\"],\"syndromes\":[\"Acute respiratory syndrome\",\"fever\",\"cough\",\"fatigue\",\"shortness of breath\",\"vomiting\",\"loss of taste\",\"loss of smell\"],\"event_date\":\"2021-02-08T13:00:00\",\"location\":\"China\"},{\"diseases\":[\"COVID-19\"],\"syndromes\":[\"Acute respiratory syndrome\",\"fever\",\"cough\",\"fatigue\",\"shortness of breath\",\"vomiting\",\"loss of taste\",\"loss of smell\"],\"event_date\":\"2021-09-12T14:00:00\",\"location\":\"China\"},{\"diseases\":[\"COVID-19\"],\"syndromes\":[\"Acute respiratory syndrome\",\"fever\",\"cough\",\"fatigue\",\"shortness of breath\",\"vomiting\",\"loss of taste\",\"loss of smell\"],\"event_date\":\"2021-01-21T13:00:00\",\"location\":\"China\"},{\"diseases\":[\"COVID-19\"],\"syndromes\":[\"Acute respiratory syndrome\",\"fever\",\"cough\",\"fatigue\",\"shortness of breath\",\"vomiting\",\"loss of taste\",\"loss of smell\"],\"event_date\":\"2021-05-06T14:00:00\",\"location\":\"China\"},{\"diseases\":[\"COVID-19\"],\"syndromes\":[\"Acute respiratory syndrome\",\"fever\",\"cough\",\"fatigue\",\"shortness of breath\",\"vomiting\",\"loss of taste\",\"loss of smell\"],\"event_date\":\"2021-08-02T14:00:00\",\"location\":\"China\"},{\"diseases\":[\"COVID-19\"],\"syndromes\":[\"Acute respiratory syndrome\",\"fever\",\"cough\",\"fatigue\",\"shortness of breath\",\"vomiting\",\"loss of taste\",\"loss of smell\"],\"event_date\":\"2021-07-08T14:00:00\",\"location\":\"China\"},{\"diseases\":[\"COVID-19\"],\"syndromes\":[\"Acute respiratory syndrome\",\"fever\",\"cough\",\"fatigue\",\"shortness of breath\",\"vomiting\",\"loss of taste\",\"loss of smell\"],\"event_date\":\"2021-07-14T14:00:00\",\"location\":\"China\"}]");
   });
-
+});
 // describe("Test reports route", function() {
 //     test("GET /reports", async () => {
 //         const req = {

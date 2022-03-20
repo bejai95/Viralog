@@ -491,5 +491,7 @@ exports.app = app;
 module.exports = {
     handleReports: handleReports,
     handleArticles: handleArticles,
+    handlePredictions: handlePredictions,
+    handleLogs: handleLogs,
     server: server,
 };

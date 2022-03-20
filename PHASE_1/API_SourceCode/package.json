@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "DB_USER='postgres' DB_PASS='SENG3011-qq' DB_NAME='postgres' DB_HOST='seng3011-qq.c8snggw2wudq.ap-southeast-2.rds.amazonaws.com' node server.js",
-    "test": "jest"
+    "test": "DB_USER='postgres' DB_PASS='SENG3011-qq' DB_NAME='postgres' DB_HOST='seng3011-qq.c8snggw2wudq.ap-southeast-2.rds.amazonaws.com' jest"
   },
   "devDependencies": {
     "eslint": "^8.10.0",
@@ -20,5 +20,8 @@
     "winston": "^3.1.0"
   },
   "author": "Team QQ",
-  "license": "ISC"
+  "license": "ISC",
+  "env": {
+    "jest": true
+}
 }
