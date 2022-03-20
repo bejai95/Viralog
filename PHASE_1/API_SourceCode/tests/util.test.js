@@ -8,43 +8,43 @@ test("test_invalid_time_format_1", async () => {
 
 test("test_invalid_time_format_2", async () => {
     // 'T' replaced by 'Z'
-    timestamp = '2022-03-13Z13:00:00'
+    let timestamp = '2022-03-13Z13:00:00'
     expect(util.timeFormatCorrect(timestamp)).toBe(false);
 });
 
 test("test_invalid_time_format_3", async () => {
     // invalid day
-    timestamp = '2022-03-1T13:00:00'
+    let timestamp = '2022-03-1T13:00:00'
     expect(util.timeFormatCorrect(timestamp)).toBe(false);
 });
 
 test("test_invalid_time_format_4", async () => {
     // invalid month
-    timestamp = '2022-3-13T13:00:00'
+    let timestamp = '2022-3-13T13:00:00'
     expect(util.timeFormatCorrect(timestamp)).toBe(false);
 });
 
 test("test_invalid_time_format_5", async () => {
     // invalid hour
-    timestamp = '2022-03-13T9:00:00'
+    let timestamp = '2022-03-13T9:00:00'
     expect(util.timeFormatCorrect(timestamp)).toBe(false);
 });
 
 test("test_invalid_time_format_6", async () => {
     // invalid hour #2 (too big)
-    timestamp = '2022-03-13T99:00:00'
+    let timestamp = '2022-03-13T99:00:00'
     expect(util.timeFormatCorrect(timestamp)).toBe(false);
 });
 
 test("test_invalid_time_format_7", async () => {
     // invalid hour #3 (just over 24)
-    timestamp = '2022-03-13T25:00:00'
+    let timestamp = '2022-03-13T25:00:00'
     expect(util.timeFormatCorrect(timestamp)).toBe(false);
 });
 
 test("test_invalid_time_format_8", async () => {
     // invalid minutes
-    timestamp = '2022-03-13T19:60:00'
+    let timestamp = '2022-03-13T19:60:00'
     expect(util.timeFormatCorrect(timestamp)).toBe(false);
     timestamp = '2022-03-13T19:99:00'
     expect(util.timeFormatCorrect(timestamp)).toBe(false);
@@ -52,7 +52,7 @@ test("test_invalid_time_format_8", async () => {
 
 test("test_invalid_time_format_9", async () => {
     // invalid seconds
-    timestamp = '2022-03-13T19:00:60'
+    let timestamp = '2022-03-13T19:00:60'
     expect(util.timeFormatCorrect(timestamp)).toBe(false);
     timestamp = '2022-03-13T19:00:78'
     expect(util.timeFormatCorrect(timestamp)).toBe(false);
@@ -100,7 +100,7 @@ test("test_findNull_function_3", async() => {
 });
 
 test("test_findNull_function_4", async() => {
-    object = {
+    let object = {
         "period_of_interest_start": "2022-03-13T19:00:00",
         "period_of_interest_end": "2022-03-18T19:00:00",
         "location": "Bhutan"
