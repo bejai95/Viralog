@@ -61,18 +61,6 @@ app.get("/articles", async (req, res) => {
             req.query, ip);
     }
 
-    // check that the start date is before the end date
-    if (req.query.period_of_interest_start > req.query.period_of_interest_end) {
-        return performError(
-            res,
-            "/reports",
-            400,
-            "Invalid timestamp for 'period_of_interest_end', must be after 'period_of_interest_start'",
-            req.query,
-            ip
-        );
-    }
-
     try {
         const results = await routes.articles(
             _conn,
