@@ -489,6 +489,7 @@ module.exports = server;
 exports.app = app;
 
 module.exports = {
+    app: app,
     handleReports: handleReports,
     handleArticles: handleArticles,
     handlePredictions: handlePredictions,
