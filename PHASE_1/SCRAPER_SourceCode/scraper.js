@@ -7,9 +7,9 @@ const CIDRAP_URL = "https://www.cidrap.umn.edu";
 const ARTICLES_URL =
     "https://www.cidrap.umn.edu/news-perspective?f%5B0%5D=type%3Ass_news";
 
-exports.scrape = async (conn, pageCount, processFn) => {
-    for (let i = 0; i < pageCount; i++) {
-        console.log(`Scraping list page ${i + 1}`);
+exports.scrape = async (conn, startPage, endPage, processFn) => {
+    for (let i = startPage-1; i < endPage; i++) {
+        console.log(`Scraping list page ${i+1}`);
         await scrapeArticleList(conn, processFn, i);
     }
 };
@@ -52,19 +52,15 @@ async function scrapeArticle(processFn, urlStub) {
     const res = await axios.get(CIDRAP_URL + urlStub);
     const $ = cheerio.load(res.data);
 
+    let date = $("span.date-display-single").first().text();
+    date = new Date(date).toISOString();
+    date = date.replace(/\.[0-9]{3}Z$/, "");
+
     const data = {
-        headline: $("#page-title").first().text(),
-        date_of_publication: $("span.date-display-single").first().text(),
-        author: $(
-            "a[href$='/ongoing-programs/news-publishing/news-publishing-staff']"
-        )
-            .first()
-            .text(),
-        main_text: $(
-            "div.field.field-name-field-body.field-type-text-long.field-label-hidden"
-        )
-            .first()
-            .text(),
+        headline:  $("#page-title").first().text(),
+        date_of_publication: date,
+        author: $("a[href$='/ongoing-programs/news-publishing/news-publishing-staff']").first().text(),
+        main_text:   $("div.field.field-name-field-body.field-type-text-long.field-label-hidden").first().text(),
         article_url: CIDRAP_URL + urlStub,
         source: "CIDRAP",
         category: $(
@@ -78,5 +74,5 @@ async function scrapeArticle(processFn, urlStub) {
     for (let key in data) {
         if (!data[key]) return;
     }
-    processFn(data);
+    await processFn(data);
 }
