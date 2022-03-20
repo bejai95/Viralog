@@ -1,60 +1,74 @@
 const util = require("../util");
 
+// Test correct time formats.
+test("test_correct_time_format_1", async () => {
+    // "T" in the middle is replaced by a space
+    let timestamp = "2022-03-13T13:00:00";
+    expect(util.timeFormatCorrect(timestamp)).toBe(true);
+});
+
+test("test_correct_time_format_2", async () => {
+    // "T" in the middle is replaced by a space
+    let timestamp = "1999-01-13T24:11:02";
+    expect(util.timeFormatCorrect(timestamp)).toBe(true);
+});
+
+// Test incorrect time formats.
 test("test_invalid_time_format_1", async () => {
-    // 'T' in the middle is replaced by a space
-    let timestamp = '2022-03-13 13:00:00'
+    // "T" in the middle is replaced by a space
+    let timestamp = "2022-03-13 13:00:00";
     expect(util.timeFormatCorrect(timestamp)).toBe(false);
 });
 
 test("test_invalid_time_format_2", async () => {
-    // 'T' replaced by 'Z'
-    let timestamp = '2022-03-13Z13:00:00'
+    // "T" replaced by "Z"
+    let timestamp = "2022-03-13Z13:00:00";
     expect(util.timeFormatCorrect(timestamp)).toBe(false);
 });
 
 test("test_invalid_time_format_3", async () => {
     // invalid day
-    let timestamp = '2022-03-1T13:00:00'
+    let timestamp = "2022-03-1T13:00:00";
     expect(util.timeFormatCorrect(timestamp)).toBe(false);
 });
 
 test("test_invalid_time_format_4", async () => {
     // invalid month
-    let timestamp = '2022-3-13T13:00:00'
+    let timestamp = "2022-3-13T13:00:00";
     expect(util.timeFormatCorrect(timestamp)).toBe(false);
 });
 
 test("test_invalid_time_format_5", async () => {
     // invalid hour
-    let timestamp = '2022-03-13T9:00:00'
+    let timestamp = "2022-03-13T9:00:00";
     expect(util.timeFormatCorrect(timestamp)).toBe(false);
 });
 
 test("test_invalid_time_format_6", async () => {
     // invalid hour #2 (too big)
-    let timestamp = '2022-03-13T99:00:00'
+    let timestamp = "2022-03-13T99:00:00";
     expect(util.timeFormatCorrect(timestamp)).toBe(false);
 });
 
 test("test_invalid_time_format_7", async () => {
     // invalid hour #3 (just over 24)
-    let timestamp = '2022-03-13T25:00:00'
+    let timestamp = "2022-03-13T25:00:00";
     expect(util.timeFormatCorrect(timestamp)).toBe(false);
 });
 
 test("test_invalid_time_format_8", async () => {
     // invalid minutes
-    let timestamp = '2022-03-13T19:60:00'
+    let timestamp = "2022-03-13T19:60:00";
     expect(util.timeFormatCorrect(timestamp)).toBe(false);
-    timestamp = '2022-03-13T19:99:00'
+    timestamp = "2022-03-13T19:99:00";
     expect(util.timeFormatCorrect(timestamp)).toBe(false);
 });
 
 test("test_invalid_time_format_9", async () => {
     // invalid seconds
-    let timestamp = '2022-03-13T19:00:60'
+    let timestamp = "2022-03-13T19:00:60";
     expect(util.timeFormatCorrect(timestamp)).toBe(false);
-    timestamp = '2022-03-13T19:00:78'
+    timestamp = "2022-03-13T19:00:78";
     expect(util.timeFormatCorrect(timestamp)).toBe(false);
 });
 
