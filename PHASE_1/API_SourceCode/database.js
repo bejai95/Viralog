@@ -9,7 +9,7 @@ async function createTcpPoolSslCerts(config) {
     }
 
     try {
-        console.log("Creating db connection");
+        // console.log("Creating db connection");
         // Establish a connection to the database
         return Knex({
             client: 'pg',
@@ -25,7 +25,7 @@ async function createTcpPoolSslCerts(config) {
         });
     }
     catch (error) {
-        console.log("Error connecting to database");
+        // console.log("Error connecting to database");
         console.log(error);
     }
 };

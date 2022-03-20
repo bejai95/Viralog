@@ -11,7 +11,10 @@ exports.articles = async function (
             "Article.article_url",
             "Article.date_of_publication",
             "Article.headline",
-            "Article.main_text"
+            "Article.main_text",
+            "Article.category",
+            "Article.author",
+            "Article.source",
         )
         .from("Article")
         .where("date_of_publication", ">=", period_of_interest_start)
@@ -72,6 +75,9 @@ exports.articles = async function (
                 headline: article.headline,
                 main_text: article.main_text,
                 reports: reportsResult,
+                category: article.category,
+                author: article.author,
+                source: article.source,
             });
         }
     }
@@ -92,7 +98,8 @@ exports.reports = async function (
             "Report.disease_id",
             "Disease.name as disease",
             "Report.event_date as date",
-            "Report.location"
+            "Report.location",
+            "Report.article_url"
         )
         .from("Report")
         .modify((queryBuilder) => {
@@ -121,6 +128,7 @@ exports.reports = async function (
             syndromes: symptoms[reportRecord.disease_id],
             event_date: reportRecord.date,
             location: reportRecord.location,
+            url: reportRecord.article_url
         });
     }
 
