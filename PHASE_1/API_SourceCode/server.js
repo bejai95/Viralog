@@ -5,6 +5,7 @@ const process = require("process");
 const express = require("express");
 const db = require("./database");
 const routes = require("./routes");
+const {findNull, findNotString, timeFormatCorrect} = require("./util");
 
 const app = express();
 app.enable("trust proxy");
@@ -35,7 +36,7 @@ app.get("/articles", async (req, res) => {
     }
 
     const notString = findNotString(req.query, 
-        "period_of_interest_start", "period_of_interest_end", "key_terms", "location", "sources"
+        ["period_of_interest_start", "period_of_interest_end", "key_terms", "location", "sources"]
     );
     if (notString) {
         return performError(res, "/articles", 400, `${notString} must be a string`, req.query, ip);
@@ -51,24 +52,6 @@ app.get("/articles", async (req, res) => {
             "Invalid timestamp for 'period_of_interest_end', must be in format 'yyyy-MM-ddTHH:mm:ss'",
             req.query, ip);
     }
-
-    // check that the start date is before the end date
-    if (req.query.period_of_interest_start > req.query.period_of_interest_end) {
-        return performError(res, "/reports", 400,
-            "Invalid timestamp for 'period_of_interest_end', must be after 'period_of_interest_start'",
-            req.query, ip);
-    }
-
-    // check that all key terms exist within the list of diseases in the database
-    // note - doesn't work :(
-    // const diseases = await conn.select("string_agg(disease_id::text, ', ')").from("Disease");
-    // for (term in key_terms) {
-    //     if (!diseases.includes(term)) {
-    //         return performError(res, "/reports", 400,
-    //             `Invalid term '${term}' inside of key_terms argument - must be within the list of allowed key_terms`,
-    //             req.query, ip);
-    //     }
-    // }
 
     try {
         const results = await routes.articles(_conn,
@@ -101,7 +84,7 @@ app.get("/reports", async (req, res) => {
     }
 
     const notString = findNotString(req.query, 
-        "period_of_interest_start", "period_of_interest_end", "key_terms", "location", "sources"
+        ["period_of_interest_start", "period_of_interest_end", "key_terms", "location", "sources"]
     );
     if (notString) {
         return performError(res, "/reports", 400, `${notString} must be a string`, req.query, ip);
@@ -115,13 +98,6 @@ app.get("/reports", async (req, res) => {
     if (req.query.period_of_interest_end && !timeFormatCorrect(req.query.period_of_interest_end)) {
         return performError(res, "/reports", 400,
             "Invalid timestamp for 'period_of_interest_end', must be in format 'yyyy-MM-ddTHH:mm:ss'",
-            req.query, ip);
-    }
-
-    // check that the start date is before the end date
-    if (req.query.period_of_interest_start > req.query.period_of_interest_end) {
-        return performError(res, "/reports", 400,
-            "Invalid timestamp for 'period_of_interest_end', must be after 'period_of_interest_start'",
             req.query, ip);
     }
 
@@ -164,7 +140,7 @@ app.get("/logs", async (req, res) => {
         return performError(res, "/logs", 400, "Missing query parameters", req.query, ip);
     }
 
-    const notString = findNotString(req.query, "period_of_interest_start", "period_of_interest_end", "routes", "team", "ip");
+    const notString = findNotString(req.query, ["period_of_interest_start", "period_of_interest_end", "routes", "team", "ip"]);
     if (notString) {
         return performError(res, "/logs", 400, `${notString} must be a string`, req.query, ip);
     }
@@ -220,26 +196,6 @@ app.get("/logs", async (req, res) => {
     }
 });
 
-function findNull(obj, keys) {
-    for (let i = 0; i < keys.length; i++) {
-        const key = keys[i];
-        if (!(key in obj) || obj[key] == null) {
-            return key;
-        }
-    }
-    return null;
-}
-
-function findNotString(obj, keys) {
-    for (let i = 0; i < keys.length; i++) {
-        const key = keys[i];
-        if ((key in obj) && typeof obj[key] !== "string") {
-            return key;
-        }
-    }
-    return null;
-}
-
 function performError(res, route, status, message, query, ip) {
     createLog(_conn, ip, route, query, status, message, query.team);
     return res.status(400).send({ status: status, message: message });
@@ -258,11 +214,6 @@ async function createLog(conn, ip, route, queryParams, status, message) {
         ip: ip,
         team: queryParams.team || "Team QQ"
     });
-}
-
-function timeFormatCorrect(timestamp) {
-    const timeFormat = /^\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d$/;
-    return timeFormat.test(timestamp);
 }
 
 const PORT = parseInt(process.env.PORT) || 8080;
