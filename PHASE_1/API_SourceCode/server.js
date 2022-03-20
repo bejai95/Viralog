@@ -22,43 +22,85 @@ app.use((req, res, next) => {
 
 let _conn;
 
-app.get("/articles", async (req, res) => {
+app.get("/articles", handleArticles);
+app.get("/reports", handleReports);
+app.get("/predictions", handlePredictions);
+app.get("/logs", handleLogs);
+
+async function handleArticles(req, res) {
     _conn = _conn || (await db.createConnectionPool());
     const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
 
     if (!req.query) {
-        return performError(res, "/articles", 400,
-            "Missing query parameters", req.query, ip);
+        return performError(
+            res,
+            "/articles",
+            400,
+            "Missing query parameters",
+            req.query,
+            ip
+        );
     }
     const nullValue = findNull(req.query, [
-        "period_of_interest_start", "period_of_interest_end", "key_terms", "location",
+        "period_of_interest_start",
+        "period_of_interest_end",
+        "key_terms",
+        "location",
     ]);
     if (nullValue) {
-        return performError( res, "/articles", 400,
-            `Missing parameter ${nullValue}`, req.query, ip );
+        return performError(
+            res,
+            "/articles",
+            400,
+            `Missing parameter ${nullValue}`,
+            req.query,
+            ip
+        );
     }
 
     const notString = findNotString(req.query, [
-        "period_of_interest_start", "period_of_interest_end", "key_terms", "location", "sources"
+        "period_of_interest_start",
+        "period_of_interest_end",
+        "key_terms",
+        "location",
+        "sources",
     ]);
     if (notString) {
-        return performError(res, "/articles", 400,
-            `${notString} must be a string`, req.query, ip);
+        return performError(
+            res,
+            "/articles",
+            400,
+            `${notString} must be a string`,
+            req.query,
+            ip
+        );
     }
 
-    if (req.query.period_of_interest_start &&
-        !timeFormatCorrect(req.query.period_of_interest_start))
-    {
-        return performError(res, "/reports", 400,
+    if (
+        req.query.period_of_interest_start &&
+        !timeFormatCorrect(req.query.period_of_interest_start)
+    ) {
+        return performError(
+            res,
+            "/reports",
+            400,
             "Invalid timestamp for 'period_of_interest_start', must be in format 'yyyy-MM-ddTHH:mm:ss'",
-            req.query, ip);
+            req.query,
+            ip
+        );
     }
-    if (req.query.period_of_interest_end &&
-        !timeFormatCorrect(req.query.period_of_interest_end))
-    {
-        return performError(res, "/reports", 400,
+    if (
+        req.query.period_of_interest_end &&
+        !timeFormatCorrect(req.query.period_of_interest_end)
+    ) {
+        return performError(
+            res,
+            "/reports",
+            400,
             "Invalid timestamp for 'period_of_interest_end', must be in format 'yyyy-MM-ddTHH:mm:ss'",
-            req.query, ip);
+            req.query,
+            ip
+        );
     }
 
     try {
@@ -75,54 +117,87 @@ app.get("/articles", async (req, res) => {
         res.send(results);
     } catch (error) {
         console.log(error);
-        return performError(res, "/articles", 500,
+        return performError(
+            res,
+            "/articles",
+            500,
             "An internal server error occurred. " + error,
-            req.query, ip);
+            req.query,
+            ip
+        );
     }
-});
+}
 
-app.get("/reports", async (req, res) => {
+async function handleReports(req, res) {
     _conn = _conn || (await db.createConnectionPool());
     const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
 
     if (!req.query) {
         return res.status(400).send({
-            status: 400, message: "Missing query parameters"
+            status: 400,
+            message: "Missing query parameters",
         });
     }
     const nullValue = findNull(req.query, [
-        "period_of_interest_start", "period_of_interest_end", "key_terms", "location",
+        "period_of_interest_start",
+        "period_of_interest_end",
+        "key_terms",
+        "location",
     ]);
     if (nullValue) {
-        return performError(res, "/reports", 400,
-            `Missing parameter ${nullValue}`,
-            req.query, ip);
-    }
-
-    const notString = findNotString(req.query, [
-        "period_of_interest_start", "period_of_interest_end", "key_terms", "location", "sources"
-    ]);
-    if (notString) {
         return performError(
-            res, "/reports", 400,
-            `${notString} must be a string`,
-            req.query, ip
+            res,
+            "/reports",
+            400,
+            `Missing parameter ${nullValue}`,
+            req.query,
+            ip
         );
     }
 
-    if (req.query.period_of_interest_start &&
-        !timeFormatCorrect(req.query.period_of_interest_start))
-    {
-        return performError(res, "/reports", 400,
-            "Invalid timestamp for 'period_of_interest_start', must be in format 'yyyy-MM-ddTHH:mm:ss'",
-            req.query, ip);
+    const notString = findNotString(req.query, [
+        "period_of_interest_start",
+        "period_of_interest_end",
+        "key_terms",
+        "location",
+        "sources",
+    ]);
+    if (notString) {
+        return performError(
+            res,
+            "/reports",
+            400,
+            `${notString} must be a string`,
+            req.query,
+            ip
+        );
     }
-    if (req.query.period_of_interest_end &&
-        !timeFormatCorrect(req.query.period_of_interest_end))
-    {
-        return performError(res, "/reports", 400,
+
+    if (
+        req.query.period_of_interest_start &&
+        !timeFormatCorrect(req.query.period_of_interest_start)
+    ) {
+        return performError(
+            res,
+            "/reports",
+            400,
+            "Invalid timestamp for 'period_of_interest_start', must be in format 'yyyy-MM-ddTHH:mm:ss'",
+            req.query,
+            ip
+        );
+    }
+    if (
+        req.query.period_of_interest_end &&
+        !timeFormatCorrect(req.query.period_of_interest_end)
+    ) {
+        return performError(
+            res,
+            "/reports",
+            400,
             "Invalid timestamp for 'period_of_interest_end', must be in format 'yyyy-MM-ddTHH:mm:ss'",
-            req.query, ip);
+            req.query,
+            ip
+        );
     }
 
     // check that the start date is before the end date
@@ -145,17 +220,30 @@ app.get("/reports", async (req, res) => {
             req.query.key_terms,
             req.query.location
         );
-        createLog(_conn, ip, "/reports", req.query, 200, "success", req.query.team);
+        createLog(
+            _conn,
+            ip,
+            "/reports",
+            req.query,
+            200,
+            "success",
+            req.query.team
+        );
         return res.send(results);
     } catch (error) {
         console.log(error);
-        return performError(res, "/reports", 500,
+        return performError(
+            res,
+            "/reports",
+            500,
             "An internal server error occurred. " + error,
-            req.query, ip);
+            req.query,
+            ip
+        );
     }
-});
+}
 
-app.get("/predictions", async (req, res) => {
+async function handlePredictions(req, res) {
     const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
     let threshold = parseFloat(req.query.threshold) || 0;
     let recent_case_range = parseInt(req.query.recent_case_range) || 30;
@@ -163,50 +251,84 @@ app.get("/predictions", async (req, res) => {
 
     if (recent_case_range < 0) {
         return performError(
-            res, "/predictions", 400,
+            res,
+            "/predictions",
+            400,
             "Parameter 'recent_case_range' must be greater than 0.",
-            req.query, ip
+            req.query,
+            ip
         );
     } else if (threshold < 0 || threshold > 1) {
         return performError(
-            res, "/predictions", 400,
+            res,
+            "/predictions",
+            400,
             "Parameter threshold must be between 0 and 1",
-            req.query, ip
+            req.query,
+            ip
         );
     }
 
     try {
-        const predictions = await routes.predictions(_conn, threshold, recent_case_range);
-        createLog(_conn, ip, "/predictions", req.query, 200, "success", req.query.team);
+        const predictions = await routes.predictions(
+            _conn,
+            threshold,
+            recent_case_range
+        );
+        createLog(
+            _conn,
+            ip,
+            "/predictions",
+            req.query,
+            200,
+            "success",
+            req.query.team
+        );
         res.send(predictions);
     } catch (error) {
         console.log(error);
         return performError(
-            res, "/predictions", 500,
+            res,
+            "/predictions",
+            500,
             "An internal server error occurred. " + error,
-            req.query, ip
+            req.query,
+            ip
         );
     }
-});
+}
 
-app.get("/logs", async (req, res) => {
+async function handleLogs(req, res) {
     _conn = _conn || (await db.createConnectionPool());
     const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
 
     if (!req.query) {
-        return performError(res, "/logs", 400,
-            "Missing query parameters", req.query, ip);
+        return performError(
+            res,
+            "/logs",
+            400,
+            "Missing query parameters",
+            req.query,
+            ip
+        );
     }
 
     // Check parameters are strings.
     const notString = findNotString(req.query, [
-        "period_of_interest_start", "period_of_interest_end", "routes", "team", "ip"
+        "period_of_interest_start",
+        "period_of_interest_end",
+        "routes",
+        "team",
+        "ip",
     ]);
     if (notString) {
         return performError(
-            res, "/logs", 400,
+            res,
+            "/logs",
+            400,
             `${notString} must be a string`,
-            req.query, ip
+            req.query,
+            ip
         );
     }
 
@@ -217,7 +339,14 @@ app.get("/logs", async (req, res) => {
         for (let i = 0; i < routesList.length; i++) {
             const routesRegex = /^\/[a-z0-9\/]+$/i;
             if (!routesRegex.test(routesList[i])) {
-                return performError(res, "/logs", 400, "invalid route list", req.query, ip);
+                return performError(
+                    res,
+                    "/logs",
+                    400,
+                    "invalid route list",
+                    req.query,
+                    ip
+                );
             }
         }
     }
@@ -231,27 +360,42 @@ app.get("/logs", async (req, res) => {
         status = parseInt(status);
         if (isNaN(status) || !Number.isSafeInteger(status)) {
             return performError(
-                res, "/logs", 400,
+                res,
+                "/logs",
+                400,
                 "status must be an integer",
-                req.query, ip
+                req.query,
+                ip
             );
         }
     }
 
     // Check dates are in correct format.
-    if (req.query.period_of_interest_start &&
-        !timeFormatCorrect(req.query.period_of_interest_start))
-    {
-        return performError(res, "/logs", 400,
+    if (
+        req.query.period_of_interest_start &&
+        !timeFormatCorrect(req.query.period_of_interest_start)
+    ) {
+        return performError(
+            res,
+            "/logs",
+            400,
             "Invalid timestamp for 'period_of_interest_start', must be in format 'yyyy-MM-ddTHH:mm:ss'",
-            req.query, ip);
+            req.query,
+            ip
+        );
     }
-    if (req.query.period_of_interest_end &&
-        !timeFormatCorrect(req.query.period_of_interest_end))
-    {
-        return performError(res, "/logs", 400,
+    if (
+        req.query.period_of_interest_end &&
+        !timeFormatCorrect(req.query.period_of_interest_end)
+    ) {
+        return performError(
+            res,
+            "/logs",
+            400,
             "Invalid timestamp for 'period_of_interest_end', must be in format 'yyyy-MM-ddTHH:mm:ss'",
-            req.query, ip);
+            req.query,
+            ip
+        );
     }
 
     try {
@@ -270,10 +414,11 @@ app.get("/logs", async (req, res) => {
     } catch (error) {
         console.log(error);
         res.status(500).send({
-            status: 500, message: "An internal server error occurred. " + error,
+            status: 500,
+            message: "An internal server error occurred. " + error,
         });
     }
-});
+}
 
 /**
  * Check whether an object is missing any keys.
@@ -342,3 +487,9 @@ const server = app.listen(PORT, () => {
 
 module.exports = server;
 exports.app = app;
+
+module.exports = {
+    handleReports: handleReports,
+    handleArticles: handleArticles,
+    server: server,
+};
