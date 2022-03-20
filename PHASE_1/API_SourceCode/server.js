@@ -101,9 +101,14 @@ app.get("/articles", async (req, res) => {
 
     // check that the start date is before the end date
     if (req.query.period_of_interest_start > req.query.period_of_interest_end) {
-        return performError(res, "/reports", 400,
+        return performError(
+            res,
+            "/reports",
+            400,
             "Invalid timestamp for 'period_of_interest_end', must be after 'period_of_interest_start'",
-            req.query, ip);
+            req.query,
+            ip
+        );
     }
 
     try {
@@ -205,9 +210,14 @@ app.get("/reports", async (req, res) => {
 
     // check that the start date is before the end date
     if (req.query.period_of_interest_start > req.query.period_of_interest_end) {
-        return performError(res, "/reports", 400,
+        return performError(
+            res,
+            "/reports",
+            400,
             "Invalid timestamp for 'period_of_interest_end', must be after 'period_of_interest_start'",
-            req.query, ip);
+            req.query,
+            ip
+        );
     }
 
     try {
@@ -466,3 +476,4 @@ const server = app.listen(PORT, () => {
 });
 
 module.exports = server;
+exports.app = app;
