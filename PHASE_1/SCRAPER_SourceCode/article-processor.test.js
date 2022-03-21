@@ -1,7 +1,8 @@
 const db = require("./database");
 const { processArticle } = require("./article-processor");
 
-test("test_article_invalid_article", async () => {
+
+test("test_article_invalid_article_empty", async () => {
     let conn;
     try {
         conn = await db.createConnectionPool();
@@ -11,11 +12,18 @@ test("test_article_invalid_article", async () => {
         return;
     }
 
-    // Creating dummy article
+    // Creating dummy article with missing params
     let article = {
-        headline: "Something in Whomever",
-        date_of_publication: "Some invalid date",
+        headline: "Something in Thailand",
+        date_of_publication: "Mar 14, 2022",
     };
+    try {
+        let processed = await processArticle(conn, article)
+        expect(true).toBe(false);
+    } catch (e) {
+        expect(e).toBe("Missing field(s) from parameter 'article'")
+    }
+
 });
 
 test("test_article_processing_one_report", async () => {
