@@ -39,7 +39,7 @@ async function processArticle(conn, article) {
     let reports;
     try {
         reports = await processor.processArticle(conn, article);
-    } catch (e) {
+    } catch (error) {
         console.log(error);
         return;
     }
