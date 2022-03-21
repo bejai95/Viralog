@@ -156,10 +156,10 @@ test("test_article_invalid_article_empty", async () => {
         date_of_publication: "Mar 14, 2022",
     };
     try {
-        let processed = await processArticle(conn, article)
+        let processed = await processArticle(conn, article);
         expect(true).toBe(false);
     } catch (e) {
-        expect(e).toBe("Missing field(s) from parameter 'article'")
+        expect(e).toBe("Missing field(s) from parameter 'article'");
     }
 
 });
