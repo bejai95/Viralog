@@ -190,7 +190,7 @@ app.get("/predictions", async (req, res) => {
     }
     if (day_count <= 0) {
         return performError(_conn, res, "/predictions", 400,
-            "Parameter day_count must be greater than 0",
+            "Parameter day_count must be 0 or more",
             req.query, ip
         );
     }

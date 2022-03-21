@@ -128,7 +128,7 @@ exports.reports = async function (
             syndromes: symptoms[reportRecord.disease_id],
             event_date: reportRecord.date,
             location: reportRecord.location,
-            url: reportRecord.article_url
+            article_url: reportRecord.article_url
         });
     }
 
