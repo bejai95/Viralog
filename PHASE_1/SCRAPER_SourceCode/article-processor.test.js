@@ -277,3 +277,53 @@ test("test_article_processing_multiple_reports", async () => {
     }
     await conn.destroy();
 });
+
+test("test_multiple_reports_different_aliases", async () => {
+    let conn;
+    try {
+        conn = await db.createConnectionPool();
+    } catch (error) {
+        console.log("Failed to connect to database.");
+        console.log(error);
+        return;
+    }    
+
+    let article = {
+        headline: "Something around the world",
+        date_of_publication: "Mar 15, 2022",
+        author: "Alex",
+        main_text: "We found a case of legionella pneumonia in Thailand. Don't forget that someone in the United States has AIDS. Sudden resurgence of human papillomavirus infection in England.",
+        article_url: "www.a_standard_disease_site.com",
+        category: "news"
+    }
+
+    let targets = {
+        Thailand: {
+            article_url: "www.a_standard_disease_site.com",
+            disease_id: "legionnaire",
+            event_date: "Mar 15, 2022",
+            location: "Thailand"
+        },
+        'United States': {
+            article_url: "www.a_standard_disease_site.com",
+            disease_id: "hiv/aids",
+            event_date: "Mar 15, 2022",
+            location: "United States"
+        },
+        England: {
+            article_url: "www.a_standard_disease_site.com",
+            disease_id: "hpv",
+            event_date: "Mar 15, 2022",
+            location: "England"
+        }
+    }
+    let processed = await processArticle(conn, article);
+    expect(processed.length).toBe(3);
+    for (let i = 0; i < processed.length; i++) {
+        expect(JSON.stringify(targets[processed[i].location])).toBe(JSON.stringify(processed[i]))
+        delete targets[processed[i].location]
+    }
+
+    await conn.destroy()
+
+})
