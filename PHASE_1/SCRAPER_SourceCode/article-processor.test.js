@@ -43,6 +43,7 @@ test("test_simple_report", async () => {
     }
 
     let processed = await findReports(article, testDiseases);
+    expect(processed.length).toBe(1)
     expect(JSON.stringify(targetReport)).toBe(JSON.stringify(processed[0]))
 })
 
@@ -63,6 +64,7 @@ test("test_using_aliases", async () => {
     }
 
     let processed = await findReports(article, testDiseases);
+    expect(processed.length).tobe(1)
     expect(JSON.stringify(targetReport)).toBe(JSON.stringify(processed[0]))
 })
 
