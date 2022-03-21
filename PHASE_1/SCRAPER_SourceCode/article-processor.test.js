@@ -1,6 +1,11 @@
 const db = require("./database");
 const { processArticle, findReports } = require("./article-processor");
 
+function isEmpty(obj) { 
+    for (var x in obj) { return false; }
+    return true;
+ }
+
 /****************************************/
 /*              Unit tests              */
 /****************************************/
@@ -64,7 +69,7 @@ test("test_using_aliases", async () => {
     }
 
     let processed = await findReports(article, testDiseases);
-    expect(processed.length).tobe(1)
+    expect(processed.length).toBe(1)
     expect(JSON.stringify(targetReport)).toBe(JSON.stringify(processed[0]))
 })
 
@@ -98,6 +103,7 @@ test("test_multiple_reports", async () => {
         expect(JSON.stringify(targets[processed[i].location])).toBe(JSON.stringify(processed[i]))
         delete targets[processed[i].location]
     }
+    expect(isEmpty(targets)).toBe(true)
 })
 
 test("test_multiple_reports_different_aliases", async () => {
@@ -136,7 +142,7 @@ test("test_multiple_reports_different_aliases", async () => {
         expect(JSON.stringify(targets[processed[i].location])).toBe(JSON.stringify(processed[i]))
         delete targets[processed[i].location]
     }
-
+    expect(isEmpty(targets)).toBe(true)
 })
 
 /****************************************/
@@ -153,9 +159,7 @@ test("test_article_invalid_article_empty", async () => {
     }
 
     // Creating dummy article with missing params
-    let article = {
-
-    };
+    let article = {};
 
     try {
         let processed = await processArticle(conn, article);
@@ -183,6 +187,7 @@ test("test_article_invalid_article_some_missing_params", async () => {
         author: "Marty",
         main_text: "Oh no there's no reports this week.",
         date_of_publication: "Mar 12 20202020"
+        // missing category
     };
 
     try {
@@ -216,11 +221,11 @@ test("test_article_processing_one_report", async () => {
 
     let expected = {
         article_url: "www.something.com",
-        disease_id: "covid",
+        disease_id: "plague",
         event_date: "Mar 14, 2022",
-        location: "Australia",
+        location: "Thailand",
     };
-    expect(JSON.stringify(processed[0]) == JSON.stringify(expected));
+    expect(JSON.stringify(processed[0])).toBe(JSON.stringify(expected));
 
     await conn.destroy();
 });
@@ -277,6 +282,7 @@ test("test_article_processing_multiple_reports", async () => {
         expect(JSON.stringify(processed[i])).toBe(JSON.stringify(targets[processed[i].location]))
         delete targets[processed[i].location]
     }
+    expect(isEmpty(targets)).toBe(true)
     await conn.destroy();
 });
 
@@ -325,7 +331,9 @@ test("test_multiple_reports_different_aliases_db", async () => {
         expect(JSON.stringify(targets[processed[i].location])).toBe(JSON.stringify(processed[i]))
         delete targets[processed[i].location]
     }
+    console.log("targets", targets)
 
+    expect(isEmpty(targets)).toBe(true)
     await conn.destroy()
 
 })
