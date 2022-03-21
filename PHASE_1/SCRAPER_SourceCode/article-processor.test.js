@@ -220,56 +220,32 @@ test("test_article_processing_multiple_reports", async () => {
     let processed = await processArticle(conn, article);
 
     // Set up our expected reports
-    let thai_expected = {
-        article_url: "www.something.com",
-        disease_id: "bubonic_plague",
-        event_date: "Mar 14, 2022",
-        location: "Thailand",
-    };
-    let aus_expected = {
-        article_url: "www.something.com",
-        disease_id: "covid",
-        event_date: "Mar 14, 2022",
-        location: "Australia",
-    };
-    let lon_expected = {
-        article_url: "www.something.com",
-        disease_id: "polio",
-        event_date: "Mar 14, 2022",
-        location: "London",
-    };
+    let targets = {
+        Thailand: {
+            article_url: "www.something.com",
+            disease_id: "plague",
+            event_date: "Mar 14, 2022",
+            location: "Thailand",
+        },
+        Australia: {
+            article_url: "www.something.com",
+            disease_id: "COVID-19",
+            event_date: "Mar 14, 2022",
+            location: "Australia",
+        }, 
+        London: {
+            article_url: "www.something.com",
+            disease_id: "polio",
+            event_date: "Mar 14, 2022",
+            location: "London",
+        }
+    }
 
     // Ensure we have collected the right number of articles
     expect(processed.length).toBe(3);
-
-    // Ensure all locations and diseases are different
-    expect(
-        processed[0].disease_id == processed[1].disease_id ||
-            processed[0].location == processed[1].location
-    ).toBe(false);
-    expect(
-        processed[0].disease_id == processed[2].disease_id ||
-            processed[0].location == processed[2].location
-    ).toBe(false);
-    expect(
-        processed[1].disease_id == processed[2].disease_id ||
-            processed[1].location == processed[2].location
-    ).toBe(false);
-
-    // Ensure we have correctly converted from article to report
-    for (let item in processed) {
-        if (item.location === "London")
-            expect(JSON.stringify(lon_expected) == JSON.stringify(item)).toBe(
-                true
-            );
-        if (item.location === "Australia")
-            expect(JSON.stringify(aus_expected) == JSON.stringify(item)).toBe(
-                true
-            );
-        if (item.location === "Thailand")
-            expect(JSON.stringify(thai_expected) == JSON.stringify(item)).toBe(
-                true
-            );
+    for (let i = 0; i < processed.length; i++) {
+        expect(JSON.stringify(processed[i])).toBe(JSON.stringify(targets[processed[i].location]))
+        delete targets[processed[i].location]
     }
     await conn.destroy();
 });
