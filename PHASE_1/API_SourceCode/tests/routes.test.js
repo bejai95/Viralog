@@ -20,7 +20,6 @@ describe("Reports Endpoint", () => {
       .send()
       .expect(200)
       .end((err, res) => {
-        expect(res.body);
         expect(res.body).toEqual(routes_test_expected);
         done();
       });
