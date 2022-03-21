@@ -5,13 +5,14 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "test": "jest --detectOpenHandles"
+    "test": "DB_USER='postgres' DB_PASS='SENG3011-qq' DB_NAME='postgres' DB_HOST='seng3011-qq.c8snggw2wudq.ap-southeast-2.rds.amazonaws.com' jest"
   },
   "author": "Team QQ",
   "license": "ISC",
   "devDependencies": {
     "@google-cloud/functions-framework": "^3.0.0",
-    "eslint": "^8.10.0"
+    "eslint": "^8.10.0",
+    "eslint-plugin-jest": "^26.1.2"
   },
   "dependencies": {
     "axios": "^0.26.0",

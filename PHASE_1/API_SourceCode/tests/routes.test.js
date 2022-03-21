@@ -152,7 +152,7 @@ const routes_test_expected = [
       "loss of taste",
       "loss of smell"
     ],
-    "url": "https://www.cidrap.umn.edu/news-perspective/2022/03/chinas-omicron-covid-19-surge-gains-steam",
+    "article_url": "https://www.cidrap.umn.edu/news-perspective/2022/03/chinas-omicron-covid-19-surge-gains-steam",
   }
 ];
 
