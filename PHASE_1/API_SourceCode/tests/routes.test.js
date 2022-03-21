@@ -17,7 +17,6 @@ describe("Reports Endpoint", () => {
         key_terms: "COVID-19",
         location: "China",
       })
-      .send()
       .expect(200)
       .end((err, res) => {
         expect(res.body).toEqual(routes_test_expected);
@@ -54,7 +53,6 @@ describe("Reports Endpoint", () => {
         location: "China",
       })
       .expect(400)
-      .send()
       .end((err, res) => {
         expect(res.body).toEqual([]);
         done();
@@ -72,7 +70,6 @@ describe("Reports Endpoint", () => {
         location: "China",
       })
       .expect(400)
-      .send()
       .end((err, res) => {
         expect(res.body["message"]).toEqual("Invalid timestamp for 'period_of_interest_end', must be in format 'yyyy-MM-ddTHH:mm:ss'");
         done();
