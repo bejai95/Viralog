@@ -278,7 +278,7 @@ test("test_article_processing_multiple_reports", async () => {
     await conn.destroy();
 });
 
-test("test_multiple_reports_different_aliases", async () => {
+test("test_multiple_reports_different_aliases_db", async () => {
     let conn;
     try {
         conn = await db.createConnectionPool();
