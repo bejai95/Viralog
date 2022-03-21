@@ -182,7 +182,7 @@ app.get("/predictions", async (req, res) => {
             req.query, ip);
     }
 
-    if (min_report_count < 0) {
+    if (min_report_count <= 0) {
         return performError(_conn, res, "/predictions", 400,
             "Parameter 'min_report_count' must be greater than 0.",
             req.query, ip
@@ -190,7 +190,7 @@ app.get("/predictions", async (req, res) => {
     }
     if (day_count <= 0) {
         return performError(_conn, res, "/predictions", 400,
-            "Parameter day_count must be 0 or more",
+            "Parameter 'day_count' must be greater than 0.",
             req.query, ip
         );
     }
