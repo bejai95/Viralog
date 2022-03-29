@@ -1,13 +1,13 @@
 import Head from "next/head";
 import Link from "next/link";
 import { useContext, useState } from "react";
-import NavBar from "../components/NavBar";
-import styles from "../styles/Disease.module.scss";
+import NavBar from "../../components/NavBar";
+import styles from "../../styles/Disease.module.scss";
 
-export default function Disease() {
+export default function DiseasePage() {
   const [errMsg, setError] = useState();
-  const diseaseName = "COVID-19";
-  const paraContent = "COVID, COVID-19, Coronavirus, ..."
+  const diseaseName = "COVID-19"; // Later this will be retrieved by the API
+  const paraContent = "COVID, COVID-19, Coronavirus, ..." // Later this will be retrieved by the API
 
   return (
     <>
