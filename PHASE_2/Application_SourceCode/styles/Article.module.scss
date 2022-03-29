@@ -1,0 +1,20 @@
+.content {
+  padding: 20px;
+}
+
+.articleButton {
+  padding: 2px 16px; 
+  background: #f3f2f3 ;
+  display: block;
+  margin: 20px 10px;
+  border-left: 8px solid #f3f2f3;
+}
+
+.articleButton:hover {
+  border-left: 8px solid #4979ff;
+}
+
+.urlLink {
+  color: blue;
+  text-decoration: underline;
+}

@@ -13,7 +13,7 @@ export async function getStaticProps() {
   }
 }
 
-export default function Diseases( {diseases} ) {
+export default function Diseases( {diseases } ) {
   
   return (
     <>
@@ -24,6 +24,7 @@ export default function Diseases( {diseases} ) {
       <NavBar />
       <div className={styles.content}>
         <h1>All Diseases</h1>
+        <p>Currently using dummy data, this will be replaced later.</p>
         {diseases.map(disease => (
           <Link href={'/diseases/' + disease.name} key={disease.id}>
             <a className={styles.diseaseButton}>
