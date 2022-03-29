@@ -1,7 +1,15 @@
-.disease_content {
-    padding: 20px;
+.content {
+  padding: 20px;
 }
 
-.disease_content h3 {
-    margin: 16px 0 2px 0
+.single {
+  padding: 2px 16px; 
+  background: #f3f2f3 ;
+  display: block;
+  margin: 20px 10px;
+  border-left: 8px solid #f3f2f3;
+}
+
+.single:hover {
+  border-left: 8px solid #4979ff;
 }
