@@ -1,7 +1,7 @@
 .navbar {
     display: block;
     overflow: visible;
-    border-bottom: 1px solid rgb(223, 223, 223);
+    border-bottom: 1px solid #eee;
 
     nav {
         max-width: 64em;
@@ -12,8 +12,10 @@
 }
 
 .title {
-    font-style: italic;
-    font-weight: bold;
+    font-size: 1.4em;
+    display: inline-block;
+    padding: 0.6em 0.6em;
+    text-align: center;
 }
 
 .element {

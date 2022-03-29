@@ -9,7 +9,7 @@ function NavBar(props) {
     <div className={styles.navbar}>
       <nav>
         <div style={{clear: "both"}}></div>
-        <Link href="/"><a className={["float_left", styles.element, styles.title].join(" ")}>Disease Watch</a></Link>
+        <Link href="/"><a className={["float_left", styles.title].join(" ")}>Disease Watch</a></Link>
         {
           !props.noSearch &&
             <form className={`${styles.search_container} float_left`} action="/search">
