@@ -25,11 +25,11 @@ export default function Diseases( {diseases} ) {
       <div className={styles.content}>
         <h1>All Diseases</h1>
         {diseases.map(disease => (
-          <div key={disease.id}>
-            <a className={styles.single}>
+          <Link href={'/diseases/' + disease.name} key={disease.id}>
+            <a className={styles.diseaseButton}>
               <h3>{ disease.name }</h3>
             </a>
-          </div>
+          </Link>
         ))}
       </div>
     </>

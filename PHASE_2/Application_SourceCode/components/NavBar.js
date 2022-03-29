@@ -20,7 +20,7 @@ function NavBar(props) {
         </div>
         <div className={styles.navRight}>
           <Link href="/tmp"><a className={right_button_styles}>Temp</a></Link>
-          <Link href="/tmp"><a className={right_button_styles}>Temp</a></Link>
+          <Link href="/diseases"><a className={right_button_styles}>Diseases</a></Link>
         </div>
         <div style={{clear: "both"}}></div>
       </nav>
