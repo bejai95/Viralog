@@ -50,8 +50,8 @@ body:not(.user-is-tabbing) textarea:focus {
     max-width: 64em;
     width: 100%;
     background: white;
-    border-left: 1px solid #eee;
-    border-right: 1px solid #eee;
+    /* border-left: 1px solid #eee;
+    border-right: 1px solid #eee; */
 }
 
 table {
