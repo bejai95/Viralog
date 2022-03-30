@@ -71,7 +71,7 @@ exports.articles = async function (
         }
 
         // Only show article if it has 1 or more reports.
-        if (reportRecords.length > 0 && keyTermCount > 0) {
+        if (reportRecords.length > 0 && (key_terms.length == 0 || keyTermCount > 0)) {
             results.push({
                 url: article.article_url,
                 date_of_publication: article.date_of_publication,
@@ -98,10 +98,13 @@ exports.reports = async function (
     // Search query here, key_terms and sources may be empty
     const reportRecords = await conn
         .select(
+            "Report.report_id",
             "Report.disease_id",
             "Disease.name as disease",
             "Report.event_date as date",
             "Report.location",
+            "Report.lat",
+            "Report.long",
             "Report.article_url"
         )
         .from("Report")
@@ -127,10 +130,15 @@ exports.reports = async function (
     for (let i = 0; i < reportRecords.length; i++) {
         const reportRecord = reportRecords[i];
         results.push({
+            report_id: reportRecord.report_id,
             diseases: [reportRecord.disease],
             syndromes: symptoms[reportRecord.disease_id],
             event_date: reportRecord.date,
-            location: reportRecord.location,
+            location: {
+                location: reportRecord.location,
+                lat: reportRecord.lat,
+                long: reportRecord.long,
+            },
             article_url: reportRecord.article_url
         });
     }
