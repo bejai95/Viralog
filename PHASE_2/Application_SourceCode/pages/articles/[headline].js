@@ -94,7 +94,7 @@ export default function DiseaseInfoPage({ article }) {
               </p>
               <p>
                 <b>Location: </b>
-                {report.location}
+                {report.location.location}
               </p>
 
             </li>  
