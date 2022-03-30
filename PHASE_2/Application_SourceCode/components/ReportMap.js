@@ -9,13 +9,36 @@ function ReportMap({ reports }) {
 
   console.log(reports[0]);
 
+  const groups = {};
+
+  for (let i = 0; i < reports.length; i++) {
+    const report = reports[i];
+    const groupId = reports[i].location.lat + "||" + reports[i].location.long;
+    if (groups[groupId]) {
+      groups[groupId].push(report);
+    }
+    else {
+      groups[groupId] = [report];
+    }
+  }
+
   const pins = [];
   if (reports) {
-    pins.push(...reports.map(report => 
-       <Marker key={report.report_id} position={[report.location.lat, report.location.long]}>
-        <Popup>{report.diseases[0]}, {report.location.location}</Popup>
-      </Marker>
-    ));
+    for (const groupId in groups) {
+      const group = groups[groupId];
+
+
+      pins.push(
+        <Marker key={groupId} position={[group[0].location.lat, group[0].location.long]}>
+          <Popup>
+            {group.map(report =>
+              <p key={report.report_id}>{report.diseases[0]}, {report.location.location}</p>
+            )}
+          </Popup>
+        </Marker>
+      );
+
+    }
   }
 
   return (
