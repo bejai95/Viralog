@@ -5,7 +5,7 @@ import styles from "../../styles/Article.module.scss";
 
 export async function getStaticProps() {
   
-  const res = await fetch('https://vivid-apogee-344409.ts.r.appspot.com/articles?period_of_interest_start=2022-02-30T12%3A00%3A00&period_of_interest_end=2022-03-30T13%3A00%3A00&key_terms=COVID-19%2Ctuberculosis%2Cebola%2Cmalaria%2Chiv%2Faids&location=China%2CAustralia&source=CIDRAP%2CCDC');
+  const res = await fetch('https://vivid-apogee-344409.ts.r.appspot.com/articles?period_of_interest_start=2000-02-30T12%3A00%3A00&period_of_interest_end=2022-03-30T13%3A00%3A00&key_terms=COVID-19%2Ctuberculosis%2Cebola%2Cmalaria%2Chiv%2Faids&location=China%2CAustralia&source=CIDRAP%2CCDC');
   const data = await res.json();
 
   return {
