@@ -11,10 +11,10 @@ function formatDate(date) {
 }
 
 export async function getServerSideProps(context) {
-  // Get past 30 days.
+  // Get past 90 days.
   let currDate = new Date();
   const periodEnd = formatDate(currDate);
-  currDate.setDate(currDate.getDate() - 30);
+  currDate.setDate(currDate.getDate() - 90);
   const periodStart = formatDate(currDate);
 
   const paramsData = {
@@ -27,10 +27,6 @@ export async function getServerSideProps(context) {
   url.search = new URLSearchParams(paramsData).toString();
   const res = await fetch(url);
   const reports = await res.json();
-  // console.log(url.toString());
-
-
-  // console.log(reports);
 
   return {
     props: { reports: reports },
