@@ -1,10 +1,11 @@
 "use strict";
 
 const nlp = require("compromise");
+const Maps = require("@googlemaps/google-maps-services-js");
 
 async function processArticle(conn, article) {
     if (!article.headline || !article.date_of_publication || !article.author || !article.main_text || !article.article_url || !article.category) {
-        throw "Missing field(s) from parameter 'article'"
+        throw "Missing field(s) from parameter 'article'";
     }
 
     // Generate disease alias table for "compromise".
@@ -56,12 +57,30 @@ async function findReports(article, diseases) {
         if (places.length > 0) {
             const location = places[0];
 
-            reports.push({
-                article_url: article.article_url,
-                disease_id: diseaseId,
-                event_date: article.date_of_publication,
-                location: processLocation(location)
+            const processedLocation = processLocation(location);
+            if (processedLocation === "New")
+                continue;
+
+            const client = new Maps.Client();
+            const res = await client.geocode({
+                params: {
+                    key: "AIzaSyCJ1xWD_QmnEHqll9tm1HMgDGhcY7MXxuI",
+                    address: processedLocation
+                }
             });
+
+            if (res.data.results.length > 0) {
+                console.log(`${processedLocation} [${res.data.results[0].geometry.location.lat}, ${res.data.results[0].geometry.location.lng}]`);
+                reports.push({
+                    article_url: article.article_url,
+                    disease_id: diseaseId,
+                    event_date: article.date_of_publication,
+                    location: processedLocation,
+                    lat: res.data.results[0].geometry.location.lat,
+                    long: res.data.results[0].geometry.location.lng
+                });
+            }
+
         }
     }
     return reports;
@@ -79,4 +98,4 @@ function processLocation(location) {
 }
 
 exports.processArticle = processArticle;
-exports.findReports = findReports
+exports.findReports = findReports;

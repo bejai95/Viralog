@@ -69,6 +69,8 @@ async function resetSchema() {
             .inTable("Article")
             .notNullable();
         table.text("location").notNullable();
+        table.decimal("lat").notNullable();
+        table.decimal("long").notNullable();
     });
 
     await conn.schema.createTable("Log", (table) => {

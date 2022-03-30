@@ -38,7 +38,9 @@ exports.articles = async function (
                 "Report.disease_id",
                 "Disease.name as disease",
                 "Report.event_date as date",
-                "Report.location"
+                "Report.location",
+                "Report.lat",
+                "Report.long"
             )
             .from("Report")
             .where("Report.article_url", "=", article.article_url)
@@ -57,7 +59,11 @@ exports.articles = async function (
                 diseases: [reportRecord.disease],
                 syndromes: symptoms[reportRecord.disease_id],
                 event_date: reportRecord.date,
-                location: reportRecord.location,
+                location: {
+                    location: reportRecord.location,
+                    lat: reportRecord.lat,
+                    long: reportRecord.long,
+                }
             });
             if (key_terms.includes(reportRecord.disease)) {
                 keyTermCount++;
