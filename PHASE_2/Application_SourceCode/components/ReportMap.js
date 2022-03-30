@@ -1,13 +1,16 @@
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
-import "leaflet/dist/leaflet.css";
-import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
 import "leaflet-defaulticon-compatibility";
+
+import L from 'leaflet';
 
 function ReportMap({ reports }) {
 
 	const accessToken = "pk.eyJ1IjoiYWxleGFuZGVybWJyb3duIiwiYSI6ImNsMWJwcWt6bDAwMHkzYm1yOHBuZWM3dHIifQ.7d3DkVxbfJJ8XknsbJYlag";
 
   console.log(reports[0]);
+
+  const pinIcon = new L.Icon.Default();
+  pinIcon.options.shadowSize = [0, 0];
 
   const groups = {};
 
@@ -23,22 +26,18 @@ function ReportMap({ reports }) {
   }
 
   const pins = [];
-  if (reports) {
-    for (const groupId in groups) {
-      const group = groups[groupId];
+  for (const groupId in groups) {
+    const group = groups[groupId];
 
-
-      pins.push(
-        <Marker key={groupId} position={[group[0].location.lat, group[0].location.long]}>
-          <Popup>
-            {group.map(report =>
-              <p key={report.report_id}>{report.diseases[0]}, {report.location.location}</p>
-            )}
-          </Popup>
-        </Marker>
-      );
-
-    }
+    pins.push(
+      <Marker key={groupId} position={[group[0].location.lat, group[0].location.long]} icon={pinIcon}>
+        <Popup>
+          {group.map(report =>
+            <div key={report.report_id}>{report.diseases[0]}, {report.location.location}</div>
+          )}
+        </Popup>
+      </Marker>
+    );
   }
 
   return (

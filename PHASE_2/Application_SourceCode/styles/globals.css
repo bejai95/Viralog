@@ -78,3 +78,8 @@ th, td {
 .float_right {
     float: right;
 }
+
+.leaflet-popup .leaflet-popup-content-wrapper {
+    border-radius: 4px;
+    box-shadow: none;
+}
