@@ -19,13 +19,6 @@ exports.articles = async function (
         .from("Article")
         .where("date_of_publication", ">=", period_of_interest_start)
         .where("date_of_publication", "<=", period_of_interest_end)
-        .innerJoin("Report", "Report.article_url", "=", "Article.article_url")
-        .modify((queryBuilder) => {
-            if (key_terms && key_terms != "") {
-                const diseases = key_terms.split(",");
-                queryBuilder.whereIn("Report.disease_id", diseases);
-            }
-        })
         .modify((queryBuilder) => {
             if (sources && sources != "") {
                 const sourcesList = sources.split(",");
@@ -57,6 +50,7 @@ exports.articles = async function (
             })
             .join("Disease", "Report.disease_id", "=", "Disease.disease_id");
 
+        let keyTermCount = 0;
         for (let i = 0; i < reportRecords.length; i++) {
             const reportRecord = reportRecords[i];
             reportsResult.push({
@@ -65,10 +59,13 @@ exports.articles = async function (
                 event_date: reportRecord.date,
                 location: reportRecord.location,
             });
+            if (key_terms.includes(reportRecord.disease)) {
+                keyTermCount++;
+            }
         }
 
         // Only show article if it has 1 or more reports.
-        if (reportRecords.length > 0) {
+        if (reportRecords.length > 0 && keyTermCount > 0) {
             results.push({
                 url: article.article_url,
                 date_of_publication: article.date_of_publication,
