@@ -4,6 +4,7 @@ import NavBar from "../../components/NavBar";
 import styles from "../../styles/Article.module.scss";
 
 export async function getServerSideProps(context) {
+  
   const articleId = context.params.id;
   const res = await fetch('https://vivid-apogee-344409.ts.r.appspot.com/articles/' + articleId);
   try {
@@ -38,7 +39,7 @@ export default function DiseaseInfoPage({ article, error }) {
           </>
         }
         {article &&
-          <div>
+          <>
             <h1>{article.headline}</h1>
             <h2>Article Details</h2>
             <p><b>Author: </b>{article.author}</p>
@@ -79,7 +80,7 @@ export default function DiseaseInfoPage({ article, error }) {
                 </li>  
               ))}
             </ul>
-            </div>
+          </>
         }
         
         
