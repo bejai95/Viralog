@@ -1,8 +1,10 @@
 import { useContext } from "react";
 import Link from "next/link";
 import styles from "../styles/NavBar.module.scss";
+import Image from "next/image";
+import logo from "../public/logo-full.png";
 
-const right_button_styles = ["float_right", styles.element, styles.hover_darken].join(" ");
+const right_button_styles = [styles.element, styles.hover_darken].join(" ");
 
 function NavBar(props) {
   return (
@@ -10,7 +12,7 @@ function NavBar(props) {
       <nav>
         <div style={{clear: "both"}}></div>
         <div className={styles.navLeft}>
-        <Link href="/"><a className={styles.title}>Disease Watch</a></Link>
+          <Link href="/"><a className={styles.title}><Image src={logo} alt="Disease Watch" layout="fill"></Image></a></Link>
         </div>
         <div className={styles.navCenter}>
           <form className={`${styles.search_container} float_left`} action="/search">
