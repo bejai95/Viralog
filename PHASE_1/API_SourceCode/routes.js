@@ -4,19 +4,25 @@ exports.articles = async function (
     period_of_interest_end,
     key_terms,
     location,
-    sources
+    sources,
+    hideBody
 ) {
+    const selectCols = [
+        "Article.article_id",
+        "Article.article_url",
+        "Article.date_of_publication",
+        "Article.headline",
+        "Article.category",
+        "Article.author",
+        "Article.source",
+    ];
+    if (hideBody == null) {
+        selectCols.push("Article.main_text");
+    }
+    console.log(hideBody);
+
     const articles = await conn
-        .select(
-            "Article.article_id",
-            "Article.article_url",
-            "Article.date_of_publication",
-            "Article.headline",
-            "Article.main_text",
-            "Article.category",
-            "Article.author",
-            "Article.source",
-        )
+        .select(selectCols)
         .from("Article")
         .where("date_of_publication", ">=", period_of_interest_start)
         .where("date_of_publication", "<=", period_of_interest_end)
