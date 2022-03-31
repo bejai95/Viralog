@@ -300,21 +300,30 @@ exports.diseases = async function (
     names
 ) {
     // Get diseases (and be able to filter by aliases)
-    const diseases = await conn
+    let diseases = await conn
         .select(
-            "Disease.disease_id",
-            "DiseaseAlias.alias"
+            "disease_id"
         )
-        .from("Disease")
-        .join("DiseaseAlias", "DiseaseAlias.disease_id", "=", "Disease.disease_id")
-        .modify((queryBuilder) => {
-            if (names && names != "") {
-                const nms = names.split(",");
-                // the list of aliases always contains the actual disease name
-                queryBuilder.whereIn("alias", nms);
-            }
-        });
-
+        .from("Disease");
+    
+    // If users have inputted a filter
+    if (names != "") {
+        diseases = await conn
+            .select(
+                "Disease.disease_id",
+                "DiseaseAlias.alias"
+            )
+            .from("Disease")
+            .join("DiseaseAlias", "DiseaseAlias.disease_id", "=", "Disease.disease_id")
+            .modify((queryBuilder) => {
+                if (names && names != "") {
+                    const nms = names.split(",");
+                    // the list of aliases always contains the actual disease name
+                    queryBuilder.whereIn("alias", nms);
+                }
+            });
+    }
+    
     // Get the alises of each disease - we still need this because the above
     // select filtered out other non-searched-for aliases of the disease we want to search for
     const aliases = await conn
