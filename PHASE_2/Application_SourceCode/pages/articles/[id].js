@@ -1,6 +1,7 @@
 import Head from "next/head";
 import Link from "next/link";
 import NavBar from "../../components/NavBar";
+import ReportList from "../../components/ReportList";
 import styles from "../../styles/Article.module.scss";
 
 export async function getServerSideProps(context) {
@@ -55,30 +56,7 @@ export default function DiseaseInfoPage({ article, error }) {
             <br></br>
     
             <h2>Article Reports</h2>
-            <ul>
-              {article.reports && article.reports.map(report => (
-                <li key={report.event_date}>
-                  
-                  <h3>Diseases</h3>
-                  <ul>
-                    {report.diseases.map(disease => (
-                      <li key={disease}>{disease}</li>
-                    ))}
-                  </ul>
-    
-                  <h3>Syndromes</h3>
-                  <ul>
-                    {report.syndromes.map(syndrome => (
-                      <li key={syndrome}>{syndrome}</li>
-                    ))}
-                  </ul>
-    
-                  <p><b>Event Date: </b>{report.event_date}</p>
-                  <p><b>Location: </b>{report.location.location}</p>
-    
-                </li>  
-              ))}
-            </ul>
+            <ReportList reports={article.reports}/>
             </div>
         }
         
