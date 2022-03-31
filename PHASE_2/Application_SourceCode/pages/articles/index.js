@@ -41,7 +41,7 @@ export default function Articles( { articles } ) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <NavBar />
-      <div className={styles.content}>
+      <div className="contentMain">
         <h1>Recent Articles</h1>
         <p>Articles from the past 30 days...</p>
         {articles.map(article => (

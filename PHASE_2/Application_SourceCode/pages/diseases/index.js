@@ -22,7 +22,7 @@ export default function Diseases( { diseases } ) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <NavBar />
-      <div className={styles.content}>
+      <div className="contentMain">
         <h1>All Diseases</h1>
         {diseases.map(disease => (
           <Link href={'/diseases/' + disease.disease_id} key={disease.disease_id}>
