@@ -9,7 +9,7 @@ export async function getServerSideProps(context) {
   try {
     const result = await res.json();
 
-    if (result.status) {
+    if (result.status != 200) {
       return { props: { error: result.message } };
     }
     return { props: { article: result } };
@@ -23,12 +23,20 @@ export default function DiseaseInfoPage({ article, error }) {
   return (
     <>
       <Head>
-        <title>{article.headline}</title>
+        <title>{error ? "Invalid Page" : article.headline}</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <NavBar />
       <div className={styles.content}>
-        {error && <b>An error occurred.</b>}
+        {error && 
+          <>
+            <h1>Error: Invalid Page</h1>
+            <p>
+              <b>Message from API: </b>
+              {error}
+            </p>
+          </>
+        }
         {article &&
           <div>
             <h1>{article.headline}</h1>
