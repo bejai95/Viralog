@@ -3,17 +3,17 @@ import Link from "next/link";
 import NavBar from "../../components/NavBar";
 import styles from "../../styles/Disease.module.scss";
 
-export async function getStaticProps() {
-
-  const res = await fetch('https://jsonplaceholder.typicode.com/users');
-  const data = await res.json();
+export async function getServerSideProps() {
+  
+  const res = await fetch('https://vivid-apogee-344409.ts.r.appspot.com/diseases?names=');
+  const diseases = await res.json();
 
   return {
-    props: { diseases: data }
+    props: { diseases: diseases }
   }
 }
 
-export default function Diseases( {diseases } ) {
+export default function Diseases( { diseases } ) {
   
   return (
     <>
@@ -24,11 +24,10 @@ export default function Diseases( {diseases } ) {
       <NavBar />
       <div className={styles.content}>
         <h1>All Diseases</h1>
-        <p>Currently using dummy data, this will be replaced later.</p>
         {diseases.map(disease => (
-          <Link href={'/diseases/' + disease.name} key={disease.id}>
+          <Link href={'/diseases/' + disease.disease_id} key={disease.disease_id}>
             <a className={styles.diseaseButton}>
-              <h3>{ disease.name }</h3>
+              <h3>{disease.disease_id}</h3>
             </a>
           </Link>
         ))}

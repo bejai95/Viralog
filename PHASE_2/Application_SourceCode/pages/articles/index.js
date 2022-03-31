@@ -7,12 +7,12 @@ function formatDate(date) {
   return date.toISOString().replace(/\.[0-9]{3}Z$/, "");
 }
 
-export async function getServerSideProps(context) {
+export async function getServerSideProps() {
   
   // Get past 30 days.
   let currDate = new Date();
   const periodEnd = formatDate(currDate);
-  currDate.setDate(currDate.getDate() - 90);
+  currDate.setDate(currDate.getDate() - 30);
   const periodStart = formatDate(currDate);
 
   const paramsData = {
