@@ -236,24 +236,24 @@ exports.diseases = async function (
     conn,
     names
 ) {
-    // Get diseases
+    // Get diseases (and be able to filter by aliases)
     const diseases = await conn
         .select(
-            "disease_id"
+            "Disease.disease_id",
+            "DiseaseAlias.alias"
         )
         .from("Disease")
+        .join("DiseaseAlias", "DiseaseAlias.disease_id", "=", "Disease.disease_id")
         .modify((queryBuilder) => {
             if (names && names != "") {
                 const nms = names.split(",");
-                // for (let i = 0; i < nms.length; i++) {
-                //     nms[i].replaceAll('"', '');
-                // }
-                console.log(nms);
-                queryBuilder.whereIn("disease_id", nms);
+                // the list of aliases always contains the actual disease name
+                queryBuilder.whereIn("alias", nms);
             }
         });
 
-    // Get the alises of each disease
+    // Get the alises of each disease - we still need this because the above
+    // select filtered out other non-searched-for aliases of the disease we want to search for
     const aliases = await conn
         .select(
             "Disease.disease_id",
@@ -275,6 +275,7 @@ exports.diseases = async function (
     const results = [];
     for (let i = 0; i < diseases.length; i++) {
         const disease = diseases[i];
+
         // extract all symptoms relating to the given disease
         const symps = [];
         // this is inside the loop as filters applied may not be in alphabetical order
@@ -296,11 +297,14 @@ exports.diseases = async function (
             aliasCount++;
         }
         
-        results.push({
-            disease_id: disease["disease_id"],
-            disease_symptoms: symps,
-            disease_aliases: als
-        });
+        // Only add the disease if an alias of that disease was added as a filter
+        if (als.length > 0) {
+            results.push({
+                disease_id: disease["disease_id"],
+                disease_symptoms: symps,
+                disease_aliases: als
+            });
+        }
     }
 
     return results;
