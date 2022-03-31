@@ -71,7 +71,8 @@ app.get("/articles", async (req, res) => {
             req.query.period_of_interest_end,
             req.query.key_terms,
             req.query.location,
-            req.query.sources
+            req.query.sources,
+            req.query.hideBody
         );
 
         createLog(_conn, ip, "/articles", req.query, 200, "success");
@@ -83,6 +84,24 @@ app.get("/articles", async (req, res) => {
             req.query, ip
         );
     }
+});
+
+app.get('/articles/:id', async (req, res) => {
+    _conn = _conn || (await db.createConnectionPool());
+    const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
+
+    try {
+        const results = await routes.articles_id(_conn, req.params.id);
+        createLog(_conn, ip, "/articles/" + req.params.id, req.query, 200, "success");
+        res.send(results);
+    } catch (error) {
+        console.log(error);
+        return performError(_conn, res, "/articles/" + req.params.id, 500,
+            "An internal server error occurred. " + error,
+            req.params.id, ip
+        );
+    }
+
 });
 
 app.get("/reports", async (req, res) => {

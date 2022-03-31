@@ -4,19 +4,25 @@ exports.articles = async function (
     period_of_interest_end,
     key_terms,
     location,
-    sources
+    sources,
+    hideBody
 ) {
+    const selectCols = [
+        "Article.article_id",
+        "Article.article_url",
+        "Article.date_of_publication",
+        "Article.headline",
+        "Article.category",
+        "Article.author",
+        "Article.source",
+    ];
+    if (hideBody == null) {
+        selectCols.push("Article.main_text");
+    }
+    console.log(hideBody);
+
     const articles = await conn
-        .select(
-            "Article.article_id",
-            "Article.article_url",
-            "Article.date_of_publication",
-            "Article.headline",
-            "Article.main_text",
-            "Article.category",
-            "Article.author",
-            "Article.source",
-        )
+        .select(selectCols)
         .from("Article")
         .where("date_of_publication", ">=", period_of_interest_start)
         .where("date_of_publication", "<=", period_of_interest_end)
@@ -88,6 +94,63 @@ exports.articles = async function (
     }
 
     return results;
+};
+
+exports.articles_id = async function (conn, article_id) {
+    const article = await conn
+        .select(
+            "Article.article_id",
+            "Article.article_url",
+            "Article.date_of_publication",
+            "Article.headline",
+            "Article.main_text",
+            "Article.category",
+            "Article.author",
+            "Article.source",
+        )
+        .from("Article")
+        .where("Article.article_id", "=", article_id);
+
+        const reportRecords = await conn
+            .select(
+                "Report.disease_id",
+                "Disease.name as disease",
+                "Report.event_date as date",
+                "Report.location",
+                "Report.lat",
+                "Report.long"
+            )
+            .from("Report")
+            .where("Report.article_id", "=", article_id)
+            .join("Disease", "Report.disease_id", "=", "Disease.disease_id");
+
+        const symptoms = await getDiseaseSymptoms(conn);
+
+        let reportResult = [];
+
+        for (let i = 0; i < reportRecords.length; i++) {
+            const reportRecord = reportRecords[i];
+            reportResult.push({
+                diseases: [reportRecord.disease],
+                syndromes: symptoms[reportRecord.disease_id],
+                event_date: reportRecord.date,
+                location: {
+                    location: reportRecord.location,
+                    lat: reportRecord.lat,
+                    long: reportRecord.long,
+                }
+            });
+        }
+
+
+    if (article.length != 1) {
+        console.log("Error: article_id not found.");
+    }
+
+    result = article[0];
+    result["reports"] = reportResult;
+
+    return result;
 };
 
 exports.reports = async function (
