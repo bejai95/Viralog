@@ -22,14 +22,14 @@ export async function getServerSideProps(context) {
     return {props: { error: "The disease you are searching for does not exist."}}
   }
 
-  // Now query all reports related to the disease
-  let currDate = new Date();
-  const periodEnd = formatDate(currDate);
-  currDate.setDate(currDate.getDate() - 90);
-  const periodStart = formatDate(currDate);
+  // Now query how many reports there have been of the disease in the past 90 days
+  let currDate1 = new Date();
+  const periodEnd1 = formatDate(currDate1);
+  currDate1.setDate(currDate1.getDate() - 90);
+  const periodStart1 = formatDate(currDate1);
   const paramsData2 = {
-    period_of_interest_start: periodStart,
-    period_of_interest_end: periodEnd,
+    period_of_interest_start: periodStart1,
+    period_of_interest_end: periodEnd1,
     key_terms: diseaseName,
     location: "",
   };
@@ -37,17 +37,45 @@ export async function getServerSideProps(context) {
   url2.search = new URLSearchParams(paramsData2).toString();
   const res2 = await fetch(url2);
   const result2 = await res2.json();
-  console.log(url2.toString());
+
+  // Now query how many reports there have been of the disease in total (no time restriction)
+  let currDate2 = new Date();
+  const periodEnd2 = formatDate(currDate2);
+  currDate2.setFullYear(currDate2.getFullYear() - 500);
+  const periodStart2 = formatDate(currDate2);
+  const paramsData3 = {
+    period_of_interest_start: periodStart2,
+    period_of_interest_end: periodEnd2,
+    key_terms: diseaseName,
+    location: "",
+  };
+  const url3 = new URL("https://vivid-apogee-344409.ts.r.appspot.com/reports");
+  url3.search = new URLSearchParams(paramsData3).toString();
+  const res3 = await fetch(url3);
+  const result3 = await res3.json();
+  console.log(url3.toString())
+
   return {
     props: { 
       disease: result1[0], 
-      numReports: result2.length
+      numReports1: result2.length,
+      numReports2: result3.length,
     } 
   };
 }
+
 function capitalizeFirstLetter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
+
+function determineRisk(numReports) {
+  if (numReports < 10) {
+    return "low risk";
+  } else {
+    return "high risk";
+  }
+}
+
 export default function DiseaseInfoPage(props) {
   
   return (
@@ -86,7 +114,8 @@ export default function DiseaseInfoPage(props) {
               </ul>
               <br></br>
               <h2>Risk Analysis</h2>
-              There have been {props.numReports} reports of {props.disease.disease_id} in the past 90 days.
+              <p>There have been {props.numReports1} reports of {props.disease.disease_id} in the past 90 days, and {props.numReports2} reports in total.</p>
+              <p>Based on the number of reports in the past 90 days, there is currently a <b>{determineRisk(props.numReports2)}</b> of {props.disease.disease_id}.</p>
               
               <br></br><br></br><br></br><br></br><br></br><br></br><br></br><br></br>
               <h3>Visualisation of case/report frequency around the world</h3>
