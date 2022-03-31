@@ -92,6 +92,7 @@ app.get('/articles/:id', async (req, res) => {
 
     try {
         const results = await routes.articles_id(_conn, req.params.id);
+        createLog(_conn, ip, "/articles/" + req.params.id, req.query, 200, "success");
         res.send(results);
     } catch (error) {
         console.log(error);
