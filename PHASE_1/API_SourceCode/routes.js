@@ -109,12 +109,48 @@ exports.articles_id = async function (conn, article_id) {
             "Article.source",
         )
         .from("Article")
-        .where("article_id", "=", article_id);
+        .where("Article.article_id", "=", article_id);
+
+        const reportRecords = await conn
+            .select(
+                "Report.disease_id",
+                "Disease.name as disease",
+                "Report.event_date as date",
+                "Report.location",
+                "Report.lat",
+                "Report.long"
+            )
+            .from("Report")
+            .where("Report.article_id", "=", article_id)
+            .join("Disease", "Report.disease_id", "=", "Disease.disease_id");
+
+        const symptoms = await getDiseaseSymptoms(conn);
+
+        let reportResult = [];
+
+        for (let i = 0; i < reportRecords.length; i++) {
+            const reportRecord = reportRecords[i];
+            reportResult.push({
+                diseases: [reportRecord.disease],
+                syndromes: symptoms[reportRecord.disease_id],
+                event_date: reportRecord.date,
+                location: {
+                    location: reportRecord.location,
+                    lat: reportRecord.lat,
+                    long: reportRecord.long,
+                }
+            });
+        }
+
 
     if (article.length != 1) {
         console.log("Error: article_id not found.");
     }
-    return article[0];
+
+    result = article[0];
+    result["reports"] = reportResult;
+
+    return result;
 };
 
 exports.reports = async function (
