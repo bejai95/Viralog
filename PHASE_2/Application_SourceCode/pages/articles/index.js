@@ -49,6 +49,9 @@ export default function Articles( { articles } ) {
               <a className={styles.listItem}>
                 <h2>{ article.headline }</h2>
                 <i>{article.author}</i>
+                <i>Reporting {article.reports.map(
+                  report => report.diseases[0] + " in " + report.location.location
+                ).join(", ")}...</i>
               </a>
             </Link>
             
