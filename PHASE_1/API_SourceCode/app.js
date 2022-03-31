@@ -71,7 +71,8 @@ app.get("/articles", async (req, res) => {
             req.query.period_of_interest_end,
             req.query.key_terms,
             req.query.location,
-            req.query.sources
+            req.query.sources,
+            req.query.hideBody
         );
 
         createLog(_conn, ip, "/articles", req.query, 200, "success");
