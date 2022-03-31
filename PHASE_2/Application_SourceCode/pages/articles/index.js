@@ -7,7 +7,7 @@ function formatDate(date) {
   return date.toISOString().replace(/\.[0-9]{3}Z$/, "");
 }
 
-export async function getServerSideProps(context) {
+export async function getServerSideProps() {
   
   // Get past 30 days.
   let currDate = new Date();
