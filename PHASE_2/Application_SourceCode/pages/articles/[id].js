@@ -9,7 +9,7 @@ export async function getServerSideProps(context) {
   try {
     const result = await res.json();
 
-    if (result.status != 200) {
+    if (result.status && result.status != 200) {
       return { props: { error: result.message } };
     }
     return { props: { article: result } };
