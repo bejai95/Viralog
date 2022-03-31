@@ -241,7 +241,17 @@ exports.diseases = async function (
         .select(
             "disease_id"
         )
-        .from("Disease");
+        .from("Disease")
+        .modify((queryBuilder) => {
+            if (names && names != "") {
+                const nms = names.split(",");
+                // for (let i = 0; i < nms.length; i++) {
+                //     nms[i].replaceAll('"', '');
+                // }
+                console.log(nms);
+                queryBuilder.whereIn("disease_id", nms);
+            }
+        });
 
     // Get the alises of each disease
     const aliases = await conn
@@ -267,7 +277,8 @@ exports.diseases = async function (
         const disease = diseases[i];
         // extract all symptoms relating to the given disease
         const symps = [];
-        let symptomCount = 0;  // could put this outside the loop for 'efficiency'
+        // this is inside the loop as filters applied may not be in alphabetical order
+        let symptomCount = 0;
         while (symptomCount < symptoms.length) {
             if (symptoms[symptomCount]["disease_id"] == disease["disease_id"]) {
                 symps.push(symptoms[symptomCount]["symptom"]);
@@ -277,7 +288,7 @@ exports.diseases = async function (
 
         // extract all aliases relating to the given disease
         const als = [];
-        let aliasCount = 0;  // could put this outside the loop for 'efficiency'
+        let aliasCount = 0;
         while (aliasCount < aliases.length) {
             if (aliases[aliasCount]["disease_id"] == disease["disease_id"]) {
                 als.push(aliases[aliasCount]["alias"]);
