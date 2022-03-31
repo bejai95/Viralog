@@ -109,12 +109,48 @@ exports.articles_id = async function (conn, article_id) {
             "Article.source",
         )
         .from("Article")
-        .where("article_id", "=", article_id);
+        .where("Article.article_id", "=", article_id);
+
+        const reportRecords = await conn
+            .select(
+                "Report.disease_id",
+                "Disease.name as disease",
+                "Report.event_date as date",
+                "Report.location",
+                "Report.lat",
+                "Report.long"
+            )
+            .from("Report")
+            .where("Report.article_id", "=", article_id)
+            .join("Disease", "Report.disease_id", "=", "Disease.disease_id");
+
+        const symptoms = await getDiseaseSymptoms(conn);
+
+        let reportResult = [];
+
+        for (let i = 0; i < reportRecords.length; i++) {
+            const reportRecord = reportRecords[i];
+            reportResult.push({
+                diseases: [reportRecord.disease],
+                syndromes: symptoms[reportRecord.disease_id],
+                event_date: reportRecord.date,
+                location: {
+                    location: reportRecord.location,
+                    lat: reportRecord.lat,
+                    long: reportRecord.long,
+                }
+            });
+        }
+
 
     if (article.length != 1) {
         console.log("Error: article_id not found.");
     }
-    return article[0];
+
+    result = article[0];
+    result["reports"] = reportResult;
+
+    return result;
 };
 
 exports.reports = async function (
@@ -257,6 +293,84 @@ exports.logs = async function (
         })
         .orderBy("timestamp", "desc");
     return logs;
+};
+
+exports.diseases = async function (
+    conn,
+    names
+) {
+    // Get diseases (and be able to filter by aliases)
+    const diseases = await conn
+        .select(
+            "Disease.disease_id",
+            "DiseaseAlias.alias"
+        )
+        .from("Disease")
+        .join("DiseaseAlias", "DiseaseAlias.disease_id", "=", "Disease.disease_id")
+        .modify((queryBuilder) => {
+            if (names && names != "") {
+                const nms = names.split(",");
+                // the list of aliases always contains the actual disease name
+                queryBuilder.whereIn("alias", nms);
+            }
+        });
+
+    // Get the alises of each disease - we still need this because the above
+    // select filtered out other non-searched-for aliases of the disease we want to search for
+    const aliases = await conn
+        .select(
+            "Disease.disease_id",
+            "DiseaseAlias.alias"
+        )
+        .from("Disease")
+        .join("DiseaseAlias", "DiseaseAlias.disease_id", "=", "Disease.disease_id");
+
+    // for some reason symptoms function is returning as empty
+    // get the symptoms for each disease
+    const symptoms = await conn
+        .select(
+            "Disease.disease_id",
+            "Symptom.symptom"
+        )
+        .from("Disease")
+        .join("Symptom", "Symptom.disease_id", "=", "Disease.disease_id");
+
+    const results = [];
+    for (let i = 0; i < diseases.length; i++) {
+        const disease = diseases[i];
+
+        // extract all symptoms relating to the given disease
+        const symps = [];
+        // this is inside the loop as filters applied may not be in alphabetical order
+        let symptomCount = 0;
+        while (symptomCount < symptoms.length) {
+            if (symptoms[symptomCount]["disease_id"] == disease["disease_id"]) {
+                symps.push(symptoms[symptomCount]["symptom"]);
+            }
+            symptomCount++;
+        }
+
+        // extract all aliases relating to the given disease
+        const als = [];
+        let aliasCount = 0;
+        while (aliasCount < aliases.length) {
+            if (aliases[aliasCount]["disease_id"] == disease["disease_id"]) {
+                als.push(aliases[aliasCount]["alias"]);
+            }
+            aliasCount++;
+        }
+        
+        // Only add the disease if an alias of that disease was added as a filter
+        if (als.length > 0) {
+            results.push({
+                disease_id: disease["disease_id"],
+                disease_symptoms: symps,
+                disease_aliases: als
+            });
+        }
+    }
+
+    return results;
 };
 
 async function getDiseaseSymptoms(conn) {

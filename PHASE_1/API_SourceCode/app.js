@@ -320,6 +320,57 @@ app.get("/logs", async (req, res) => {
     }
 });
 
+app.get("/diseases", async (req, res) => {
+    _conn = _conn || (await db.createConnectionPool());
+    const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
+
+    if (!req.query) {
+        return res.status(400).send({
+            status: 400,
+            message: "Missing query parameters"
+        });
+    }
+
+    // Check parameters exist
+    const nullValue = findNull(req.query, [
+        "names"
+    ]);
+    if (nullValue) {
+        return performError(_conn, res, "/diseases", 400,
+            `Missing parameter ${nullValue}`,
+            req.query,
+            ip
+        );
+    }
+
+    // Check parameter values are a string
+    const notString = findNotString(req.query, [
+        "names"
+    ]);
+    if (notString) {
+        return performError(_conn,
+            res, "/diseases", 400,
+            `${notString} must be a string`,
+            req.query, ip
+        );
+    }
+
+    try {
+        const results = await routes.diseases(
+            _conn,
+            req.query.names
+        );
+        createLog(_conn, ip, "/diseases", req.query, 200, "success", req.query.team);
+        return res.send(results);
+    } catch (error) {
+        console.log(error);
+        return performError(_conn, res, "/diseases", 500,
+            "An internal server error occurred. " + error,
+            req.query, ip
+        );
+    }
+});
+
 function performError(conn, res, route, status, message, query, ip) {
     createLog(conn, ip, route, query, status, message, query.team);
     return res.status(400).send({ status: status, message: message });
