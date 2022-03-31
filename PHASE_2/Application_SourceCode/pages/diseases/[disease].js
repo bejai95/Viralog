@@ -42,10 +42,21 @@ export default function DiseaseInfoPage({ disease, error }) {
           {disease &&
             <>
               <h1>{disease.disease_id}</h1>
+              
               <h3>Also known as</h3>
-              <p>{disease.disease_aliases}</p>
+              <ul>
+                {disease.disease_aliases.map(name => (
+                  <li key={name}>{name}</li>
+                ))}
+              </ul>
+              
               <h3>Symptoms</h3>
-              <p>{disease.disease_symptoms}</p>
+              <ul>
+                {disease.disease_symptoms.map(name => (
+                  <li key={name}>{name}</li>
+                ))}
+              </ul>
+              
               <br></br>
               <h3>Visualisation of case/report frequency around the world</h3>
               <br></br>

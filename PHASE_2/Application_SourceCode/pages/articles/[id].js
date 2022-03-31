@@ -8,6 +8,7 @@ export async function getServerSideProps(context) {
   
   const articleId = context.params.id;
   const res = await fetch('https://vivid-apogee-344409.ts.r.appspot.com/articles/' + articleId);
+  
   try {
     const result = await res.json();
 
