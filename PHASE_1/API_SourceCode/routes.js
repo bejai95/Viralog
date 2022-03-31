@@ -232,6 +232,73 @@ exports.logs = async function (
     return logs;
 };
 
+exports.diseases = async function (
+    conn,
+    names
+) {
+    // Get diseases
+    const diseases = await conn
+        .select(
+            "disease_id"
+        )
+        .from("Disease");
+
+    // Get the alises of each disease
+    const aliases = await conn
+        .select(
+            "Disease.disease_id",
+            "DiseaseAlias.alias"
+        )
+        .from("Disease")
+        .join("DiseaseAlias", "DiseaseAlias.disease_id", "=", "Disease.disease_id");
+
+    // for some reason symptoms function is returning as empty
+    // get the symptoms for each disease
+    const symptoms = await conn
+        .select(
+            "Disease.disease_id",
+            "Symptom.symptom"
+        )
+        .from("Disease")
+        .join("Symptom", "Symptom.disease_id", "=", "Disease.disease_id");
+
+    const results = [];
+    let symptomCount = 0;
+    let aliasCount = 0;
+    for (let i = 0; i < diseases.length; i++) {
+        const disease = diseases[i];
+        // extract all symptoms relating to the given disease
+        const symps = [];
+        while (symptomCount < symptoms.length) {
+            if (symptoms[symptomCount]["disease_id"] == disease["disease_id"]) {
+                symps.push(symptoms[symptomCount]["symptom"]);
+                symptomCount++;
+            } else {
+                break;
+            }
+        }
+
+        // extract all aliases relating to the given disease
+        const als = [];
+        while (aliasCount < aliases.length) {
+            if (aliases[aliasCount]["disease_id"] == disease["disease_id"]) {
+                als.push(aliases[aliasCount]["alias"]);
+                aliasCount++;
+            } else {
+                break;
+            }
+        }
+        
+        results.push({
+            disease_id: disease["disease_id"],
+            disease_symptoms: symps,
+            disease_aliases: als
+        });
+    }
+
+    return results;
+};
+
 async function getDiseaseSymptoms(conn) {
     const symptomRecords = await conn
         .select("Disease.disease_id", "symptom")
