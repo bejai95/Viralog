@@ -41,20 +41,18 @@ export default function Articles( { articles } ) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <NavBar />
-      <div className="contentMain">
-        <div className={styles.contentInner}>
-          <h2>Recent Articles</h2>
-          <i>Articles from the past 30 days...</i>
-          {articles.map(article => (
-              <Link href={'/articles/' + article.article_id} key={article.article_id}>
-                <a className={styles.listItem}>
-                  <h2>{ article.headline }</h2>
-                  <i>{article.author}</i>
-                </a>
-              </Link>
-              
-          ))}
-        </div>
+      <div className={styles.contentInner}>
+        <h2>Recent Articles</h2>
+        <i>Articles from the past 30 days...</i>
+        {articles.map(article => (
+            <Link href={'/articles/' + article.article_id} key={article.article_id}>
+              <a className={styles.listItem}>
+                <h2>{ article.headline }</h2>
+                <i>{article.author}</i>
+              </a>
+            </Link>
+            
+        ))}
       </div>
     </>
   );
