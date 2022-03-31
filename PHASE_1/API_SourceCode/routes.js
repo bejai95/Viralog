@@ -8,6 +8,7 @@ exports.articles = async function (
 ) {
     const articles = await conn
         .select(
+            "Article.article_id",
             "Article.article_url",
             "Article.date_of_publication",
             "Article.headline",
@@ -43,7 +44,7 @@ exports.articles = async function (
                 "Report.long"
             )
             .from("Report")
-            .where("Report.article_url", "=", article.article_url)
+            .where("Report.article_id", "=", article.article_id)
             .modify((queryBuilder) => {
                 if (location && location != "") {
                     const locations = location.split(",");
@@ -73,6 +74,7 @@ exports.articles = async function (
         // Only show article if it has 1 or more reports.
         if (reportRecords.length > 0 && (key_terms.length == 0 || keyTermCount > 0)) {
             results.push({
+                article_id: article.article_id,
                 url: article.article_url,
                 date_of_publication: article.date_of_publication,
                 headline: article.headline,
@@ -105,7 +107,9 @@ exports.reports = async function (
             "Report.location",
             "Report.lat",
             "Report.long",
-            "Report.article_url"
+            "Report.article_id",
+            "Article.article_url",
+            "Article.headline",
         )
         .from("Report")
         .modify((queryBuilder) => {
@@ -122,7 +126,8 @@ exports.reports = async function (
         })
         .where("Report.event_date", ">=", period_of_interest_start)
         .where("Report.event_date", "<=", period_of_interest_end)
-        .join("Disease", "Report.disease_id", "=", "Disease.disease_id");
+        .join("Disease", "Report.disease_id", "=", "Disease.disease_id")
+        .join("Article", "Article.article_id", "=", "Report.article_id");
 
     const symptoms = await getDiseaseSymptoms(conn);
 
@@ -131,6 +136,7 @@ exports.reports = async function (
         const reportRecord = reportRecords[i];
         results.push({
             report_id: reportRecord.report_id,
+            disease_id: reportRecord.disease_id,
             diseases: [reportRecord.disease],
             syndromes: symptoms[reportRecord.disease_id],
             event_date: reportRecord.date,
@@ -139,7 +145,9 @@ exports.reports = async function (
                 lat: reportRecord.lat,
                 long: reportRecord.long,
             },
-            article_url: reportRecord.article_url
+            article_id: reportRecord.article_id,
+            article_url: reportRecord.article_url,
+            headline: reportRecord.headline,
         });
     }
 

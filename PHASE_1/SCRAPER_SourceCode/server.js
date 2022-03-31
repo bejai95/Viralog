@@ -38,6 +38,9 @@ async function scrape(message, context) {
 async function processArticle(conn, article) {
     let reports;
     try {
+        const res = await conn("Article").insert(article).returning("article_id");
+        article.article_id = res[0].article_id;
+
         reports = await processor.processArticle(conn, article);
     } catch (error) {
         console.log(error);
@@ -46,8 +49,6 @@ async function processArticle(conn, article) {
     console.log(`Article "${article.headline}": ${reports.length} reports`);
 
     try {
-        await conn("Article").insert(article);
-
         await conn.batchInsert("Report", reports);
     }
     catch (error) {

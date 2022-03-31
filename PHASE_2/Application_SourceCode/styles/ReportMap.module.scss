@@ -1,0 +1,27 @@
+
+.mapPopup {
+	overflow-y: scroll;
+	width: 100%;
+	min-height: 2em;
+	max-height: 10em;
+}
+
+.mapPopup h1 {
+	font-size: 1.2em;
+	margin: 4px 0 0 0;
+}
+
+.mapPopup h2 {
+	font-size: 1em;
+	margin: 2px 0 0 0;
+}
+
+.report {
+	padding: 2px 0;
+	display: block;
+}
+
+.diseaseLink {
+	display: inline-block;
+	margin-right: 4px;
+}

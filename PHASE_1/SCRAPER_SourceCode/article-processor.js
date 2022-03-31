@@ -72,7 +72,7 @@ async function findReports(article, diseases) {
             if (res.data.results.length > 0) {
                 console.log(`${processedLocation} [${res.data.results[0].geometry.location.lat}, ${res.data.results[0].geometry.location.lng}]`);
                 reports.push({
-                    article_url: article.article_url,
+                    article_id: article.article_id,
                     disease_id: diseaseId,
                     event_date: article.date_of_publication,
                     location: processedLocation,

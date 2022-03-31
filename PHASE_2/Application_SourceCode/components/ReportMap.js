@@ -1,43 +1,34 @@
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import "leaflet-defaulticon-compatibility";
+import styles from "../styles/ReportMap.module.scss";
 
 import L from 'leaflet';
+
+const pinIcon = new L.Icon.Default();
+pinIcon.options.shadowSize = [0, 0];
 
 function ReportMap({ reports }) {
 
 	const accessToken = "pk.eyJ1IjoiYWxleGFuZGVybWJyb3duIiwiYSI6ImNsMWJwcWt6bDAwMHkzYm1yOHBuZWM3dHIifQ.7d3DkVxbfJJ8XknsbJYlag";
-
-  console.log(reports[0]);
-
-  const pinIcon = new L.Icon.Default();
-  pinIcon.options.shadowSize = [0, 0];
 
   const groups = {};
 
   for (let i = 0; i < reports.length; i++) {
     const report = reports[i];
     const groupId = reports[i].location.lat + "||" + reports[i].location.long;
-    if (groups[groupId]) {
-      groups[groupId].push(report);
+    if (!groups[groupId]) {
+      groups[groupId] = {};
     }
-    else {
-      groups[groupId] = [report];
+    if (!groups[groupId][report.disease_id]) {
+      groups[groupId][report.disease_id] = [];
     }
+    groups[groupId][report.disease_id].push(report);
   }
 
   const pins = [];
   for (const groupId in groups) {
     const group = groups[groupId];
-
-    pins.push(
-      <Marker key={groupId} position={[group[0].location.lat, group[0].location.long]} icon={pinIcon}>
-        <Popup>
-          {group.map(report =>
-            <div key={report.report_id}>{report.diseases[0]}, {report.location.location}</div>
-          )}
-        </Popup>
-      </Marker>
-    );
+    pins.push(generateMarker(groupId, group));
   }
 
   return (
@@ -48,6 +39,57 @@ function ReportMap({ reports }) {
       />
       {pins}
     </MapContainer>
+  );
+}
+
+function generateMarker(groupId, group) {
+  const diseaseLinks = [];
+  const diseaseArticles = [];
+  let position;
+
+  for (const diseaseId in group) {
+    const diseaseReports = group[diseaseId];
+
+    console.log(diseaseId);
+
+    diseaseLinks.push(
+      <a key={diseaseId} href={"/diseases/" + diseaseId} className={styles.diseaseLink}>{diseaseReports[0].diseases[0]}</a>
+    );
+
+    const reportLinks = [];
+    for (let i = 0; i < diseaseReports.length; i++) {
+      const report = diseaseReports[i];
+      let headline = report.headline;
+      if (headline.length > 56) {
+        headline = headline.substr(0,56) + "...";
+      }
+      reportLinks.push(<a key={report.report_id} href={report.article_url} className={styles.report}>{headline}</a>);
+    }
+
+    diseaseArticles.push(
+      <div>
+        <h2 key={diseaseId}>{diseaseReports[0].diseases[0]}</h2>
+        {reportLinks}
+      </div>
+    );
+
+    position = [diseaseReports[0].location.lat, diseaseReports[0].location.long];
+  }
+
+  return (
+    <Marker key={groupId} position={position} icon={pinIcon}>
+      <Popup>
+        <div className={styles.mapPopup}>
+          <div>
+            <h1>Diseases Found</h1>
+            {diseaseLinks}
+          </div>
+          <h1>Articles</h1>
+          {diseaseArticles}
+        </div>
+        
+      </Popup>
+    </Marker>
   );
 }
 

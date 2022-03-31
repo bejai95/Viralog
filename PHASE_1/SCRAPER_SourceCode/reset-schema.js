@@ -21,7 +21,8 @@ async function resetSchema() {
     await conn.schema.dropTableIfExists("Article");
 
     await conn.schema.createTable("Article", (table) => {
-        table.text("article_url").primary();
+        table.increments("article_id");
+        table.text("article_url").notNullable();
         table.text("headline").notNullable();
         table.text("main_text").notNullable();
         table.text("category");
@@ -64,8 +65,8 @@ async function resetSchema() {
             .inTable("Disease")
             .notNullable();
         table
-            .text("article_url")
-            .references("article_url")
+            .integer("article_id").unsigned()
+            .references("article_id")
             .inTable("Article")
             .notNullable();
         table.text("location").notNullable();

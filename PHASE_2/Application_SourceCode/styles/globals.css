@@ -82,4 +82,5 @@ th, td {
 .leaflet-popup .leaflet-popup-content-wrapper {
     border-radius: 4px;
     box-shadow: none;
+    width: 30em;
 }
