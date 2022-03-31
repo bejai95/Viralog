@@ -46,8 +46,8 @@ export default function DiseaseInfoPage({ article, error }) {
               <a className={styles.headline}>{article.headline}</a>
             </Link>
             <br></br>
-            <i>{article.author}</i>
-            <i>{article.date_of_publication}</i>
+            <i>Author: {article.author}</i>
+            <i>Date published: {article.date_of_publication}</i>
             <p>
               <b>Category: </b> {article.category}
             </p>
