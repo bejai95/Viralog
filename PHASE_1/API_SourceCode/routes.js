@@ -96,6 +96,27 @@ exports.articles = async function (
     return results;
 };
 
+exports.article = async function (conn, article_id) {
+    const article = await conn
+        .select(
+            "Article.article_id",
+            "Article.article_url",
+            "Article.date_of_publication",
+            "Article.headline",
+            "Article.main_text",
+            "Article.category",
+            "Article.author",
+            "Article.source",
+        )
+        .from("Article")
+        .where("article_id", "=", article_id);
+
+    if (article.length != 1) {
+        console.log("Error: article_id not found.");
+    }
+    return article[0];
+};
+
 exports.reports = async function (
     conn,
     period_of_interest_start,
