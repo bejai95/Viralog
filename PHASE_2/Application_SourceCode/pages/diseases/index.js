@@ -31,9 +31,11 @@ export default function Diseases( { diseases } ) {
         {diseases.map(disease => (
           <Link href={'/diseases/' + disease.disease_id} key={disease.disease_id}>
             <a className={styles.listItem}>
-              <h2>{capitalizeFirstLetter(disease.disease_id)}</h2>
-              <i>known as {disease.disease_aliases.join(", ")}.</i>
-              <i>symptoms include {disease.disease_symptoms.join(", ")}.</i>
+              <h2>{capitalizeFirstLetter(disease.disease_aliases[0])}</h2>
+              <i>{disease.disease_aliases.length > 1 &&
+                <>(also known as {disease.disease_aliases.slice(1).join(", ")})</>
+              }</i>
+                  <i>symptoms include {disease.disease_symptoms.join(", ")}.</i>
             </a>
           </Link>
         ))}
