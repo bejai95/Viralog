@@ -1,7 +1,7 @@
 import Head from "next/head";
 import Link from "next/link";
 import NavBar from "../../components/NavBar";
-import styles from "../../styles/Disease.module.scss";
+import styles from "../../styles/ListPage.module.scss";
 
 export async function getServerSideProps() {
   
@@ -13,21 +13,27 @@ export async function getServerSideProps() {
   }
 }
 
+function capitalizeFirstLetter(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
 export default function Diseases( { diseases } ) {
   
   return (
     <>
       <Head>
-        <title>All Diseases</title>
+        <title>Diseases</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <NavBar />
-      <div className="contentMain">
-        <h1>All Diseases</h1>
+      <div className={styles.contentInner}>
+        <h2>Diseases</h2>
         {diseases.map(disease => (
           <Link href={'/diseases/' + disease.disease_id} key={disease.disease_id}>
-            <a className={styles.diseaseButton}>
-              <h3>{disease.disease_id}</h3>
+            <a className={styles.listItem}>
+              <h2>{capitalizeFirstLetter(disease.disease_id)}</h2>
+              <i>known as {disease.disease_aliases.join(", ")}.</i>
+              <i>symptoms include {disease.disease_symptoms.join(", ")}.</i>
             </a>
           </Link>
         ))}
