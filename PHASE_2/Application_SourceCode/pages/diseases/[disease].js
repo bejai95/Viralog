@@ -2,15 +2,18 @@ import Head from "next/head";
 import Link from "next/link";
 import NavBar from "../../components/NavBar";
 import styles from "../../styles/Disease.module.scss";
-
 export async function getServerSideProps(context) {
   
-  const diseaseId = context.params.disease;
-  const res = await fetch('https://vivid-apogee-344409.ts.r.appspot.com/diseases?names=' + diseaseId);
+  const paramsData = {
+    names: context.params.disease
+  };
+  const url = new URL("https://vivid-apogee-344409.ts.r.appspot.com/diseases");
+  url.search = new URLSearchParams(paramsData).toString();
+  const res = await fetch(url);
+  console.log(url.toString());
   
   try {
     const result = await res.json();
-
     if (result.status && result.status != 200) {
       return { props: { error: result.message } };
     }
@@ -20,11 +23,9 @@ export async function getServerSideProps(context) {
     return {  props: { error: "Failed to get article." } };
   }
 }
-
 function capitalizeFirstLetter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
-
 export default function DiseaseInfoPage({ disease, error }) {
   return (
     <>
