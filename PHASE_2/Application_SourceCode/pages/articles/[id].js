@@ -28,7 +28,7 @@ export default function DiseaseInfoPage({ article, error }) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <NavBar />
-      <div className={styles.content}>
+      <div className="contentMain">
         {error && 
           <>
             <h1>Error: Invalid Page</h1>
