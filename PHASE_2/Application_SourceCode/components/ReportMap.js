@@ -1,6 +1,7 @@
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import "leaflet-defaulticon-compatibility";
 import styles from "../styles/ReportMap.module.scss";
+import Link from "next/link";
 
 import L from 'leaflet';
 
@@ -53,7 +54,9 @@ function generateMarker(groupId, group) {
     console.log(diseaseId);
 
     diseaseLinks.push(
-      <a key={diseaseId} href={"/diseases/" + diseaseId} className={styles.diseaseLink}>{diseaseReports[0].diseases[0]}</a>
+      <Link href={"/diseases/" + diseaseId}>
+        <a key={diseaseId} className={styles.diseaseLink}>{diseaseReports[0].diseases[0]}</a>
+      </Link>
     );
 
     const reportLinks = [];
@@ -63,7 +66,11 @@ function generateMarker(groupId, group) {
       if (headline.length > 56) {
         headline = headline.substr(0,56) + "...";
       }
-      reportLinks.push(<a key={report.report_id} href={report.article_url} className={styles.report}>{headline}</a>);
+      reportLinks.push(
+        <Link href={"/articles/" + report.article_id}>
+          <a key={report.report_id}className={styles.report}>{headline}</a>
+        </Link>
+      );
     }
 
     diseaseArticles.push(
