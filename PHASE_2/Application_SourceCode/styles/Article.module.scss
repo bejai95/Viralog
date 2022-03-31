@@ -1,20 +1,16 @@
-.content {
-  padding: 20px;
-}
 
-.articleButton {
-  padding: 2px 16px; 
-  background: #f3f2f3 ;
+.article i {
   display: block;
-  margin: 20px 10px;
-  border-left: 8px solid #f3f2f3;
+  font-size: 0.9em;
+  margin: 2px 0;
 }
 
-.articleButton:hover {
-  border-left: 8px solid #4979ff;
+.headline {
+  display: block;
+  font-size: 1.6em;
+  margin-top: 20px;
 }
 
-.urlLink {
-  color: blue;
+.headline:hover {
   text-decoration: underline;
 }

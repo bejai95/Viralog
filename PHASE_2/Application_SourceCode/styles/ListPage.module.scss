@@ -1,0 +1,45 @@
+
+.contentInner {
+	margin: auto;
+	max-width: 40em;
+
+	margin: auto;
+    min-height: calc(100vh - 3.6em);
+    width: 100%;
+    background: white;
+    border-left: 1px solid #eee;
+    border-right: 1px solid #eee;
+    border-top: 1px solid #eee;
+    margin-top: 16px;
+
+    padding: 0 48px;
+}
+
+.contentInner h2 {
+	margin: 32px 0 0 0;
+}
+
+.listItem {
+	display: block;
+	border: 1px solid rgb(235, 235, 235);
+	border-radius: 4px;
+	padding: 10px;
+	margin: 10px 0;
+	width: 100%;
+}
+
+.listItem:hover {
+	transition: 0.1s;
+	background-color: rgb(252, 252, 252);
+}
+
+.listItem h2 {
+	font-size: 1em;
+	margin: 0;
+}
+
+.listItem i {
+	display: block;
+	font-size: 0.8em;
+	margin-top: 4px;
+}

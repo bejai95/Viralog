@@ -147,7 +147,7 @@ exports.articles_id = async function (conn, article_id) {
         console.log("Error: article_id not found.");
     }
 
-    result = article[0];
+    const result = article[0];
     result["reports"] = reportResult;
 
     return result;

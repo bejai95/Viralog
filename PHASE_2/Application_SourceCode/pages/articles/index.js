@@ -1,18 +1,18 @@
 import Head from "next/head";
 import Link from "next/link";
 import NavBar from "../../components/NavBar";
-import styles from "../../styles/Article.module.scss";
+import styles from "../../styles/ListPage.module.scss";
 
 function formatDate(date) {
   return date.toISOString().replace(/\.[0-9]{3}Z$/, "");
 }
 
-export async function getServerSideProps(context) {
+export async function getServerSideProps() {
   
   // Get past 30 days.
   let currDate = new Date();
   const periodEnd = formatDate(currDate);
-  currDate.setDate(currDate.getDate() - 90);
+  currDate.setDate(currDate.getDate() - 30);
   const periodStart = formatDate(currDate);
 
   const paramsData = {
@@ -41,15 +41,17 @@ export default function Articles( { articles } ) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <NavBar />
-      <div className={styles.content}>
-        <h1>Recent Articles</h1>
-        <p>Articles from the past 30 days...</p>
+      <div className={styles.contentInner}>
+        <h2>Recent Articles</h2>
+        <i>Articles from the past 30 days...</i>
         {articles.map(article => (
-          <Link href={'/articles/' + article.article_id} key={article.article_id}>
-            <a className={styles.articleButton}>
-              <h3>{ article.headline }</h3>
-            </a>
-          </Link>
+            <Link href={'/articles/' + article.article_id} key={article.article_id}>
+              <a className={styles.listItem}>
+                <h2>{ article.headline }</h2>
+                <i>{article.author}</i>
+              </a>
+            </Link>
+            
         ))}
       </div>
     </>
