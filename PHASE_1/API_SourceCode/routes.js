@@ -90,7 +90,7 @@ exports.articles = async function (
     return results;
 };
 
-exports.article = async function (conn, article_id) {
+exports.articles_id = async function (conn, article_id) {
     const article = await conn
         .select(
             "Article.article_id",
