@@ -10,7 +10,6 @@ export async function getServerSideProps(context) {
   const url = new URL("https://vivid-apogee-344409.ts.r.appspot.com/diseases");
   url.search = new URLSearchParams(paramsData).toString();
   const res = await fetch(url);
-  console.log(url.toString());
   
   try {
     const result = await res.json();
