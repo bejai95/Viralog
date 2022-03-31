@@ -39,28 +39,16 @@ export default function DiseaseInfoPage({ article, error }) {
           </>
         }
         {article &&
-          <div>
-            <h1>{article.headline}</h1>
-            <h2>Article Details</h2>
-            <p><b>Author: </b>{article.author}</p>
-            <p><b>Article URL: </b><a href={article.article_url} className={styles.urlLink}>{article.article_url}</a></p>
-            <p><b>Publication Date: </b>{article.date_of_publication}</p>
-            <p>
-              <b>Category: </b>
-              {article.category}
-            </p>
-            <p>
-              <b>Source: </b>
-              {article.source}
-            </p>
-            <br></br>
-    
-            <h2>Article Reports</h2>
+          <div className={styles.article}>
+            <Link href={article.article_url}><a className={styles.headline}>{article.headline}</a></Link>
+            <i>{article.author}</i>
+            <i>{article.date_of_publication}</i>
+            <div><b>Category: </b> {article.category}</div>
+            <div><b>Source: </b> {article.source}</div>
+            <h2>Reports found...</h2>
             <ReportList reports={article.reports}/>
             </div>
         }
-        
-        
       </div>
     </>
   );

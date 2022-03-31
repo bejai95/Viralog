@@ -1,0 +1,34 @@
+
+.contentInner {
+	margin: auto;
+	max-width: 40em;
+}
+
+.contentInner h2 {
+	margin: 32px 0 0 0;
+}
+
+.listItem {
+	display: block;
+	border: 1px solid rgb(235, 235, 235);
+	border-radius: 4px;
+	padding: 10px;
+	max-width: 40em;
+	margin: 10px auto;
+}
+
+.listItem:hover {
+	transition: 0.1s;
+	background-color: rgb(252, 252, 252);
+}
+
+.listItem h2 {
+	font-size: 1em;
+	margin: 0;
+}
+
+.listItem i {
+	display: block;
+	font-size: 0.8em;
+	margin-top: 4px;
+}
