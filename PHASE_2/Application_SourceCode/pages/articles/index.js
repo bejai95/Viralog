@@ -12,7 +12,7 @@ export async function getServerSideProps(context) {
   // Get past 30 days.
   let currDate = new Date();
   const periodEnd = formatDate(currDate);
-  currDate.setDate(currDate.getDate() - 90);
+  currDate.setDate(currDate.getDate() - 30);
   const periodStart = formatDate(currDate);
 
   const paramsData = {
