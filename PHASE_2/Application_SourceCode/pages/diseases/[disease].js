@@ -21,6 +21,10 @@ export async function getServerSideProps(context) {
   }
 }
 
+function capitalizeFirstLetter(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
 export default function DiseaseInfoPage({ disease, error }) {
   return (
     <>
@@ -29,7 +33,7 @@ export default function DiseaseInfoPage({ disease, error }) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <NavBar />
-      <div className={styles.content}>
+      <div className="contentMain">
         {error && 
             <>
               <h1>Error: Invalid Page</h1>
@@ -41,7 +45,7 @@ export default function DiseaseInfoPage({ disease, error }) {
           }
           {disease &&
             <>
-              <h1>{disease.disease_id}</h1>
+              <h1>{capitalizeFirstLetter(disease.disease_aliases[0])}</h1>
               
               <h3>Also known as</h3>
               <ul>

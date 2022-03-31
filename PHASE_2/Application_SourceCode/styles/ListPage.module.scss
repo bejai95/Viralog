@@ -29,8 +29,8 @@
 }
 
 .listItem:hover {
-	transition: 0.1s;
-	background-color: rgb(252, 252, 252);
+	transition: 0.2s;
+	border-left: 4px solid blue;
 }
 
 .listItem h2 {
