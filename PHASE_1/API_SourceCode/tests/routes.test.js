@@ -19,7 +19,7 @@ describe("Reports Endpoint", () => {
       })
       .expect(200)
       .end((err, res) => {
-        expect(res.body).toEqual(routes_test_expected);
+        expect(res.body).toEqual(reports_test_expected);
         done();
       });
 
@@ -102,10 +102,10 @@ describe("Logs Endpoint", () => {
       .get("/logs")
       .set("Content-Type", "application/json")
       .query({
-        period_of_interest_start: "2022-03-20T13:09:05",
-        period_of_interest_end: "2022-03-20T13:09:05",
+        period_of_interest_start: "2022-03-31T02:26:57",
+        period_of_interest_end: "2022-03-31T02:26:57",
         key_terms: "COVID-19",
-        location: "China",
+        location: "China,Australia",
       })
       .expect(200)
       .end((err, res) => {
@@ -132,13 +132,13 @@ describe("Predictions Endpoint", () => {
   });
 });
 
-const routes_test_expected = [
+const reports_test_expected = [
   {
+    "report_id": 33,
+    "disease_id": "COVID-19",
     "diseases": [
       "COVID-19"
     ],
-    "event_date": "2022-03-13T13:00:00",
-    "location": "China",
     "syndromes": [
       "Acute respiratory syndrome",
       "fever",
@@ -149,12 +149,21 @@ const routes_test_expected = [
       "loss of taste",
       "loss of smell"
     ],
+    "event_date": "2022-03-13T13:00:00",
+    "location": {
+      "location": "China",
+      "lat": "35.86",
+      "long": "104.20"
+    },
+    "article_id": 44,
     "article_url": "https://www.cidrap.umn.edu/news-perspective/2022/03/chinas-omicron-covid-19-surge-gains-steam",
+    "headline": "China's Omicron COVID-19 surge gains steam"
   }
-];
+]
 
 const articles_test_expected = [
   {
+    "article_id": 44,
     "url": "https://www.cidrap.umn.edu/news-perspective/2022/03/chinas-omicron-covid-19-surge-gains-steam",
     "date_of_publication": "2022-03-13T13:00:00",
     "headline": "China's Omicron COVID-19 surge gains steam",
@@ -175,84 +184,121 @@ const articles_test_expected = [
           "loss of smell"
         ],
         "event_date": "2022-03-13T13:00:00",
-        "location": "China"
+        "location": {
+          "location": "China",
+          "lat": "35.86",
+          "long": "104.20"
+        }
       }
     ],
     "category": "COVID-19",
     "author": "Lisa Schnirring | News Editor | CIDRAP News",
     "source": "CIDRAP"
   }
-];
+]
 
 const logs_test_expected = [
   {
-    "id": 389,
+    "id": 105,
     "status": 200,
     "route": "/reports",
-    "req_params": "{\"period_of_interest_start\":\"2020-03-13T12:21:21\",\"period_of_interest_end\":\"2022-03-13T17:21:21\",\"key_terms\":\"COVID-18\",\"location\":\"China\"}",
-    "timestamp": "2022-03-20T13:09:05",
+    "req_params": "{\"period_of_interest_start\":\"2017-03-13T12:21:21\",\"period_of_interest_end\":\"2017-03-13T12:21:22\",\"key_terms\":\"COVID-18\",\"location\":\"China\"}",
+    "timestamp": "2022-03-31T02:26:57",
     "message": "success",
     "ip": "::ffff:127.0.0.1",
     "team": "Team QQ"
   },
   {
-    "id": 390,
+    "id": 106,
+    "status": 200,
+    "route": "/reports",
+    "req_params": "{\"period_of_interest_start\":\"2022-03-13T12:21:21\",\"period_of_interest_end\":\"2020-02-13T12:21:21\",\"key_terms\":\"COVID-19\",\"location\":\"China\"}",
+    "timestamp": "2022-03-31T02:26:57",
+    "message": "success",
+    "ip": "::ffff:127.0.0.1",
+    "team": "Team QQ"
+  },
+  {
+    "id": 107,
     "status": 400,
     "route": "/reports",
-    "req_params": "{\"period_of_interest_start\":\"2023-03-13T12:21:21\",\"period_of_interest_end\":\"2022-03-13T17:21:21\",\"key_terms\":\"COVID-19\",\"location\":\"China\"}",
-    "timestamp": "2022-03-20T13:09:05",
-    "message": "Invalid timestamp for 'period_of_interest_end', must be after 'period_of_interest_start'",
+    "req_params": "{\"period_of_interest_start\":\"2020-03-13T12:21:21\",\"period_of_interest_end\":\"2022-03-13X17:21:21\",\"key_terms\":\"COVID-19\",\"location\":\"China\"}",
+    "timestamp": "2022-03-31T02:26:57",
+    "message": "Invalid timestamp for 'period_of_interest_end', must be in format 'yyyy-MM-ddTHH:mm:ss'",
     "ip": "::ffff:127.0.0.1",
     "team": "Team QQ"
   },
   {
-    "id": 391,
+    "id": 108,
     "status": 200,
     "route": "/articles",
-    "req_params": "{\"period_of_interest_start\":\"2022-03-13T12:21:21\",\"period_of_interest_end\":\"2022-03-13T17:21:21\",\"key_terms\":\"COVID-19\",\"location\":\"China\"}",
-    "timestamp": "2022-03-20T13:09:05",
-    "message": "success",
-    "ip": "::ffff:127.0.0.1",
-    "team": "Team QQ"
-  },
-  {
-    "id": 392,
-    "status": 200,
-    "route": "/logs",
-    "req_params": "{\"period_of_interest_start\":\"2022-03-13T12:21:21\",\"period_of_interest_end\":\"2022-03-13T17:21:21\",\"key_terms\":\"COVID-19\",\"location\":\"China\"}",
-    "timestamp": "2022-03-20T13:09:05",
+    "req_params": "{\"period_of_interest_start\":\"2022-03-13T12:21:21\",\"period_of_interest_end\":\"2022-03-13T13:09:06\",\"key_terms\":\"COVID-19\",\"location\":\"China\"}",
+    "timestamp": "2022-03-31T02:26:57",
     "message": "success",
     "ip": "::ffff:127.0.0.1",
     "team": "Team QQ"
   }
-];
+]
 
 const predictions_test_expected = [
   {
     "disease": "COVID-19",
     "reports": [
       {
-        "report_id": 6,
-        "event_date": "2022-03-16T13:00:00",
-        "disease_id": "COVID-19",
-        "article_url": "https://www.cidrap.umn.edu/news-perspective/2022/03/covid-19-cases-soar-asian-hot-spots-us-gets-new-covid-czar",
-        "location": "South Korea"
-      },
-      {
         "report_id": 1,
-        "event_date": "2022-03-16T13:00:00",
+        "event_date": "2022-03-29T13:00:00",
         "disease_id": "COVID-19",
-        "article_url": "https://www.cidrap.umn.edu/news-perspective/2022/03/70-covid-survivors-uk-study-had-impaired-memory-focus",
-        "location": "United Kingdom Ireland"
+        "article_id": 9,
+        "location": "Africa",
+        "lat": "-8.78",
+        "long": "34.51"
       },
       {
         "report_id": 3,
-        "event_date": "2022-03-17T13:00:00",
+        "event_date": "2022-03-29T13:00:00",
         "disease_id": "COVID-19",
-        "article_url": "https://www.cidrap.umn.edu/news-perspective/2022/03/studies-show-vaccines-protect-against-serious-omicron-illness",
-        "location": "United States"
+        "article_id": 3,
+        "location": "America",
+        "lat": "37.09",
+        "long": "-95.71"
+      },
+      {
+        "report_id": 2,
+        "event_date": "2022-03-27T13:00:00",
+        "disease_id": "COVID-19",
+        "article_id": 7,
+        "location": "Edinburgh",
+        "lat": "55.95",
+        "long": "-3.19"
+      },
+      {
+        "report_id": 5,
+        "event_date": "2022-03-27T13:00:00",
+        "disease_id": "COVID-19",
+        "article_id": 2,
+        "location": "Shanghai",
+        "lat": "31.23",
+        "long": "121.47"
+      },
+      {
+        "report_id": 4,
+        "event_date": "2022-03-28T13:00:00",
+        "disease_id": "COVID-19",
+        "article_id": 5,
+        "location": "Texas",
+        "lat": "31.97",
+        "long": "-99.90"
+      },
+      {
+        "report_id": 6,
+        "event_date": "2022-03-28T13:00:00",
+        "disease_id": "COVID-19",
+        "article_id": 6,
+        "location": "United Kingdom—",
+        "lat": "55.38",
+        "long": "-3.44"
       }
     ],
-    "report_count": 3
+    "report_count": 6
   }
-];
+]
