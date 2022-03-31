@@ -263,30 +263,26 @@ exports.diseases = async function (
         .join("Symptom", "Symptom.disease_id", "=", "Disease.disease_id");
 
     const results = [];
-    let symptomCount = 0;
-    let aliasCount = 0;
     for (let i = 0; i < diseases.length; i++) {
         const disease = diseases[i];
         // extract all symptoms relating to the given disease
         const symps = [];
+        let symptomCount = 0;  // could put this outside the loop for 'efficiency'
         while (symptomCount < symptoms.length) {
             if (symptoms[symptomCount]["disease_id"] == disease["disease_id"]) {
                 symps.push(symptoms[symptomCount]["symptom"]);
-                symptomCount++;
-            } else {
-                break;
             }
+            symptomCount++;
         }
 
         // extract all aliases relating to the given disease
         const als = [];
+        let aliasCount = 0;  // could put this outside the loop for 'efficiency'
         while (aliasCount < aliases.length) {
             if (aliases[aliasCount]["disease_id"] == disease["disease_id"]) {
                 als.push(aliases[aliasCount]["alias"]);
-                aliasCount++;
-            } else {
-                break;
             }
+            aliasCount++;
         }
         
         results.push({
