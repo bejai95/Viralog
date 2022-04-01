@@ -159,7 +159,7 @@ const reports_test_expected = [
     "article_url": "https://www.cidrap.umn.edu/news-perspective/2022/03/chinas-omicron-covid-19-surge-gains-steam",
     "headline": "China's Omicron COVID-19 surge gains steam"
   }
-]
+];
 
 const articles_test_expected = [
   {
@@ -195,7 +195,7 @@ const articles_test_expected = [
     "author": "Lisa Schnirring | News Editor | CIDRAP News",
     "source": "CIDRAP"
   }
-]
+];
 
 const logs_test_expected = [
   {
@@ -238,7 +238,7 @@ const logs_test_expected = [
     "ip": "::ffff:127.0.0.1",
     "team": "Team QQ"
   }
-]
+];
 
 const predictions_test_expected = [
   {
@@ -301,4 +301,4 @@ const predictions_test_expected = [
     ],
     "report_count": 6
   }
-]
+];

@@ -11,7 +11,7 @@ const {
     formatDate
 } = require("../util");
 
-async (req, res, conn) => {
+exports.logs = async (req, res, conn) => {
     const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
 
     if (!req.query) {
@@ -67,7 +67,7 @@ async (req, res, conn) => {
         !timeFormatCorrect(req.query.period_of_interest_start))
     {
         return performError(conn, res, "/logs", 400,
-            "Invalid timestamp for \"period_of_interest_start\", must be in format \"yyyy-MM-ddTHH:mm:ss\"",
+            "Invalid timestamp for 'period_of_interest_start', must be in format 'yyyy-MM-ddTHH:mm:ss'",
             req.query, ip
         );
     }
@@ -75,14 +75,14 @@ async (req, res, conn) => {
         !timeFormatCorrect(req.query.period_of_interest_end))
     {
         return performError(conn, res, "/logs", 400,
-            "Invalid timestamp for \"period_of_interest_end\", must be in format \"yyyy-MM-ddTHH:mm:ss\"",
+            "Invalid timestamp for 'period_of_interest_end', must be in format 'yyyy-MM-ddTHH:mm:ss'",
             req.query, ip
         );
     }
 
     try {
         // Run logs command with validated parameters.
-        const logs = await logs(
+        const result = await logs(
             conn,
             req.query.period_of_interest_start,
             req.query.period_of_interest_end,
@@ -92,7 +92,7 @@ async (req, res, conn) => {
             req.query.ip
         );
         createLog(conn, ip, "/logs", req.query, 200, "success");
-        res.send(logs);
+        res.send(result);
     } catch (error) {
         console.log(error);
         res.status(500).send({
@@ -102,7 +102,7 @@ async (req, res, conn) => {
     }
 };
 
-exports.logs = async function (
+async function logs(
     conn,
     period_of_interest_start,
     period_of_interest_end,
@@ -138,6 +138,6 @@ exports.logs = async function (
                 queryBuilder.whereIn("route", routes);
             }
         })
-        .orderBy("timestamp", "desc");
+        .orderBy("timestamp", "desc").limit(4096);
     return logs;
-};
+}

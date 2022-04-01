@@ -39,21 +39,21 @@ exports.predictions = async (req, res, conn) => {
 
     if (min_report_count <= 0) {
         return performError(conn, res, "/predictions", 400,
-            "Parameter \"min_report_count\" must be greater than 0.",
+            "Parameter 'min_report_count' must be greater than 0.",
             req.query, ip
         );
     }
     if (day_count <= 0) {
         return performError(conn, res, "/predictions", 400,
-            "Parameter \"day_count\" must be greater than 0.",
+            "Parameter 'day_count' must be greater than 0.",
             req.query, ip
         );
     }
 
     try {
-        const predictions = await predictions(conn, min_report_count, day_count);
+        const result = await predictions(conn, min_report_count, day_count);
         createLog(conn, ip, "/predictions", req.query, 200, "success", req.query.team);
-        res.send(predictions);
+        res.send(result);
     } catch (error) {
         console.log(error);
         return performError(conn,

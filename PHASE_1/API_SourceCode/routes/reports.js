@@ -47,7 +47,7 @@ exports.reports = async (req, res, conn) => {
         !timeFormatCorrect(req.query.period_of_interest_start))
     {
         return performError(conn, res, "/reports", 400,
-            "Invalid timestamp for \"period_of_interest_start\", must be in format \"yyyy-MM-ddTHH:mm:ss\"",
+            "Invalid timestamp for 'period_of_interest_start', must be in format 'yyyy-MM-ddTHH:mm:ss'",
             req.query, ip
         );
     }
@@ -55,7 +55,7 @@ exports.reports = async (req, res, conn) => {
         !timeFormatCorrect(req.query.period_of_interest_end))
     {
         return performError(conn, res, "/reports", 400,
-            "Invalid timestamp for \"period_of_interest_end\", must be in format \"yyyy-MM-ddTHH:mm:ss\"",
+            "Invalid timestamp for 'period_of_interest_end', must be in format 'yyyy-MM-ddTHH:mm:ss'",
             req.query, ip
         );
     }
