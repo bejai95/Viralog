@@ -100,18 +100,18 @@ export default function DiseaseInfoPage(props) {
           }
           {props.disease &&
             <>
-              <h1>{capitalizeFirstLetter(props.disease.disease_aliases[0])}</h1>
+              <h1>{capitalizeFirstLetter(props.disease.disease_id)}</h1>
               
-              <h3>Also known as</h3>
+              <h3>Known as</h3>
               <ul>
-                {props.disease.disease_aliases.map(name => (
+                {props.disease.aliases.map(name => (
                   <li key={name}>{name}</li>
                 ))}
               </ul>
               
               <h3>Symptoms</h3>
               <ul>
-                {props.disease.disease_symptoms.map(name => (
+                {props.disease.symptoms.map(name => (
                   <li key={name}>{name}</li>
                 ))}
               </ul>
