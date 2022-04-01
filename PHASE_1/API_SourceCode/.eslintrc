@@ -3,7 +3,8 @@
         "semi": ["error", "always"],
         "quotes": ["error", "double"],
         "no-undef": "error",
-        "no-extra-semi": "warn"
+        "no-extra-semi": "warn",
+        "indent": ["error", 4]
     },
 	"parserOptions": {
         "ecmaVersion": 9

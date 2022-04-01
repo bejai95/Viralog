@@ -14,6 +14,9 @@ export async function getServerSideProps(context) {
   };
   const url1 = new URL("https://vivid-apogee-344409.ts.r.appspot.com/diseases");
   url1.search = new URLSearchParams(paramsData1).toString();
+
+  console.log(url1.toString());
+
   const res1 = await fetch(url1);
   const result1 = await res1.json();
   if (result1.status && result1.status != 200) {

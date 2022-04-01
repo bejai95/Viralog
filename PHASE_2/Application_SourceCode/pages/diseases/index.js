@@ -29,7 +29,7 @@ export default function Diseases( { diseases } ) {
       <div className={styles.contentInner}>
         <h2>Diseases</h2>
         {diseases.map(disease => (
-          <Link href={'/diseases/' + disease.disease_id} key={disease.disease_id}>
+          <Link href={'/diseases/' + encodeURIComponent(disease.disease_id)} key={disease.disease_id}>
             <a className={styles.listItem}>
               <h2>{capitalizeFirstLetter(disease.disease_aliases[0])}</h2>
               <i>{disease.disease_aliases.length > 1 &&

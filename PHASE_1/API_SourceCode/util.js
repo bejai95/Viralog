@@ -1,3 +1,4 @@
+"use strict";
 
 /**
  * Check whether an object is missing any keys.
@@ -60,3 +61,46 @@ exports.parseInteger = function(strInt) {
     }
     return num;
 };
+
+exports.formatDate = function(date) {
+    return date.toISOString().replace(/\.[0-9]{3}Z$/, "");
+};
+
+exports.getDiseaseSymptoms = async function (conn) {
+    const symptomRecords = await conn
+        .select("Disease.disease_id", "symptom")
+        .from("Disease")
+        .innerJoin("Symptom", "Symptom.disease_id", "Disease.disease_id");
+    const diseaseSymptoms = {};
+    for (let i = 0; i < symptomRecords.length; i++) {
+        const record = symptomRecords[i];
+        if (diseaseSymptoms[record.disease_id] == null) {
+            diseaseSymptoms[record.disease_id] = [];
+        }
+
+        diseaseSymptoms[record.disease_id].push(record.symptom);
+    }
+    return diseaseSymptoms;
+};
+
+exports.performError = function(conn, res, route, status, message, query, ip) {
+    createLog(conn, ip, route, query, status, message, query.team);
+    return res.status(400).send({ status: status, message: message });
+};
+
+async function createLog(conn, ip, route, queryParams, status, message) {
+    let timestamp = new Date().toISOString();
+    timestamp = timestamp.replace(/\.[0-9]{3}Z$/, "");
+
+    await conn("Log").insert({
+        status: status,
+        route: route,
+        req_params: JSON.stringify(queryParams),
+        timestamp: timestamp,
+        message: message,
+        ip: ip,
+        team: queryParams.team || "Team QQ",
+    });
+}
+
+exports.createLog = createLog;
