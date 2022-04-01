@@ -1,3 +1,4 @@
+"use strict";
 import Head from "next/head";
 import Link from "next/link";
 import { useContext, useState, useMemo } from "react";

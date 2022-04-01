@@ -1,3 +1,4 @@
+"use strict";
 import { useContext } from "react";
 import Link from "next/link";
 import styles from "../styles/NavBar.module.scss";

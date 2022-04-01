@@ -1,3 +1,4 @@
+"use strict";
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import "leaflet-defaulticon-compatibility";
 import styles from "../styles/ReportMap.module.scss";
