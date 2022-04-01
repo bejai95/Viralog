@@ -51,8 +51,6 @@ function generateMarker(groupId, group) {
   for (const diseaseId in group) {
     const diseaseReports = group[diseaseId];
 
-    console.log(diseaseId);
-
     diseaseLinks.push(
       <Link href={"/diseases/" + diseaseId}>
         <a key={diseaseId} className={styles.diseaseLink}>{diseaseReports[0].diseases[0]}</a>

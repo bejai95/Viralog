@@ -1,3 +1,5 @@
+"use strict";
+
 import Head from "next/head";
 import Link from "next/link";
 import NavBar from "../../components/NavBar";
@@ -5,23 +7,19 @@ import styles from "../../styles/Disease.module.scss";
 function formatDate(date) {
   return date.toISOString().replace(/\.[0-9]{3}Z$/, "");
 }
+
 export async function getServerSideProps(context) {
   const diseaseName = context.params.disease;
   
   // First query disease information
-  const paramsData1 = {
-    names: diseaseName
-  };
-  const url1 = new URL("https://vivid-apogee-344409.ts.r.appspot.com/diseases");
-  url1.search = new URLSearchParams(paramsData1).toString();
+  const reqUrl = "https://vivid-apogee-344409.ts.r.appspot.com/diseases/" + encodeURIComponent(diseaseName);
 
-  console.log(url1.toString());
+  const diseaseResult = await fetch(reqUrl);
+  const diseaseInfo = await diseaseResult.json();
 
-  const res1 = await fetch(url1);
-  const result1 = await res1.json();
-  if (result1.status && result1.status != 200) {
-    return { props: { error: result1.message } };
-  } else if (result1.length === 0) {
+  if (diseaseResult.status && diseaseResult.status != 200) {
+    return { props: { error: diseaseResult.message } };
+  } else if (diseaseResult.length === 0) {
     return {props: { error: "The disease you are searching for does not exist."}}
   }
 
@@ -56,11 +54,10 @@ export async function getServerSideProps(context) {
   url3.search = new URLSearchParams(paramsData3).toString();
   const res3 = await fetch(url3);
   const result3 = await res3.json();
-  console.log(url3.toString())
 
   return {
     props: { 
-      disease: result1[0], 
+      disease: diseaseInfo, 
       numReports1: result2.length,
       numReports2: result3.length,
     } 
