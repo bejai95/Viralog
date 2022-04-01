@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "test": "DB_USER='postgres' DB_PASS='SENG3011-qq' DB_NAME='postgres' DB_HOST='seng3011-qq.c8snggw2wudq.ap-southeast-2.rds.amazonaws.com' jest"
+    "test": "DB_USER='postgres' DB_PASS='SENG3011-qq' DB_NAME='postgres' DB_HOST='seng3011-qq.c8snggw2wudq.ap-southeast-2.rds.amazonaws.com' jest",
+    "deploy": "gcloud functions deploy scrape --runtime=nodejs16 --trigger-event=google.pubsub.topic.publish --trigger-resource=scrape --region=australia-southeast1"
   },
   "author": "Team QQ",
   "license": "ISC",
