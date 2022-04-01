@@ -75,6 +75,22 @@ function determineRisk(numReports) {
   }
 }
 
+function getDiseaseAliases(disease_id, aliases) {
+  const filtered = aliases.filter(alias => alias != disease_id);
+  if (filtered.length > 0) {
+    // return <i>(also known as {filtered.join(", ")})</i>
+    return <>
+      <h3>Also known as...</h3>
+        <ul>
+          {filtered.map(name => (
+            <li key={name}>{name}</li>
+          ))}
+        </ul>
+    </>
+  }
+  return null;
+}
+
 export default function DiseaseInfoPage(props) {
   
   return (
@@ -98,12 +114,7 @@ export default function DiseaseInfoPage(props) {
             <>
               <h1>{capitalizeFirstLetter(props.disease.disease_id)}</h1>
               
-              <h3>Known as</h3>
-              <ul>
-                {props.disease.aliases.map(name => (
-                  <li key={name}>{name}</li>
-                ))}
-              </ul>
+              {getDiseaseAliases(props.disease.disease_id, props.disease.aliases)}
               
               <h3>Symptoms</h3>
               <ul>

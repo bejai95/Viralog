@@ -18,8 +18,15 @@ function capitalizeFirstLetter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-export default function Diseases( { diseases } ) {
-  
+function getDiseaseAliases(disease_id, aliases) {
+  const filtered = aliases.filter(alias => alias != disease_id);
+  if (filtered.length > 0) {
+    return <i>(also known as {filtered.join(", ")})</i>
+  }
+  return null;
+}
+
+export default function Diseases({ diseases }) {
   return (
     <>
       <Head>
@@ -32,10 +39,8 @@ export default function Diseases( { diseases } ) {
         {diseases.map(disease => (
           <Link href={'/diseases/' + encodeURIComponent(disease.disease_id)} key={disease.disease_id}>
             <a className={styles.listItem}>
-              <h2>{capitalizeFirstLetter(disease.aliases[0])}</h2>
-              <i>{disease.aliases.length > 1 &&
-                <>(also known as {disease.aliases.slice(1).join(", ")})</>
-              }</i>
+              <h2>{capitalizeFirstLetter(disease.disease_id)}</h2>
+              {getDiseaseAliases(disease.disease_id, disease.aliases)}
                   <i>symptoms include {disease.symptoms.join(", ")}.</i>
             </a>
           </Link>
