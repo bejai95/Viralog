@@ -104,6 +104,24 @@ app.get('/articles/:id', async (req, res) => {
 
 });
 
+app.get('/reports/:id', async (req, res) => {
+    _conn = _conn || (await db.createConnectionPool());
+    const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
+
+    try {
+        const results = await routes.reports_id(_conn, req.params.id);
+        createLog(_conn, ip, "/reports/" + req.params.id, req.query, 200, "success");
+        res.send(results);
+    } catch (error) {
+        console.log(error);
+        return performError(_conn, res, "/reports/" + req.params.id, 500,
+            "An internal server error occurred. " + error,
+            req.params.id, ip
+        );
+    }
+
+});
+
 app.get("/reports", async (req, res) => {
     _conn = _conn || (await db.createConnectionPool());
     const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;

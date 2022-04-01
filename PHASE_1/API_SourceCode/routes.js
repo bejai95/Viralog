@@ -143,7 +143,7 @@ exports.articles_id = async function (conn, article_id) {
         }
 
 
-    if (article.length != 1) {
+    if (article.length == 0) {
         console.log("Error: article_id not found.");
     }
 
@@ -152,6 +152,36 @@ exports.articles_id = async function (conn, article_id) {
 
     return result;
 };
+
+exports.reports_id = async function (conn, report_id) {
+    const reports = await conn
+        .select(
+            "Report.report_id",
+            "Report.disease_id",
+            "Disease.name as disease",
+            "Report.event_date as date",
+            "Report.location",
+            "Report.lat",
+            "Report.long"
+        )
+        .from("Report")
+        .where("Report.report_id", "=", report_id)
+        .join("Disease", "Report.disease_id", "=", "Disease.disease_id");
+
+    if (reports.length == 0) {
+        console.log("Error: disease_id not found.");
+    }
+
+    const symptoms = await getDiseaseSymptoms(conn);
+
+    let result = reports[0];
+
+    console.log(reports);
+
+    result["symptoms"] = symptoms[result.disease];
+
+    return result;
+}
 
 exports.reports = async function (
     conn,
