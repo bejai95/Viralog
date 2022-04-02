@@ -37,7 +37,6 @@ exports.findNotString = function (obj, keys) {
     return null;
 };
 
-
 exports.timeFormatCorrect = function (timestamp) {
     const timeFormat = /^\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d$/;
     return timeFormat.test(timestamp);

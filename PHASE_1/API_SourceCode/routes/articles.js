@@ -52,6 +52,19 @@ exports.articles = async function(req, res, conn) {
         );
     }
 
+    let limit = req.query.limit;
+    if (limit) {
+        limit = parseInt(limit);
+        if (isNaN(limit) || !Number.isSafeInteger(limit)) {
+            return performError(conn,
+                res, "/articles", 400,
+                "limit must be an integer",
+                req.query,
+                ip
+            );
+        }
+    }
+
     try {
         const results = await articles(
             conn,
@@ -60,6 +73,7 @@ exports.articles = async function(req, res, conn) {
             req.query.key_terms,
             req.query.location,
             req.query.sources,
+            limit,
             req.query.hideBody
         );
 
@@ -97,6 +111,7 @@ async function articles(
     key_terms,
     location,
     sources,
+    limit,
     hideBody
 ) {
     const selectCols = [
@@ -121,6 +136,11 @@ async function articles(
             if (sources && sources != "") {
                 const sourcesList = sources.split(",");
                 queryBuilder.whereIn("Article.source", sourcesList);
+            }
+        })
+        .modify((queryBuilder) => {
+            if (limit) {
+                queryBuilder.limit(limit);
             }
         });
     const results = [];
