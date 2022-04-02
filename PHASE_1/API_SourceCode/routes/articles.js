@@ -204,6 +204,7 @@ async function articlesId(conn, article_id) {
 
     const reportRecords = await conn
         .select(
+            "Report.report_id",
             "Report.disease_id",
             "Disease.name as disease",
             "Report.event_date as date",
@@ -222,6 +223,7 @@ async function articlesId(conn, article_id) {
     for (let i = 0; i < reportRecords.length; i++) {
         const reportRecord = reportRecords[i];
         reportResult.push({
+            report_id: reportRecord.report_id,
             diseases: [reportRecord.disease],
             syndromes: symptoms[reportRecord.disease_id],
             event_date: reportRecord.date,

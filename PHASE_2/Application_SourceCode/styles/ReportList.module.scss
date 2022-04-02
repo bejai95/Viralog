@@ -1,0 +1,19 @@
+
+.reportList {
+	list-style: none;
+	padding: 0;
+}
+
+.reportList li {
+	margin: 0 0 20px 0;
+	border-left: 3px solid #107cf1;
+	padding: 10px;
+}
+
+.reportList a:hover {
+	text-decoration: underline;
+}
+
+.symptoms {
+	font-size: 0.9em;
+}
