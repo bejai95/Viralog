@@ -4,6 +4,7 @@ import Link from "next/link";
 import NavBar from "../../components/NavBar";
 import styles from "../../styles/InfoPage.module.scss";
 import DiseaseRiskInfo from "../../components/DiseaseRiskInfo";
+import ReportList from "../../components/ReportList";
 
 function formatDate(date) {
   return date.toISOString().replace(/\.[0-9]{3}Z$/, "");
@@ -75,12 +76,11 @@ export default function DiseaseInfoPage({disease, error}) {
               <DiseaseRiskInfo disease={disease}/>
               <i style={{ fontSize: "0.8em"}}>* a disease is &quot;high risk&quot; if it has had 10 or more reports in the past 90 days.</i>
 
-              <br /><br /><br /><br /><br /><br /><br /><br />
-              <h3>Visualisation of case/report frequency around the world</h3>
-              <br />
-              <h3>Predictions (if they exist)</h3>
+              <h2>Report Frequency</h2>
+              <i>(graph of report frequency over time)</i>
 
-              <br />
+              <h2>Recent Reports</h2>
+              <ReportList reports={disease.recent_reports}/>
             </>
           }
       </div>

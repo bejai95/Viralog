@@ -12,15 +12,22 @@ export default function ReportList({ reports }) {
 	<ul className={styles.reportList}>
 		{reports && reports.map(report => (
       <li key={report.report_id}>
-        <i>
-          <Link href={"/diseases/" + encodeURIComponent(report.diseases[0])}>
-            <a><b>{report.diseases[0]}</b></a>
+        {
+          report.article_id && report.headline &&
+          <Link href={"/articles/" + encodeURIComponent(report.article_id)}>
+            <a><b>{report.headline}</b></a>
           </Link>
-          <span> reported in</span>
-          <b> {report.location.location}</b> on
-          <b> {formatDate(report.event_date)}</b>
-        </i>
-        <div className={styles.symptoms}>syndromes and symtoms include {report.syndromes.map(s => s.toLowerCase()).join(", ")}</div>
+        }
+        <div>
+          <Link href={"/diseases/" + encodeURIComponent(report.diseases[0])}>
+            <a><i>{report.diseases[0]}</i></a>
+          </Link>
+          <span> reported in <i>{report.location.location}</i> on <i>{formatDate(report.event_date)}</i></span>
+        </div>
+        {
+          report.syndromes &&
+            <div className={styles.symptoms}>syndromes and symtoms include {report.syndromes.map(s => s.toLowerCase()).join(", ")}</div>
+        }
       </li>
 		))}
 	</ul>

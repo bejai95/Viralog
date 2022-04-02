@@ -77,13 +77,23 @@ async function predictions(conn, minReportCount, dayCount) {
     // Put results into an object indexed by disease name
     let collatedResults = {};
     for (let i = 0; i < results.length; i++) {
-        if (!(results[i].disease_id in collatedResults)) {
-            collatedResults[results[i].disease_id] = {
-                disease: results[i].disease_id,
+        const result = results[i];
+        if (!(result.disease_id in collatedResults)) {
+            collatedResults[result.disease_id] = {
+                disease: result.disease_id,
                 reports: [],
             };
         }
-        collatedResults[results[i].disease_id].reports.push(results[i]);
+        collatedResults[result.disease_id].reports.push({
+            report_id: result.report_id,
+            disease_id: result.disease_id,
+            event_date: result.event_date,
+            location: {
+                location: result.location,
+                lat: parseFloat(result.lat),
+                long: parseFloat(result.long),
+            },
+        });
     }
 
     // Add the threshold into each item

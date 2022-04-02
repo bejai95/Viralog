@@ -181,11 +181,39 @@ async function diseasesId(conn, diseaseId) {
         .where("disease_id", "=", diseaseId)
         .count("*", {as: "count"});
 
+    const recentReports = await conn("Report")
+        .select(
+            "Report.report_id",
+            "Report.disease_id",
+            "Report.event_date",
+            "Report.location",
+            "Report.lat",
+            "Report.long",
+            "Article.article_id",
+            "Article.headline",
+        )
+        .join("Article", "Article.article_id", "=", "Report.article_id")
+        .where("disease_id", "=", diseaseId)
+        .orderBy("event_date", "desc")
+        .limit(16);
+
     return {
         disease_id: diseaseId,
         aliases: aliases.map(row => row.alias),
         symptoms: symptoms.map(row => row.symptom),
         recent_report_count: parseInt(recentCountRes[0].count),
-        total_report_count: parseInt(totalCountRes[0].count)
+        total_report_count: parseInt(totalCountRes[0].count),
+        recent_reports: recentReports.map(report => ({
+            report_id: report.report_id,
+            diseases: [report.disease_id],
+            event_date: report.event_date,
+            location: {
+                location: report.location,
+                lat: parseFloat(report.lat),
+                long: parseFloat(report.long),
+            },
+            article_id: report.article_id,
+            headline: report.headline
+        }))
     };
 }
