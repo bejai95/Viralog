@@ -71,14 +71,16 @@ export default function DiseaseInfoPage({disease, error}) {
               {disease.symptoms.length > 0 && <h2>Symptoms</h2>}
               <i>{disease.symptoms.join(", ")}</i>
               
-              <br></br>
               <h2>Risk Analysis</h2>
               <DiseaseRiskInfo disease={disease}/>
+              <i style={{ fontSize: "0.8em"}}>* a disease is &quot;high risk&quot; if it has had 10 or more reports in the past 90 days.</i>
 
               <br /><br /><br /><br /><br /><br /><br /><br />
               <h3>Visualisation of case/report frequency around the world</h3>
-              <br></br>
+              <br />
               <h3>Predictions (if they exist)</h3>
+
+              <br />
             </>
           }
       </div>

@@ -24,7 +24,7 @@ function DiseaseRiskInfo({disease}) {
 
       <span className={styles.riskRating}>
         <b>{determineRisk(disease.recent_report_count)} risk</b>
-        <i>based on recent report count</i>
+        <i>based on recent report count*</i>
       </span>
     </div>
   );
