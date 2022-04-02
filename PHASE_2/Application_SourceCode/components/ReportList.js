@@ -14,7 +14,7 @@ export default function ReportList({ reports }) {
       <li key={report.report_id}>
         <i>
           <Link href={"/diseases/" + encodeURIComponent(report.diseases[0])}>
-            <a>{report.diseases[0]}</a>
+            <a><b>{report.diseases[0]}</b></a>
           </Link>
           <span> reported in</span>
           <b> {report.location.location}</b> on

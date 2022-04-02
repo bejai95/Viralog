@@ -54,18 +54,15 @@ export default function ArticleInfoPage({ article, error }) {
         }
         {article &&
           <div className={styles.article}>
-            <Link href={article.article_url}>
-              <a className={styles.headline}>{article.headline}</a>
+            <Link href={article.article_url} >
+              <a className={styles.headline} target="_blank">{article.headline}</a>
             </Link>
-            <br></br>
-            <i>Author: {article.author}</i>
-            <i>Date published: {article.date_of_publication}</i>
-            <p>
-              <b>Category: </b> {article.category}
-            </p>
-            <p>
-              <b>Source: </b> {article.source}
-            </p>
+            <div className={styles.info}>{article.author}</div>
+            <div className={styles.info}>Published {new Date(article.date_of_publication).toLocaleDateString()}</div>
+            <h2>Category</h2>
+            <div className={styles.info}>{article.category}</div>
+            <h2>Source</h2>
+            <div className={styles.info}>{article.source}</div>
             <h2>Reports</h2>
             <ReportList reports={article.reports}/>
             <div className={styles.mapContainer}>

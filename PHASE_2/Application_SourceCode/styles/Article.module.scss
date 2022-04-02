@@ -5,6 +5,12 @@
   margin: 2px 0;
 }
 
+.article h2 {
+  margin: 10px 0 2px 0;
+  font-size: 1em;
+  font-weight: bold;
+}
+
 .headline {
   display: block;
   font-size: 1.6em;
@@ -13,6 +19,11 @@
 
 .headline:hover {
   text-decoration: underline;
+}
+
+.info {
+  font-size: 0.9em;
+  margin: 0;
 }
 
 .mapContainer {

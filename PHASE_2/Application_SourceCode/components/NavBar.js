@@ -16,8 +16,8 @@ function NavBar(props) {
           <Link href="/"><a className={styles.title}><Image src={logo} alt="Disease Watch" layout="fill"></Image></a></Link>
         </div>
         <div className={styles.navCenter}>
-          <form className={`${styles.search_container} float_left`} action="/search">
-            <input type="text" placeholder="Search..." name="search"/>
+          <form className={`${styles.search_container} float_left`} action="/diseases">
+            <input type="text" placeholder="Search diseases..." name="search"/>
             <button type="submit"><i className="fa fa-search" /></button>
           </form>
         </div>
