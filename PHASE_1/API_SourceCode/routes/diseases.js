@@ -166,9 +166,26 @@ async function diseasesId(conn, diseaseId) {
         .from("Symptom")
         .where("Symptom.disease_id", "=", diseaseId);
 
+    let currDate = new Date();
+    const periodEnd = formatDate(currDate);
+    currDate.setDate(currDate.getDate() - 90);
+    const periodStart = formatDate(currDate);
+
+    const recentCountRes = await conn("Report")
+        .count("*", {as: "count"})
+        .where("disease_id", "=", diseaseId)
+        .where("event_date", ">=", periodStart)
+        .where("event_date", "<=", periodEnd);
+    
+    const totalCountRes = await conn("Report")
+        .where("disease_id", "=", diseaseId)
+        .count("*", {as: "count"});
+
     return {
         disease_id: diseaseId,
         aliases: aliases.map(row => row.alias),
         symptoms: symptoms.map(row => row.symptom),
+        recent_report_count: parseInt(recentCountRes[0].count),
+        total_report_count: parseInt(totalCountRes[0].count)
     };
 }
