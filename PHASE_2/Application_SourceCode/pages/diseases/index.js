@@ -41,7 +41,10 @@ export default function Diseases({ diseases }) {
             <a className={styles.listItem}>
               <h2>{capitalizeFirstLetter(disease.disease_id)}</h2>
               {getDiseaseAliases(disease.disease_id, disease.aliases)}
-                  <i>symptoms include {disease.symptoms.join(", ")}.</i>
+              {disease.symptoms.length > 0 &&
+                <i>symptoms include {disease.symptoms.join(", ")}.</i>
+              }
+                  
             </a>
           </Link>
         ))}
