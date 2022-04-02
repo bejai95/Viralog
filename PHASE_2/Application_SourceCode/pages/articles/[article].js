@@ -3,7 +3,7 @@ import Head from "next/head";
 import Link from "next/link";
 import NavBar from "../../components/NavBar";
 import ReportList from "../../components/ReportList";
-import styles from "../../styles/Article.module.scss";
+import styles from "../../styles/InfoPage.module.scss";
 import { useContext, useState, useMemo } from "react";
 import dynamic from "next/dynamic";
 
@@ -38,7 +38,7 @@ export default function ArticleInfoPage({ article, error }) {
   return (
     <>
       <Head>
-        <title>{error ? "Invalid Page" : article.headline}</title>
+        <title>{error ? "Invalid Page" : article.headline + " - Disease Watch"}</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <NavBar />
