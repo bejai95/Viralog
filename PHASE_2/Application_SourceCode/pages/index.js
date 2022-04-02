@@ -4,8 +4,8 @@ import Link from "next/link";
 import { useContext, useState, useMemo } from "react";
 import NavBar from "../components/NavBar";
 import styles from "../styles/Home.module.scss";
-import dynamic from 'next/dynamic';
-const { URL, URLSearchParams } = require('url');
+import dynamic from "next/dynamic";
+const { URL, URLSearchParams } = require("url");
 
 function formatDate(date) {
   return date.toISOString().replace(/\.[0-9]{3}Z$/, "");
@@ -31,14 +31,14 @@ export async function getServerSideProps(context) {
 
   return {
     props: { reports: reports },
-  }
+  };
 }
 
 export default function Home({ reports }) {
   const [errMsg, setError] = useState();
 
   const ReportMap = useMemo(() => dynamic(
-    () => import('../components/ReportMap'),
+    () => import("../components/ReportMap"),
     { 
       loading: () => <p>Map is loading...</p>,
       ssr: false

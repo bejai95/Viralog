@@ -30,7 +30,7 @@ export async function getServerSideProps() {
 
   return {
     props: { articles: articles },
-  }
+  };
 }
 
 export default function Articles( { articles } ) {
@@ -46,7 +46,7 @@ export default function Articles( { articles } ) {
         <h2>Recent Articles</h2>
         <i>Articles from the past 30 days...</i>
         {articles.map(article => (
-            <Link href={'/articles/' + encodeURIComponent(article.article_id)} key={article.article_id}>
+            <Link href={"/articles/" + encodeURIComponent(article.article_id)} key={article.article_id}>
               <a className={styles.listItem}>
                 <h2>{ article.headline }</h2>
                 <i>{article.author}</i>

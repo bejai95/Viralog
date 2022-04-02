@@ -4,11 +4,13 @@ import Link from "next/link";
 import NavBar from "../../components/NavBar";
 import ReportList from "../../components/ReportList";
 import styles from "../../styles/Article.module.scss";
+import { useContext, useState, useMemo } from "react";
+import dynamic from "next/dynamic";
 
 export async function getServerSideProps(context) {
   
-  const articleId = context.params.id;
-  const res = await fetch('https://vivid-apogee-344409.ts.r.appspot.com/articles/' + articleId);
+  const articleId = context.params.article;
+  const res = await fetch("https://vivid-apogee-344409.ts.r.appspot.com/articles/" + articleId);
   
   try {
     const result = await res.json();
@@ -23,7 +25,16 @@ export async function getServerSideProps(context) {
   }
 }
 
-export default function DiseaseInfoPage({ article, error }) {
+export default function ArticleInfoPage({ article, error }) {
+
+  const ReportMap = useMemo(() => dynamic(
+    () => import("../../components/ReportMap"),
+    { 
+      loading: () => <p>Map is loading...</p>,
+      ssr: false
+    }
+  ), []);
+
   return (
     <>
       <Head>
@@ -55,8 +66,11 @@ export default function DiseaseInfoPage({ article, error }) {
             <p>
               <b>Source: </b> {article.source}
             </p>
-            <h2>Reports found...</h2>
+            <h2>Reports</h2>
             <ReportList reports={article.reports}/>
+            <div className={styles.mapContainer}>
+              <ReportMap reports={article.reports} hideArticles={true}/>
+            </div>
           </div>
         }
       </div>

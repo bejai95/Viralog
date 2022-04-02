@@ -118,9 +118,6 @@ async function reportsId(conn, report_id) {
     const symptoms = await getDiseaseSymptoms(conn);
 
     let result = reports[0];
-
-    console.log(reports);
-
     result["symptoms"] = symptoms[result.disease];
 
     return result;
@@ -178,8 +175,8 @@ async function reports(
             event_date: reportRecord.date,
             location: {
                 location: reportRecord.location,
-                lat: reportRecord.lat,
-                long: reportRecord.long,
+                lat: parseFloat(reportRecord.lat),
+                long: parseFloat(reportRecord.long),
             },
             article_id: reportRecord.article_id,
             article_url: reportRecord.article_url,

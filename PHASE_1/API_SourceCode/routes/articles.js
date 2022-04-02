@@ -111,7 +111,6 @@ async function articles(
     if (hideBody == null) {
         selectCols.push("Article.main_text");
     }
-    console.log(hideBody);
 
     const articles = await conn
         .select(selectCols)
@@ -160,8 +159,8 @@ async function articles(
                 event_date: reportRecord.date,
                 location: {
                     location: reportRecord.location,
-                    lat: reportRecord.lat,
-                    long: reportRecord.long,
+                    lat: parseFloat(reportRecord.lat),
+                    long: parseFloat(reportRecord.long),
                 }
             });
             if (key_terms.includes(reportRecord.disease)) {
@@ -228,8 +227,8 @@ async function articlesId(conn, article_id) {
             event_date: reportRecord.date,
             location: {
                 location: reportRecord.location,
-                lat: reportRecord.lat,
-                long: reportRecord.long,
+                lat: parseFloat(reportRecord.lat),
+                long: parseFloat(reportRecord.long),
             }
         });
     }

@@ -6,12 +6,12 @@ import styles from "../../styles/ListPage.module.scss";
 
 export async function getServerSideProps() {
   
-  const res = await fetch('https://vivid-apogee-344409.ts.r.appspot.com/diseases?names=');
+  const res = await fetch("https://vivid-apogee-344409.ts.r.appspot.com/diseases?names=");
   const diseases = await res.json();
 
   return {
     props: { diseases: diseases }
-  }
+  };
 }
 
 function capitalizeFirstLetter(string) {
@@ -21,7 +21,7 @@ function capitalizeFirstLetter(string) {
 function getDiseaseAliases(disease_id, aliases) {
   const filtered = aliases.filter(alias => alias != disease_id);
   if (filtered.length > 0) {
-    return <i>(also known as {filtered.join(", ")})</i>
+    return <i>(also known as {filtered.join(", ")})</i>;
   }
   return null;
 }
@@ -37,7 +37,7 @@ export default function Diseases({ diseases }) {
       <div className={styles.contentInner}>
         <h2>Diseases</h2>
         {diseases.map(disease => (
-          <Link href={'/diseases/' + encodeURIComponent(disease.disease_id)} key={disease.disease_id}>
+          <Link href={"/diseases/" + encodeURIComponent(disease.disease_id)} key={disease.disease_id}>
             <a className={styles.listItem}>
               <h2>{capitalizeFirstLetter(disease.disease_id)}</h2>
               {getDiseaseAliases(disease.disease_id, disease.aliases)}
