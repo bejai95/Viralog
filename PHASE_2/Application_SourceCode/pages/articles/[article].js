@@ -53,7 +53,7 @@ export default function ArticleInfoPage({ article, error }) {
           </>
         }
         {article &&
-          <div className={styles.article}>
+          <div className={styles.infoPage}>
             <Link href={article.article_url} >
               <a className={styles.headline} target="_blank">{article.headline}</a>
             </Link>
