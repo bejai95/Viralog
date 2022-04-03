@@ -36,7 +36,8 @@ exports.diseases = async (req, res, conn) => {
     try {
         const results = await diseases(
             conn,
-            req.query.names
+            req.query.names,
+            req.query.orderBy
         );
         createLog(conn, ip, "/diseases", req.query, 200, "success", req.query.team);
         return res.send(results);
@@ -67,32 +68,67 @@ exports.diseasesId = async (req, res, conn) => {
 
 async function diseases(
     conn,
-    names
+    names,
+    orderBy
 ) {
     // Get diseases (and be able to filter by aliases)
-    let diseases = await conn
-        .select(
-            "disease_id"
-        )
-        .from("Disease");
-    
-    // If users have inputted a filter
-    if (names != "") {
-        diseases = await conn
-            .select(
-                "Disease.disease_id",
-                "DiseaseAlias.alias"
-            )
-            .from("Disease")
-            .join("DiseaseAlias", "DiseaseAlias.disease_id", "=", "Disease.disease_id")
-            .modify((queryBuilder) => {
-                if (names && names != "") {
-                    const nms = names.split(",");
+    const diseases = await conn
+        .select("Disease.disease_id")
+        .from("Disease")
+        .modify(queryBuilder => {
+            if (names && names != "") {
+                const namesList = names.split(",");
                     // the list of aliases always contains the actual disease name
-                    queryBuilder.whereIn("alias", nms);
-                }
-            });
-    }
+                queryBuilder.join("DiseaseAlias", "DiseaseAlias.disease_id", "=", "Disease.disease_id")
+                    .whereIn("alias", namesList);
+            }
+        })
+        .modify(queryBuilder => {
+            if (orderBy == "alphabetical") {
+                queryBuilder.orderBy("Disease.disease_id", "asc");
+            }
+            else {
+                queryBuilder
+                    .leftOuterJoin("Report", "Report.disease_id", "=", "Disease.disease_id")
+                    .count("Report.report_id", {as: "report_count"})
+                    .groupBy("Disease.disease_id")
+                    .orderBy("report_count", "desc");
+            }
+        });
+    
+    // // If users have inputted a filter
+    // if (names != "") {
+    //     diseases = await conn
+    //         .select(
+    //             "Disease.disease_id",
+    //             "DiseaseAlias.alias"
+    //         )
+    //         .from("Disease")
+    //         .join("DiseaseAlias", "DiseaseAlias.disease_id", "=", "Disease.disease_id")
+    //         .modify((queryBuilder) => {
+    //             if (names && names != "") {
+    //                 const namesList = names.split(",");
+    //                 // the list of aliases always contains the actual disease name
+    //                 queryBuilder.whereIn("alias", namesList);
+    //             }
+    //         });
+    // }
+    // else {
+    //     diseases = await conn
+    //         .select("disease_id")
+    //         .from("Disease")
+    //         .modify((queryBuilder) => {
+    //             if (orderBy == "alphabetical") {
+
+    //             }
+    //             else {
+    //                 queryBuilder
+    //                     .join("Report", "Report.disease_id", "=", "Disease.disease_id")
+    //                     .count("Report.report_id", {as: "report_count"})
+    //                     .orderBy("report_count");
+    //             }
+    //         });
+    // }
     
     // Get the alises of each disease - we still need this because the above
     // select filtered out other non-searched-for aliases of the disease we want to search for
