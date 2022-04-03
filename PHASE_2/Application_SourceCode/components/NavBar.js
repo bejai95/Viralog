@@ -22,9 +22,11 @@ function NavBar(props) {
           </form>
         </div>
         <div className={styles.navRight}>
+          <Link href="/"><a className={right_button_styles}>Map</a></Link>
           <Link href="/diseases"><a className={right_button_styles}>Diseases</a></Link>
           <Link href="/articles"><a className={right_button_styles}>Articles</a></Link>
         </div>
+
         <div style={{clear: "both"}}></div>
       </nav>
     </div>
