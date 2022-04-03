@@ -17,7 +17,7 @@ function NavBar(props) {
         </div>
         <div className={styles.navCenter}>
           <form className={`${styles.search_container} float_left`} action="/diseases">
-            <input type="text" placeholder="Search diseases..." name="search"/>
+            <input type="text" placeholder="Search diseases..." name="diseases"/>
             <button type="submit"><i className="fa fa-search" /></button>
           </form>
         </div>

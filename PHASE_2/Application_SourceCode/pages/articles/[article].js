@@ -10,7 +10,7 @@ import dynamic from "next/dynamic";
 export async function getServerSideProps(context) {
   
   const articleId = context.params.article;
-  const res = await fetch("https://vivid-apogee-344409.ts.r.appspot.com/articles/" + articleId);
+  const res = await fetch("http://localhost:8080/articles/" + articleId);
   
   try {
     const result = await res.json();

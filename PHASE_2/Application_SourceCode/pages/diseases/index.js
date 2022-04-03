@@ -3,10 +3,15 @@ import Head from "next/head";
 import Link from "next/link";
 import NavBar from "../../components/NavBar";
 import styles from "../../styles/ListPage.module.scss";
+import { useRouter } from 'next/router'
 
 export async function getServerSideProps() {
+  const router = useRouter()
+  const diseasesParam = router.query.diseases;
+  const symptomsParam = router.query.symptoms;
   
-  const res = await fetch("https://vivid-apogee-344409.ts.r.appspot.com/diseases?names=");
+  
+  const res = await fetch("http://localhost:8080/diseases?names=" + encodeURIComponent(diseasesParam));
   const diseases = await res.json();
 
   return {
@@ -27,6 +32,14 @@ function getDiseaseAliases(disease_id, aliases) {
 }
 
 export default function Diseases({ diseases }) {
+  const router = useRouter()
+  const diseasesParam = router.query.diseases;
+  const symptomsParam = router.query.symptoms;
+  let usedFilters = false;
+  if (diseasesParam || symptomsParam) {
+    usedFilters = true;
+  } 
+  
   return (
     <>
       <Head>
@@ -35,7 +48,25 @@ export default function Diseases({ diseases }) {
       </Head>
       <NavBar />
       <div className={styles.contentInner}>
-        <h2>Diseases</h2>
+        <h2>Disease Filters</h2>
+        <p>Please enter a comma seperated list of diseases and/or symptoms. If a field is left blank then results will not be filtered by that field.</p>
+        
+        <form>
+          <label htmlFor="diseases-search">Filter by disease: </label>
+          <input id="diseases-search" name="diseases" type="text" placeholder="e.g. Zika,Ebola,Measles" 
+            defaultValue={diseasesParam}></input>
+          <br></br>
+          <label htmlFor="symptoms-search">Filter by symptom: </label>
+          <input id="symptoms-search" name="symptoms" type="text" placeholder="e.g. fever,cough,fatigue"
+            defaultValue={symptomsParam}></input>
+          <br></br>
+          <button type="button">
+            <a href="http://localhost:3000/diseases?diseases=&symptoms=">Reset</a>
+          </button>
+          <button type="submit">Search</button>
+        </form>
+        
+        <h2>{usedFilters ? "Diseases matching search (press reset to view all diseases)" : "All Diseases"}</h2>
         {diseases.map(disease => (
           <Link href={"/diseases/" + encodeURIComponent(disease.disease_id)} key={disease.disease_id}>
             <a className={styles.listItem}>
@@ -43,8 +74,7 @@ export default function Diseases({ diseases }) {
               {getDiseaseAliases(disease.disease_id, disease.aliases)}
               {disease.symptoms.length > 0 &&
                 <i>symptoms include {disease.symptoms.join(", ")}.</i>
-              }
-                  
+              }     
             </a>
           </Link>
         ))}

@@ -22,7 +22,7 @@ export async function getServerSideProps(context) {
 }
 
 async function getDiseaseInfo(diseaseId) {
-  const reqUrl = "https://vivid-apogee-344409.ts.r.appspot.com/diseases/" + encodeURIComponent(diseaseId);
+  const reqUrl = "http://localhost:8080/diseases/" + encodeURIComponent(diseaseId);
 
   const res = await fetch(reqUrl);
   const diseaseInfo = await res.json();

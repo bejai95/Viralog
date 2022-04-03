@@ -23,7 +23,7 @@ export async function getServerSideProps() {
     location: "",
     hideBody: ""
   };
-  const url = new URL("https://vivid-apogee-344409.ts.r.appspot.com/articles");
+  const url = new URL("http://localhost:8080/articles");
   url.search = new URLSearchParams(paramsData).toString();
   const res = await fetch(url);
   const articles = await res.json();

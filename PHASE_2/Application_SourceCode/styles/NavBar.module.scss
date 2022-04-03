@@ -55,49 +55,47 @@
     cursor: pointer;
 }
 
-
-// Search box.
 .search_container {
-    margin: 0.7em 1em;
-    display: inline-block;
-    height: 2em;
+  margin: 0.7em 1em;
+  display: inline-block;
+  height: 2em;
 }
 
 .search_container input {
-    display: inline-block;
-    font-size: 0.9em;
-    height: 100%;
-    width: 20em;
-    background-color: transparent;
-    border:none;
-    border-bottom: 2px solid black;
-    transition: 0.2s;
+  display: inline-block;
+  font-size: 0.9em;
+  height: 100%;
+  width: 20em;
+  background-color: transparent;
+  border:none;
+  border-bottom: 2px solid black;
+  transition: 0.2s;
 
-    &::placeholder {
-        color: #222;
-    }
+  &::placeholder {
+      color: #222;
+  }
 }
 
 .search_container input:focus {
-    background-color: white;
-    border-radius: 2px;
-    padding-left: 6px;
+  background-color: white;
+  border-radius: 2px;
+  padding-left: 6px;
 }
 
 .search_container button {
-    display: inline-block;
-    position: absolute;
-    transform: translateX(-3em);
-    height: 2.9em;
-    width: 3em;
-    border:none;
-    background-color: transparent;
+  display: inline-block;
+  position: absolute;
+  transform: translateX(-3em);
+  height: 2.9em;
+  width: 3em;
+  border:none;
+  background-color: transparent;
 }
 
 .search_container button:hover {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .search_container button:hover i {
-    transform: scale(1.1);
+  transform: scale(1.1);
 }
