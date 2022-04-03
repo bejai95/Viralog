@@ -15,23 +15,25 @@ function formatDate(date) {
 }
 
 export async function getServerSideProps(context) {
+  
   const diseaseId = context.params.disease;
-  const diseaseInfo = await getDiseaseInfo(diseaseId);
+  const reqUrl = "https://vivid-apogee-344409.ts.r.appspot.com/diseases/" + encodeURIComponent(diseaseId);
+  console.log("https://vivid-apogee-344409.ts.r.appspot.com/diseases/" + encodeURIComponent(diseaseId))
+  const res = await fetch(reqUrl);
+  const result = await res.json();
+  
+
+  if (result.status && result.status != 200) {
+    return { props: { error: result.message } };
+  } else if (result.length === 0) {
+    return {props: { error: "The disease you are searching for does not exist."}}
+  }
 
   return {
     props: { 
-      disease: diseaseInfo
+      disease: result
     }
   };
-}
-
-async function getDiseaseInfo(diseaseId) {
-  const reqUrl = "https://vivid-apogee-344409.ts.r.appspot.com/diseases/" + encodeURIComponent(diseaseId);
-
-  const res = await fetch(reqUrl);
-  const diseaseInfo = await res.json();
-
-  return diseaseInfo;
 }
 
 function capitalizeFirstLetter(string) {
