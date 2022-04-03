@@ -5,6 +5,10 @@ import NavBar from "../../components/NavBar";
 import styles from "../../styles/InfoPage.module.scss";
 import DiseaseRiskInfo from "../../components/DiseaseRiskInfo";
 import ReportList from "../../components/ReportList";
+import { useContext, useState, useMemo } from "react";
+import dynamic from "next/dynamic";
+import DiseaseImage from "../../public/logo-icon.png";
+import Image from "next/image";
 
 function formatDate(date) {
   return date.toISOString().replace(/\.[0-9]{3}Z$/, "");
@@ -46,6 +50,14 @@ function getDiseaseAliases(disease_id, aliases) {
 }
 
 export default function DiseaseInfoPage({disease, error}) {
+  const ReportMap = useMemo(() => dynamic(
+    () => import("../../components/ReportMap"),
+    { 
+      loading: () => <p>Map is loading...</p>,
+      ssr: false
+    }
+  ), []);
+
   return (
     <>
       <Head>
@@ -65,7 +77,10 @@ export default function DiseaseInfoPage({disease, error}) {
           }
           {disease &&
             <>
-              <h1>{capitalizeFirstLetter(disease.disease_id)}</h1>
+              <div className={styles.title}>
+                <span className={styles.diseaseIcon}><Image src={DiseaseImage} alt="" width={32} height={31} /></span>
+                <h1>{capitalizeFirstLetter(disease.disease_id)}</h1>
+              </div>
               
               {getDiseaseAliases(disease.disease_id, disease.aliases)}
               
@@ -78,6 +93,11 @@ export default function DiseaseInfoPage({disease, error}) {
 
               <h2>Report Frequency</h2>
               <i>(graph of report frequency over time)</i>
+
+              <h2>Report Map</h2>
+              <div className={styles.mapContainer}>
+                <ReportMap reports={disease.recent_reports} />
+              </div>
 
               <h2>Recent Reports</h2>
               <ReportList reports={disease.recent_reports}/>
