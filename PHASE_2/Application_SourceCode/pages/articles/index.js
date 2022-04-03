@@ -3,6 +3,7 @@ import Head from "next/head";
 import Link from "next/link";
 import NavBar from "../../components/NavBar";
 import styles from "../../styles/ListPage.module.scss";
+import apiurl from "../../utils/apiconn";
 
 function formatDate(date) {
   return date.toISOString().replace(/\.[0-9]{3}Z$/, "");
@@ -23,7 +24,7 @@ export async function getServerSideProps() {
     location: "",
     hideBody: ""
   };
-  const url = new URL("https://vivid-apogee-344409.ts.r.appspot.com/articles");
+  const url = new URL(`${apiurl}/articles`);
   url.search = new URLSearchParams(paramsData).toString();
   const res = await fetch(url);
   const articles = await res.json();

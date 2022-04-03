@@ -5,6 +5,7 @@ import { useContext, useState, useMemo } from "react";
 import NavBar from "../components/NavBar";
 import styles from "../styles/Home.module.scss";
 import dynamic from "next/dynamic";
+import apiurl from "../utils/apiconn";
 const { URL, URLSearchParams } = require("url");
 
 function formatDate(date) {
@@ -24,7 +25,7 @@ export async function getServerSideProps(context) {
     key_terms: "",
     location: "",
   };
-  const url = new URL("https://vivid-apogee-344409.ts.r.appspot.com/reports");
+  const url = new URL(`${apiurl}/reports`);
   url.search = new URLSearchParams(paramsData).toString();
   const res = await fetch(url);
   const reports = await res.json();

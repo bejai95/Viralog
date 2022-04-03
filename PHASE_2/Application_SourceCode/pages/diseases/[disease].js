@@ -9,6 +9,7 @@ import { useContext, useState, useMemo } from "react";
 import dynamic from "next/dynamic";
 import DiseaseImage from "../../public/logo-icon.png";
 import Image from "next/image";
+import apiurl from "../../utils/apiconn";
 
 function formatDate(date) {
   return date.toISOString().replace(/\.[0-9]{3}Z$/, "");
@@ -17,8 +18,8 @@ function formatDate(date) {
 export async function getServerSideProps(context) {
   
   const diseaseId = context.params.disease;
-  const reqUrl = "https://vivid-apogee-344409.ts.r.appspot.com/diseases/" + encodeURIComponent(diseaseId);
-  console.log("https://vivid-apogee-344409.ts.r.appspot.com/diseases/" + encodeURIComponent(diseaseId))
+  const reqUrl = `${apiurl}/diseases/` + encodeURIComponent(diseaseId);
+  console.log(`${apiurl}/diseases/` + encodeURIComponent(diseaseId))
   const res = await fetch(reqUrl);
   const result = await res.json();
   
