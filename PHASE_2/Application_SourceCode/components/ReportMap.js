@@ -47,6 +47,7 @@ function generateMarker(groupId, group) {
   const diseaseLinks = [];
   const diseaseArticles = [];
   let position;
+  console.log(group)
 
   for (const diseaseId in group) {
     const diseaseReports = group[diseaseId];

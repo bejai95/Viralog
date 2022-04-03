@@ -52,6 +52,41 @@ test("test_simple_report", async () => {
     expect(JSON.stringify(targetReport)).toBe(JSON.stringify(processed[0]))
 })
 
+test("test_headline_report", async () => {
+    let article = {
+        headline: "legionnaire in Thailand",
+        date_of_publication: "Mar 15, 2022",
+        author: "Dan",
+        main_text: "Actually, nothing to report here",
+        article_url: "www.somethingworthworryingabout.com",
+        category: "news",
+    }
+    let targetReport = {
+        article_url: "www.somethingworthworryingabout.com",
+        disease_id: "legionnaire",
+        event_date: "Mar 15, 2022",
+        location: "Thailand"
+    }
+
+    let processed = await findReports(article, testDiseases);
+    expect(processed.length).toBe(1)
+    expect(JSON.stringify(targetReport)).toBe(JSON.stringify(processed[0]))
+})
+
+test("test_no_reports", async () => {
+    let article = {
+        headline: "Not much in the world",
+        date_of_publication: "Mar 15, 2022",
+        author: "Dan",
+        main_text: "Yep, nothing to report here",
+        article_url: "www.somethingworthworryingabout.com",
+        category: "news",
+    }
+
+    let processed = await findReports(article, testDiseases);
+    expect(processed.length).toBe(0)
+})
+
 test("test_using_aliases", async () => {
     let article = {
         headline: "Something around the world",
@@ -331,7 +366,6 @@ test("test_multiple_reports_different_aliases_db", async () => {
         expect(JSON.stringify(targets[processed[i].location])).toBe(JSON.stringify(processed[i]))
         delete targets[processed[i].location]
     }
-    console.log("targets", targets)
 
     expect(isEmpty(targets)).toBe(true)
     await conn.destroy()

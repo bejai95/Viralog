@@ -58,8 +58,10 @@ export async function getServerSideProps(context) {
   return {
     props: { 
       disease: result1[0], 
-      numReports1: result2.length,
-      numReports2: result3.length,
+      reportsLast90Days: result2,
+      numReportsLast90Days: result2.length,
+      reportsAllTime: result3,
+      numReportsAllTime: result3.length,
     } 
   };
 }
@@ -77,7 +79,7 @@ function determineRisk(numReports) {
 }
 
 export default function DiseaseInfoPage(props) {
-  
+  console.log(props)
   return (
     <>
       <Head>
@@ -114,10 +116,10 @@ export default function DiseaseInfoPage(props) {
               </ul>
               <br></br>
               <h2>Risk Analysis</h2>
-              <p>There have been {props.numReports1} reports of {props.disease.disease_id} in the past 90 days, and {props.numReports2} reports in total.</p>
-              <p>Based on the number of reports in the past 90 days, there is currently a <b>{determineRisk(props.numReports2)}</b> of {props.disease.disease_id}.</p>
+              <p>There have been {props.numReportsLast90Days} reports of {props.disease.disease_id} in the past 90 days, and {props.numReportsAllTime} reports in total.</p>
+              <p>Based on the number of reports in the past 90 days, there is currently a <b>{determineRisk(props.numReportsLast90Days)}</b> of {props.disease.disease_id}.</p>
               
-              <br></br><br></br><br></br><br></br><br></br><br></br><br></br><br></br>
+              {/* <br></br><br></br><br></br><br></br><br></br><br></br><br></br><br></br> // what the fuck is this */}
               <h3>Visualisation of case/report frequency around the world</h3>
               <br></br>
               <h3>Predictions (if they exist)</h3>
