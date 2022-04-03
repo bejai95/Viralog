@@ -75,6 +75,9 @@ async function diseases(
     const diseases = await conn
         .select("Disease.disease_id")
         .from("Disease")
+        .leftOuterJoin("Report", "Report.disease_id", "=", "Disease.disease_id")
+        .count("Report.report_id", {as: "report_count"})
+        .groupBy("Disease.disease_id")
         .modify(queryBuilder => {
             if (names && names != "") {
                 const namesList = names.split(",");
@@ -89,46 +92,9 @@ async function diseases(
             }
             else {
                 queryBuilder
-                    .leftOuterJoin("Report", "Report.disease_id", "=", "Disease.disease_id")
-                    .count("Report.report_id", {as: "report_count"})
-                    .groupBy("Disease.disease_id")
                     .orderBy("report_count", "desc");
             }
         });
-    
-    // // If users have inputted a filter
-    // if (names != "") {
-    //     diseases = await conn
-    //         .select(
-    //             "Disease.disease_id",
-    //             "DiseaseAlias.alias"
-    //         )
-    //         .from("Disease")
-    //         .join("DiseaseAlias", "DiseaseAlias.disease_id", "=", "Disease.disease_id")
-    //         .modify((queryBuilder) => {
-    //             if (names && names != "") {
-    //                 const namesList = names.split(",");
-    //                 // the list of aliases always contains the actual disease name
-    //                 queryBuilder.whereIn("alias", namesList);
-    //             }
-    //         });
-    // }
-    // else {
-    //     diseases = await conn
-    //         .select("disease_id")
-    //         .from("Disease")
-    //         .modify((queryBuilder) => {
-    //             if (orderBy == "alphabetical") {
-
-    //             }
-    //             else {
-    //                 queryBuilder
-    //                     .join("Report", "Report.disease_id", "=", "Disease.disease_id")
-    //                     .count("Report.report_id", {as: "report_count"})
-    //                     .orderBy("report_count");
-    //             }
-    //         });
-    // }
     
     // Get the alises of each disease - we still need this because the above
     // select filtered out other non-searched-for aliases of the disease we want to search for
@@ -177,6 +143,7 @@ async function diseases(
         if (als.length > 0) {
             results.push({
                 disease_id: disease["disease_id"],
+                report_count: disease["report_count"],
                 symptoms: symps,
                 aliases: als
             });
