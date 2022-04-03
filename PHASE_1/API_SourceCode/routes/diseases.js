@@ -10,7 +10,8 @@ const {
     performError,
     createLog,
     getDiseaseSymptoms,
-    formatDate
+    formatDate,
+    bundleToWeeks
 } = require("../util");
 
 exports.diseases = async (req, res, conn) => {
@@ -212,6 +213,15 @@ async function diseasesId(conn, diseaseId) {
         .where("disease_id", "=", diseaseId)
         .orderBy("event_date", "desc")
         .limit(16);
+    
+    const visualisationReports = await conn("Report")
+        .select(
+            "Report.report_id",
+            "Report.event_date"
+        )
+        .where("disease_id", "=", diseaseId)
+        .orderBy("event_date", "desc")
+    
 
     return {
         disease_id: diseaseId,
@@ -230,6 +240,7 @@ async function diseasesId(conn, diseaseId) {
             },
             article_id: report.article_id,
             headline: report.headline
-        }))
+        })),
+        reports_by_week: bundleToWeeks(visualisationReports)
     };
 }

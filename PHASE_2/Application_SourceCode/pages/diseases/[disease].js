@@ -10,6 +10,7 @@ import dynamic from "next/dynamic";
 import DiseaseImage from "../../public/logo-icon.png";
 import Image from "next/image";
 import apiurl from "../../utils/apiconn";
+import FrequencyGraph from "../../components/FrequencyGraph";
 
 function formatDate(date) {
   return date.toISOString().replace(/\.[0-9]{3}Z$/, "");
@@ -53,6 +54,7 @@ function getDiseaseAliases(disease_id, aliases) {
 }
 
 export default function DiseaseInfoPage({disease, error}) {
+  console.log(disease)
   const ReportMap = useMemo(() => dynamic(
     () => import("../../components/ReportMap"),
     { 
@@ -96,6 +98,7 @@ export default function DiseaseInfoPage({disease, error}) {
 
               <h2>Report Frequency</h2>
               <i>(graph of report frequency over time)</i>
+              <FrequencyGraph data={disease.reports_by_week}/>
 
               <h2>Report Map</h2>
               <div className={styles.mapContainer}>
