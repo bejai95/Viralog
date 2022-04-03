@@ -142,7 +142,8 @@ async function articles(
             if (limit) {
                 queryBuilder.limit(limit);
             }
-        });
+        })
+        .orderBy("date_of_publication", "desc");
     const results = [];
 
     const symptoms = await getDiseaseSymptoms(conn);
