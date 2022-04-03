@@ -20,7 +20,6 @@ function capitalizeFirstLetter(string) {
 }
 
 function getDiseaseAliases(disease_id, aliases) {
-  // console.log(disease_id, aliases)
   const filtered = aliases.filter(alias => alias != disease_id);
   if (filtered.length > 0) {
     return <i>(also known as {filtered.join(", ")})</i>;
@@ -29,7 +28,6 @@ function getDiseaseAliases(disease_id, aliases) {
 }
 
 export default function Diseases({ diseases }) {
-  console.log(diseases)
   return (
     <>
       <Head>
