@@ -49,11 +49,13 @@ export default function Articles( { articles } ) {
             <Link href={"/articles/" + encodeURIComponent(article.article_id)} key={article.article_id}>
               <a className={styles.listItem}>
                 <h2>{ article.headline }</h2>
-                <i>{article.author}</i>
-                <i>Reporting {article.reports.map(
-                  report => report.diseases[0] + " in " + report.location.location
-                ).join(", ")}...</i>
-                <span className="float_right" style={{fontSize: "0.9em"}}>{new Date(article.date_of_publication).toLocaleDateString()}</span>
+                <div><i>{article.author}</i></div>
+                <div>
+                  <i>Reporting {article.reports.map(
+                    report => report.diseases[0] + " in " + report.location.location
+                    ).join(", ")}...</i>
+                  <span className="float_right" style={{fontSize: "0.9em"}}>{new Date(article.date_of_publication).toLocaleDateString()}</span>
+                </div>
                 <div style={{clear: "both"}} />
               </a>
             </Link>
