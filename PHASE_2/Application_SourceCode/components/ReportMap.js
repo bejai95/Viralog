@@ -4,6 +4,8 @@ import "leaflet-defaulticon-compatibility";
 import styles from "../styles/ReportMap.module.scss";
 import Link from "next/link";
 import L from "leaflet";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
 
 const pinIcon = new L.Icon.Default();
 pinIcon.options.shadowSize = [0, 0];
@@ -23,6 +25,7 @@ function ReportMap({ reports, hideArticles }) {
     for (let i = 0; i < reports.length; i++) {
       const report = reports[i];
       const groupId = report.location.lat + "||" + report.location.long;
+      const diseaseId = report.disease_id || report.diseases[0];
 
       minLat = Math.min(minLat, report.location.lat);
       maxLat = Math.max(maxLat, report.location.lat);
@@ -32,10 +35,10 @@ function ReportMap({ reports, hideArticles }) {
       if (!groups[groupId]) {
         groups[groupId] = {};
       }
-      if (!groups[groupId][report.disease_id]) {
-        groups[groupId][report.disease_id] = [];
+      if (!groups[groupId][diseaseId]) {
+        groups[groupId][diseaseId] = [];
       }
-      groups[groupId][report.disease_id].push(report);
+      groups[groupId][diseaseId].push(report);
     }
   }
 
@@ -63,20 +66,13 @@ function ReportMap({ reports, hideArticles }) {
 
 function generateMarker(groupId, group, hideArticles) {
   const diseaseLinks = [];
-  const diseaseArticles = [];
   let position;
 
   for (const diseaseId in group) {
     const diseaseReports = group[diseaseId];
 
-    diseaseLinks.push(
-      <Link href={"/diseases/" + diseaseId} key={diseaseId}>
-        <a className={styles.diseaseLink}>{diseaseReports[0].diseases[0]}</a>
-      </Link>
-    );
-
+    const reportLinks = [];
     if (!hideArticles) {
-      const reportLinks = [];
       for (let i = 0; i < diseaseReports.length; i++) {
         const report = diseaseReports[i];
         let headline = report.headline;
@@ -89,15 +85,18 @@ function generateMarker(groupId, group, hideArticles) {
           </Link>
         );
       }
+    }
 
-      diseaseArticles.push(
-        <div key={diseaseId}>
-          <h2>{diseaseReports[0].diseases[0]}</h2>
+    diseaseLinks.push(
+      <li key={diseaseId}>
+        <Link href={"/diseases/" + diseaseId} >
+          <a className={styles.diseaseLink}>{diseaseReports[0].diseases[0]}</a>
+        </Link>
+        <div>
           {reportLinks}
         </div>
-      );
-    }
-    
+      </li>
+    );
 
     position = [diseaseReports[0].location.lat, diseaseReports[0].location.long];
   }
@@ -106,12 +105,11 @@ function generateMarker(groupId, group, hideArticles) {
     <Marker key={groupId} position={position} icon={pinIcon}>
       <Popup>
         <div className={styles.mapPopup}>
-          <div>
-            <h1>Diseases Found</h1>
+          <FontAwesomeIcon className={styles.warn} icon={faTriangleExclamation} size="lg" />
+          <h1>Diseases Reported</h1>
+          <ul className={styles.diseaseLinks}>
             {diseaseLinks}
-          </div>
-          {diseaseArticles.length > 0 && <h1>Articles</h1>}
-          {diseaseArticles}
+          </ul>
         </div>
         
       </Popup>

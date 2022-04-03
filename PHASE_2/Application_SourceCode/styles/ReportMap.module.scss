@@ -3,17 +3,14 @@
 	overflow-y: scroll;
 	width: 100%;
 	min-height: 2em;
-	max-height: 10em;
+	max-height: 16em;
 }
 
 .mapPopup h1 {
-	font-size: 1.2em;
-	margin: 4px 0 0 0;
-}
-
-.mapPopup h2 {
-	font-size: 1em;
-	margin: 2px 0 0 0;
+	display: inline-block;
+	font-size: 1.4em;
+	margin: 0 0 0 6px;
+	font-style: italic;
 }
 
 .report {
@@ -21,7 +18,27 @@
 	display: block;
 }
 
+.report:hover {
+	text-decoration: underline;
+}
+
+.diseaseLinks {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
 .diseaseLink {
 	display: inline-block;
-	margin-right: 4px;
+	font-size: 1.4em;
+	color: black !important;
+}
+
+.diseaseLink:hover {
+	text-decoration: underline;
+}
+
+.warn {
+	float: left;
+	font-size: 1.6em;
 }
