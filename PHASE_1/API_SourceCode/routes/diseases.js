@@ -1,5 +1,7 @@
 "use strict";
 
+const Fuse = require('fuse.js')
+
 const {
     findNull,
     findNotString,
@@ -23,7 +25,7 @@ exports.diseases = async (req, res, conn) => {
 
     // Check parameter values are a string
     const notString = findNotString(req.query, [
-        "names"
+        "names", "search", "symptoms"
     ]);
     if (notString) {
         return performError(conn,
@@ -78,14 +80,14 @@ async function diseases(
         .leftOuterJoin("Report", "Report.disease_id", "=", "Disease.disease_id")
         .count("Report.report_id", {as: "report_count"})
         .groupBy("Disease.disease_id")
-        .modify(queryBuilder => {
-            if (names && names != "") {
-                const namesList = names.split(",");
-                    // the list of aliases always contains the actual disease name
-                queryBuilder.join("DiseaseAlias", "DiseaseAlias.disease_id", "=", "Disease.disease_id")
-                    .whereIn("alias", namesList);
-            }
-        })
+        // .modify(queryBuilder => {
+        //     if (names && names != "") {
+        //         const namesList = names.split(",");
+        //             // the list of aliases always contains the actual disease name
+        //         queryBuilder.join("DiseaseAlias", "DiseaseAlias.disease_id", "=", "Disease.disease_id")
+        //             .whereIn("alias", namesList);
+        //     }
+        // })
         .modify(queryBuilder => {
             if (orderBy == "alphabetical") {
                 queryBuilder.orderBy("Disease.disease_id", "asc");
@@ -150,7 +152,26 @@ async function diseases(
         }
     }
 
-    return results;
+    let out = [];
+
+    for (let n in names.split(",")) {
+        const options = {
+            includeScore: true,
+            keys: ['disease_id']
+        }
+        const fuse = new Fuse(results, options)
+
+        let result = fuse.search(names.split(",")[n]);
+        result = result.filter(x => x.score < 0.5);
+        
+        for (let r in result) {
+            if (out.indexOf(result[r].item) == -1) {
+                out.push(result[r].item);
+            }
+        }
+    }
+
+    return out;
 }
 
 async function diseasesId(conn, diseaseId) {
