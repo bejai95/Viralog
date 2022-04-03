@@ -80,14 +80,6 @@ async function diseases(
         .leftOuterJoin("Report", "Report.disease_id", "=", "Disease.disease_id")
         .count("Report.report_id", {as: "report_count"})
         .groupBy("Disease.disease_id")
-        // .modify(queryBuilder => {
-        //     if (names && names != "") {
-        //         const namesList = names.split(",");
-        //             // the list of aliases always contains the actual disease name
-        //         queryBuilder.join("DiseaseAlias", "DiseaseAlias.disease_id", "=", "Disease.disease_id")
-        //             .whereIn("alias", namesList);
-        //     }
-        // })
         .modify(queryBuilder => {
             if (orderBy == "alphabetical") {
                 queryBuilder.orderBy("Disease.disease_id", "asc");
@@ -175,9 +167,9 @@ async function diseases(
 }
 
 async function diseasesId(conn, diseaseId) {
-    const diseases = await conn.select("*").from("Disease");
+    const diseases = await conn.select("*").from("Disease").where("disease_id", diseaseId);
     if (diseases.length == 0) {
-        return null;
+        throw "Disease not found";
     }
 
     const aliases = await conn
