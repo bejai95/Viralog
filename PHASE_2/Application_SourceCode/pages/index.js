@@ -1,10 +1,12 @@
+"use strict";
 import Head from "next/head";
 import Link from "next/link";
 import { useContext, useState, useMemo } from "react";
 import NavBar from "../components/NavBar";
 import styles from "../styles/Home.module.scss";
-import dynamic from 'next/dynamic';
-const { URL, URLSearchParams } = require('url');
+import dynamic from "next/dynamic";
+import apiurl from "../utils/apiconn";
+const { URL, URLSearchParams } = require("url");
 
 function formatDate(date) {
   return date.toISOString().replace(/\.[0-9]{3}Z$/, "");
@@ -23,21 +25,21 @@ export async function getServerSideProps(context) {
     key_terms: "",
     location: "",
   };
-  const url = new URL("https://vivid-apogee-344409.ts.r.appspot.com/reports");
+  const url = new URL(`${apiurl}/reports`);
   url.search = new URLSearchParams(paramsData).toString();
   const res = await fetch(url);
   const reports = await res.json();
 
   return {
     props: { reports: reports },
-  }
+  };
 }
 
 export default function Home({ reports }) {
   const [errMsg, setError] = useState();
 
   const ReportMap = useMemo(() => dynamic(
-    () => import('../components/ReportMap'),
+    () => import("../components/ReportMap"),
     { 
       loading: () => <p>Map is loading...</p>,
       ssr: false

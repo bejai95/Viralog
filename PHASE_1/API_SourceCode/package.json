@@ -4,10 +4,11 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "start": "DB_USER='postgres' DB_PASS='SENG3011-qq' DB_NAME='postgres' DB_HOST='seng3011-qq.c8snggw2wudq.ap-southeast-2.rds.amazonaws.com' node server.js",
+    "start": "cross-env DB_USER='postgres' DB_PASS='SENG3011-qq' DB_NAME='postgres' DB_HOST='seng3011-qq.c8snggw2wudq.ap-southeast-2.rds.amazonaws.com' node server.js",
     "test": "DB_USER='postgres' DB_PASS='SENG3011-qq' DB_NAME='postgres' DB_HOST='seng3011-qq.c8snggw2wudq.ap-southeast-2.rds.amazonaws.com' jest"
   },
   "devDependencies": {
+    "cross-env": "^7.0.3",
     "eslint": "^8.10.0",
     "eslint-plugin-jest": "^26.1.2",
     "jest": "^27.5.1",
@@ -15,6 +16,7 @@
   },
   "dependencies": {
     "express": "^4.16.2",
+    "fuse.js": "^6.5.3",
     "knex": "^1.0.0",
     "pg": "^8.0.0",
     "winston": "^3.1.0"

@@ -1,68 +1,39 @@
+"use strict";
 import Head from "next/head";
 import Link from "next/link";
 import NavBar from "../../components/NavBar";
-import styles from "../../styles/Disease.module.scss";
+import styles from "../../styles/InfoPage.module.scss";
+import DiseaseRiskInfo from "../../components/DiseaseRiskInfo";
+import ReportList from "../../components/ReportList";
+import { useContext, useState, useMemo } from "react";
+import dynamic from "next/dynamic";
+import DiseaseImage from "../../public/logo-icon.png";
+import Image from "next/image";
+import apiurl from "../../utils/apiconn";
+
 function formatDate(date) {
   return date.toISOString().replace(/\.[0-9]{3}Z$/, "");
 }
+
 export async function getServerSideProps(context) {
-  const diseaseName = context.params.disease;
   
-  // First query disease information
-  const paramsData1 = {
-    names: diseaseName
-  };
-  const url1 = new URL("https://vivid-apogee-344409.ts.r.appspot.com/diseases");
-  url1.search = new URLSearchParams(paramsData1).toString();
-  const res1 = await fetch(url1);
-  const result1 = await res1.json();
-  if (result1.status && result1.status != 200) {
-    return { props: { error: result1.message } };
-  } else if (result1.length === 0) {
+  const diseaseId = context.params.disease;
+  const reqUrl = `${apiurl}/diseases/` + encodeURIComponent(diseaseId);
+  console.log(`${apiurl}/diseases/` + encodeURIComponent(diseaseId))
+  const res = await fetch(reqUrl);
+  const result = await res.json();
+  
+
+  if (result.status && result.status != 200) {
+    return { props: { error: result.message } };
+  } else if (result.length === 0) {
     return {props: { error: "The disease you are searching for does not exist."}}
   }
 
-  // Now query how many reports there have been of the disease in the past 90 days
-  let currDate1 = new Date();
-  const periodEnd1 = formatDate(currDate1);
-  currDate1.setDate(currDate1.getDate() - 90);
-  const periodStart1 = formatDate(currDate1);
-  const paramsData2 = {
-    period_of_interest_start: periodStart1,
-    period_of_interest_end: periodEnd1,
-    key_terms: diseaseName,
-    location: "",
-  };
-  const url2 = new URL("https://vivid-apogee-344409.ts.r.appspot.com/reports");
-  url2.search = new URLSearchParams(paramsData2).toString();
-  const res2 = await fetch(url2);
-  const result2 = await res2.json();
-
-  // Now query how many reports there have been of the disease in total (no time restriction)
-  let currDate2 = new Date();
-  const periodEnd2 = formatDate(currDate2);
-  currDate2.setFullYear(currDate2.getFullYear() - 500);
-  const periodStart2 = formatDate(currDate2);
-  const paramsData3 = {
-    period_of_interest_start: periodStart2,
-    period_of_interest_end: periodEnd2,
-    key_terms: diseaseName,
-    location: "",
-  };
-  const url3 = new URL("https://vivid-apogee-344409.ts.r.appspot.com/reports");
-  url3.search = new URLSearchParams(paramsData3).toString();
-  const res3 = await fetch(url3);
-  const result3 = await res3.json();
-  console.log(url3.toString())
-
   return {
     props: { 
-      disease: result1[0], 
-      reportsLast90Days: result2,
-      numReportsLast90Days: result2.length,
-      reportsAllTime: result3,
-      numReportsAllTime: result3.length,
-    } 
+      disease: result
+    }
   };
 }
 
@@ -70,59 +41,69 @@ function capitalizeFirstLetter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-function determineRisk(numReports) {
-  if (numReports < 10) {
-    return "low risk";
-  } else {
-    return "high risk";
+function getDiseaseAliases(disease_id, aliases) {
+  const filtered = aliases.filter(alias => alias != disease_id);
+  if (filtered.length > 0) {
+    return <>
+      <h2>Also known as</h2>
+      <i>{filtered.join(", ")}</i>
+    </>;
   }
+  return null;
 }
 
-export default function DiseaseInfoPage(props) {
-  console.log(props)
+export default function DiseaseInfoPage({disease, error}) {
+  const ReportMap = useMemo(() => dynamic(
+    () => import("../../components/ReportMap"),
+    { 
+      loading: () => <p>Map is loading...</p>,
+      ssr: false
+    }
+  ), []);
+
   return (
     <>
       <Head>
-        <title>{props.error ? "Invalid Page" : props.disease.disease_id}</title>
+        <title>{error ? "Invalid Page" : disease.disease_id + " - Disease Watch"}</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <NavBar />
-      <div className="contentMain">
-        {props.error && 
+      <div className={"contentMain " + styles.infoPage}>
+        {error && 
             <>
               <h1>Error: Invalid Page</h1>
               <p>
                 <b>Message from API: </b>
-                {props.error}
+                {error}
               </p>
             </>
           }
-          {props.disease &&
+          {disease &&
             <>
-              <h1>{capitalizeFirstLetter(props.disease.disease_aliases[0])}</h1>
+              <div className={styles.title}>
+                <span className={styles.diseaseIcon}><Image src={DiseaseImage} alt="" width={32} height={31} /></span>
+                <h1>{capitalizeFirstLetter(disease.disease_id)}</h1>
+              </div>
               
-              <h3>Also known as</h3>
-              <ul>
-                {props.disease.disease_aliases.map(name => (
-                  <li key={name}>{name}</li>
-                ))}
-              </ul>
+              {getDiseaseAliases(disease.disease_id, disease.aliases)}
               
-              <h3>Symptoms</h3>
-              <ul>
-                {props.disease.disease_symptoms.map(name => (
-                  <li key={name}>{name}</li>
-                ))}
-              </ul>
-              <br></br>
+              {disease.symptoms.length > 0 && <h2>Symptoms</h2>}
+              <i>{disease.symptoms.join(", ")}</i>
+              
               <h2>Risk Analysis</h2>
-              <p>There have been {props.numReportsLast90Days} reports of {props.disease.disease_id} in the past 90 days, and {props.numReportsAllTime} reports in total.</p>
-              <p>Based on the number of reports in the past 90 days, there is currently a <b>{determineRisk(props.numReportsLast90Days)}</b> of {props.disease.disease_id}.</p>
-              
-              {/* <br></br><br></br><br></br><br></br><br></br><br></br><br></br><br></br> // what the fuck is this */}
-              <h3>Visualisation of case/report frequency around the world</h3>
-              <br></br>
-              <h3>Predictions (if they exist)</h3>
+              <DiseaseRiskInfo disease={disease}/>
+              <i style={{ fontSize: "0.8em"}}>* a disease is &quot;high risk&quot; if it has had 10 or more reports in the past 90 days.</i>
+
+              <h2>Report Frequency</h2>
+              <i>(graph of report frequency over time)</i>
+
+              <h2>Report Map</h2>
+              <div className={styles.mapContainer}>
+                <ReportMap reports={disease.recent_reports} />
+              </div>
+
+              <h2>Recent Reports</h2>
+              <ReportList reports={disease.recent_reports}/>
             </>
           }
       </div>

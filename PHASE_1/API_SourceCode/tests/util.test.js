@@ -51,8 +51,7 @@ test("test_invalid_time_format_6", async () => {
 });
 
 test("test_invalid_time_format_7", async () => {
-    // invalid hour #3 (just over 24)
-    let timestamp = "2022-03-13T25:00:00";
+    let timestamp = "2022-03-13T25:00:00 ";
     expect(util.timeFormatCorrect(timestamp)).toBe(false);
 });
 

@@ -1,0 +1,53 @@
+
+.infoPage h2 {
+  margin: 16px 0 2px 0;
+  font-size: 1em;
+  font-weight: bold;
+}
+
+.infoPage h3 {
+  margin: 10px 0 2px 0;
+  font-size: 0.9em;
+  font-weight: bold;
+}
+
+.headline {
+  display: block;
+  font-size: 1.6em;
+  margin-top: 20px;
+}
+
+.headline:hover {
+  text-decoration: underline;
+}
+
+.info {
+  font-size: 0.9em;
+  margin: 0;
+}
+
+.mapContainer {
+  width:100%;
+  height: 512px;
+  margin-top: 6px;
+}
+
+.diseaseIcon {
+  margin-top: 10px;
+}
+
+.title {
+  margin-top: 10px;
+}
+
+.title h1 {
+  display: inline-block;
+  margin: 0 6px;
+  font-size: 1.8em;
+}
+
+.diseaseIcon {
+  display: block;
+  float: left;
+  transform: translateY(-6px);
+}
