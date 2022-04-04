@@ -66,14 +66,14 @@ export default function Home({ reports, diseases }) {
       </Head>
       <NavBar />
       <div className={styles.contentMain}>
-        <h1>Dashboard</h1>
+        <h1 className={styles.mainHeading}>Dashboard</h1>
         { errMsg && <div><b style={{color: "red"}}>{errMsg}</b></div> }
-        <h2>Interactive Report Map</h2>
+        <h2 className={styles.mainHeading}>Interactive Report Map</h2>
         <i>Showing past 90 days...</i>
         <div className={styles.mapContainer}>
           <ReportMap reports={reports} zoom={2}/>
         </div>
-        <h2>Active Diseases</h2>
+        <h2 className={styles.mainHeading}>Active Diseases</h2>
         <ul>
         {
           diseases.slice(0, 10).map(disease => 
