@@ -76,12 +76,12 @@ function generateMarker(groupId, group, hideArticles) {
       for (let i = 0; i < diseaseReports.length; i++) {
         const report = diseaseReports[i];
         let headline = report.headline;
-        if (headline.length > 56) {
-          headline = headline.substr(0,56) + "...";
+        if (headline.length > 46) {
+          headline = headline.substr(0,46) + "...";
         }
         reportLinks.push(
           <Link href={"/articles/" + report.article_id} key={report.report_id}>
-            <a className={styles.report}>{headline}</a>
+            <a className={styles.report}>{new Date(report.event_date).toLocaleDateString()} - {headline}</a>
           </Link>
         );
       }
