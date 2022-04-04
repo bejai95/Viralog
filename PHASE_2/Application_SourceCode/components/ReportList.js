@@ -10,6 +10,9 @@ function formatDate(dateStr) {
 export default function ReportList({ reports }) {
   return (
 	<ul className={styles.reportList}>
+    { (!reports || reports.length == 0) && 
+    <i>No reports found.</i>
+    }
 		{reports && reports.map(report => (
       <li key={report.report_id}>
         {

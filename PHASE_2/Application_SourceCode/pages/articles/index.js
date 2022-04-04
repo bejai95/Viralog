@@ -3,6 +3,7 @@ import Head from "next/head";
 import Link from "next/link";
 import NavBar from "../../components/NavBar";
 import styles from "../../styles/ListPage.module.scss";
+import apiurl from "../../utils/apiconn";
 
 function formatDate(date) {
   return date.toISOString().replace(/\.[0-9]{3}Z$/, "");
@@ -23,7 +24,7 @@ export async function getServerSideProps() {
     location: "",
     hideBody: ""
   };
-  const url = new URL("http://localhost:8080/articles");
+  const url = new URL(`${apiurl}/articles`);
   url.search = new URLSearchParams(paramsData).toString();
   const res = await fetch(url);
   const articles = await res.json();
@@ -49,10 +50,14 @@ export default function Articles( { articles } ) {
             <Link href={"/articles/" + encodeURIComponent(article.article_id)} key={article.article_id}>
               <a className={styles.listItem}>
                 <h2>{ article.headline }</h2>
-                <i>{article.author}</i>
-                <i>Reporting {article.reports.map(
-                  report => report.diseases[0] + " in " + report.location.location
-                ).join(", ")}...</i>
+                <div><i>{article.author}</i></div>
+                <div>
+                  <i>Reporting {article.reports.map(
+                    report => report.diseases[0] + " in " + report.location.location
+                    ).join(", ")}...</i>
+                  <span className="float_right" style={{fontSize: "0.9em"}}>{new Date(article.date_of_publication).toLocaleDateString()}</span>
+                </div>
+                <div style={{clear: "both"}} />
               </a>
             </Link>
             

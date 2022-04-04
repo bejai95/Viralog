@@ -6,11 +6,12 @@ import ReportList from "../../components/ReportList";
 import styles from "../../styles/InfoPage.module.scss";
 import { useContext, useState, useMemo } from "react";
 import dynamic from "next/dynamic";
+import apiurl from "../../utils/apiconn";
 
 export async function getServerSideProps(context) {
   
   const articleId = context.params.article;
-  const res = await fetch("http://localhost:8080/articles/" + articleId);
+  const res = await fetch(`${apiurl}/articles/` + articleId);
   
   try {
     const result = await res.json();

@@ -3,19 +3,21 @@ import Head from "next/head";
 import Link from "next/link";
 import NavBar from "../../components/NavBar";
 import styles from "../../styles/ListPage.module.scss";
-import { useRouter } from 'next/router'
+import apiurl from "../../utils/apiconn";
 
-export async function getServerSideProps() {
-  const router = useRouter()
-  const diseasesParam = router.query.diseases;
-  const symptomsParam = router.query.symptoms;
+export async function getServerSideProps(context) {
+  const diseasesParam = context.query.diseases;
+  const symptomsParam = context.query.symptoms;
   
-  
-  const res = await fetch("http://localhost:8080/diseases?names=" + encodeURIComponent(diseasesParam));
+  const res = await fetch(`${apiurl}/diseases?names=${encodeURIComponent(diseasesParam)}`);
   const diseases = await res.json();
 
   return {
-    props: { diseases: diseases }
+    props: {
+      diseases: diseases,
+      diseasesParam: diseasesParam || null,
+      symptomsParam: symptomsParam || null
+    }
   };
 }
 
@@ -31,14 +33,11 @@ function getDiseaseAliases(disease_id, aliases) {
   return null;
 }
 
-export default function Diseases({ diseases }) {
-  const router = useRouter()
-  const diseasesParam = router.query.diseases;
-  const symptomsParam = router.query.symptoms;
+export default function Diseases({ diseases, diseasesParam, symptomsParam }) {
   let usedFilters = false;
   if (diseasesParam || symptomsParam) {
     usedFilters = true;
-  } 
+  }
   
   return (
     <>
@@ -74,7 +73,9 @@ export default function Diseases({ diseases }) {
               {getDiseaseAliases(disease.disease_id, disease.aliases)}
               {disease.symptoms.length > 0 &&
                 <i>symptoms include {disease.symptoms.join(", ")}.</i>
-              }     
+              }
+              <div className="float_right" style={{fontSize: "0.9em"}}>{disease.report_count} reports</div>
+              <div style={{clear: "both"}}></div>
             </a>
           </Link>
         ))}

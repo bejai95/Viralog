@@ -1,5 +1,7 @@
 "use strict";
 
+const Fuse = require('fuse.js')
+
 const {
     findNull,
     findNotString,
@@ -23,7 +25,7 @@ exports.diseases = async (req, res, conn) => {
 
     // Check parameter values are a string
     const notString = findNotString(req.query, [
-        "names"
+        "names", "search", "symptoms"
     ]);
     if (notString) {
         return performError(conn,
@@ -36,7 +38,8 @@ exports.diseases = async (req, res, conn) => {
     try {
         const results = await diseases(
             conn,
-            req.query.names
+            req.query.names,
+            req.query.orderBy
         );
         createLog(conn, ip, "/diseases", req.query, 200, "success", req.query.team);
         return res.send(results);
@@ -67,32 +70,25 @@ exports.diseasesId = async (req, res, conn) => {
 
 async function diseases(
     conn,
-    names
+    names,
+    orderBy
 ) {
     // Get diseases (and be able to filter by aliases)
-    let diseases = await conn
-        .select(
-            "disease_id"
-        )
-        .from("Disease");
-    
-    // If users have inputted a filter
-    if (names != "") {
-        diseases = await conn
-            .select(
-                "Disease.disease_id",
-                "DiseaseAlias.alias"
-            )
-            .from("Disease")
-            .join("DiseaseAlias", "DiseaseAlias.disease_id", "=", "Disease.disease_id")
-            .modify((queryBuilder) => {
-                if (names && names != "") {
-                    const nms = names.split(",");
-                    // the list of aliases always contains the actual disease name
-                    queryBuilder.whereIn("alias", nms);
-                }
-            });
-    }
+    const diseases = await conn
+        .select("Disease.disease_id")
+        .from("Disease")
+        .leftOuterJoin("Report", "Report.disease_id", "=", "Disease.disease_id")
+        .count("Report.report_id", {as: "report_count"})
+        .groupBy("Disease.disease_id")
+        .modify(queryBuilder => {
+            if (orderBy == "alphabetical") {
+                queryBuilder.orderBy("Disease.disease_id", "asc");
+            }
+            else {
+                queryBuilder
+                    .orderBy("report_count", "desc");
+            }
+        });
     
     // Get the alises of each disease - we still need this because the above
     // select filtered out other non-searched-for aliases of the disease we want to search for
@@ -141,19 +137,39 @@ async function diseases(
         if (als.length > 0) {
             results.push({
                 disease_id: disease["disease_id"],
+                report_count: disease["report_count"],
                 symptoms: symps,
                 aliases: als
             });
         }
     }
 
-    return results;
+    let out = [];
+
+    for (let n in names.split(",")) {
+        const options = {
+            includeScore: true,
+            keys: ['disease_id']
+        }
+        const fuse = new Fuse(results, options)
+
+        let result = fuse.search(names.split(",")[n]);
+        result = result.filter(x => x.score < 0.5);
+        
+        for (let r in result) {
+            if (out.indexOf(result[r].item) == -1) {
+                out.push(result[r].item);
+            }
+        }
+    }
+
+    return out;
 }
 
 async function diseasesId(conn, diseaseId) {
-    const diseases = await conn.select("*").from("Disease");
+    const diseases = await conn.select("*").from("Disease").where("disease_id", diseaseId);
     if (diseases.length == 0) {
-        return null;
+        throw "Disease not found";
     }
 
     const aliases = await conn

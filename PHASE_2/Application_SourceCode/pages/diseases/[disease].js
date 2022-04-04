@@ -5,29 +5,36 @@ import NavBar from "../../components/NavBar";
 import styles from "../../styles/InfoPage.module.scss";
 import DiseaseRiskInfo from "../../components/DiseaseRiskInfo";
 import ReportList from "../../components/ReportList";
+import { useContext, useState, useMemo } from "react";
+import dynamic from "next/dynamic";
+import DiseaseImage from "../../public/logo-icon.png";
+import Image from "next/image";
+import apiurl from "../../utils/apiconn";
 
 function formatDate(date) {
   return date.toISOString().replace(/\.[0-9]{3}Z$/, "");
 }
 
 export async function getServerSideProps(context) {
+  
   const diseaseId = context.params.disease;
-  const diseaseInfo = await getDiseaseInfo(diseaseId);
+  const reqUrl = `${apiurl}/diseases/` + encodeURIComponent(diseaseId);
+  console.log(`${apiurl}/diseases/` + encodeURIComponent(diseaseId));
+  const res = await fetch(reqUrl);
+  const result = await res.json();
+  
+
+  if (result.status && result.status != 200) {
+    return { props: { error: result.message } };
+  } else if (result.length === 0) {
+    return {props: { error: "The disease you are searching for does not exist."}};
+  }
 
   return {
     props: { 
-      disease: diseaseInfo
+      disease: result
     }
   };
-}
-
-async function getDiseaseInfo(diseaseId) {
-  const reqUrl = "http://localhost:8080/diseases/" + encodeURIComponent(diseaseId);
-
-  const res = await fetch(reqUrl);
-  const diseaseInfo = await res.json();
-
-  return diseaseInfo;
 }
 
 function capitalizeFirstLetter(string) {
@@ -46,6 +53,14 @@ function getDiseaseAliases(disease_id, aliases) {
 }
 
 export default function DiseaseInfoPage({disease, error}) {
+  const ReportMap = useMemo(() => dynamic(
+    () => import("../../components/ReportMap"),
+    { 
+      loading: () => <p>Map is loading...</p>,
+      ssr: false
+    }
+  ), []);
+
   return (
     <>
       <Head>
@@ -65,7 +80,10 @@ export default function DiseaseInfoPage({disease, error}) {
           }
           {disease &&
             <>
-              <h1>{capitalizeFirstLetter(disease.disease_id)}</h1>
+              <div className={styles.title}>
+                <span className={styles.diseaseIcon}><Image src={DiseaseImage} alt="" width={32} height={31} /></span>
+                <h1>{capitalizeFirstLetter(disease.disease_id)}</h1>
+              </div>
               
               {getDiseaseAliases(disease.disease_id, disease.aliases)}
               
@@ -78,6 +96,11 @@ export default function DiseaseInfoPage({disease, error}) {
 
               <h2>Report Frequency</h2>
               <i>(graph of report frequency over time)</i>
+
+              <h2>Report Map</h2>
+              <div className={styles.mapContainer}>
+                <ReportMap reports={disease.recent_reports} />
+              </div>
 
               <h2>Recent Reports</h2>
               <ReportList reports={disease.recent_reports}/>
