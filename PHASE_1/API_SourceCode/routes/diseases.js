@@ -25,7 +25,7 @@ exports.diseases = async (req, res, conn) => {
 
     // Check parameter values are a string
     const notString = findNotString(req.query, [
-        "names", "search", "symptoms"
+        "names", "search", "symptoms", "min_reports"
     ]);
     if (notString) {
         return performError(conn,
@@ -40,6 +40,7 @@ exports.diseases = async (req, res, conn) => {
             conn,
             req.query.search,
             req.query.symptoms,
+            req.query.min_reports,
             req.query.orderBy
         );
         createLog(conn, ip, "/diseases", req.query, 200, "success", req.query.team);
@@ -80,6 +81,7 @@ async function diseases(
     conn,
     search,
     symptoms_list,
+    min_reports,
     orderBy
 ) {
     // Get diseases (and be able to filter by aliases)
@@ -166,6 +168,9 @@ async function diseases(
 
             let result = fuse.search(searchItem);
             result = result.filter(x => x.score < 0.5);
+            if (min_reports) {
+                result = result.filter(x => x.item.recent_report_count >= min_reports);
+            }
 
             for (let r in result) {
                 if (searchResults.indexOf(result[r].item) == -1) {
@@ -193,9 +198,12 @@ async function diseases(
             const fuse = new Fuse(results, options);
 
             let result = fuse.search(symptomItem);
+            // console.log(result);
             result = result.filter(x => x.score < 0.5);
 
-            console.log(symptomItems);
+            if (min_reports) {
+                result = result.filter(x => x.item.recent_report_count >= min_reports);
+            }
             
             for (let r in result) {
                 if (symptomResults.indexOf(result[r].item) == -1) {
@@ -208,6 +216,8 @@ async function diseases(
     // console.log(searchResults);
     console.log(symptomResults);
     // consozle.log();
+
+
 
     if (search && !symptoms_list) return searchResults;
     if (symptoms_list && !search) return symptomResults;
