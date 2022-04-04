@@ -33,7 +33,6 @@ export async function getServerSideProps(context) {
   url.search = new URLSearchParams(paramsData).toString();
   const res = await fetch(url);
   const diseases = await res.json();
-  console.log(url.href);
 
   return {
     props: {
@@ -60,7 +59,7 @@ function getDiseaseAliases(disease_id, aliases) {
 
 export default function Diseases({ diseases, searchParam, diseasesParam, symptomsParam, riskLevelParam }) {
   let params = false;
-  if (searchParam || diseasesParam || symptomsParam) {
+  if (searchParam || diseasesParam || symptomsParam || riskLevelParam) {
     params = true;
   }
 
