@@ -73,22 +73,15 @@ export default function Articles( { articles, time } ) {
         <br></br>
         Show articles from the past:
         <form>
-          <label htmlFor="week">Week:</label>
-          <input id="week" name="time" type="radio" value="week"></input>
+          <select name="time" defaultValue={time}>
+            <option value="week">Week</option>
+            <option value="month">Month</option>
+            <option value="3-months">3-months</option>
+            <option value="year">Year</option>
+            <option value="all-time">All-time</option>
+          </select>
           <br></br>
-          <label htmlFor="month">Month:</label>
-          <input id="month" name="time" type="radio" value="month"></input>
-          <br></br>
-          <label htmlFor="3-months">3 months:</label>
-          <input id="3-months" name="time" type="radio" value="3-months"></input>
-          <br></br>
-          <label htmlFor="year">Year:</label>
-          <input id="year" name="time" type="radio" value="year"></input>
-          <br></br>
-          <label htmlFor="all-time">All-time:</label>
-          <input id="all-time" name="time" type="radio" value="all-time"></input>
-          <br></br>
-          <button type="submit">Search</button>
+          <button type="submit">Go</button>
           <br></br>
         </form>
         <br></br>
