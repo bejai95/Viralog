@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "start": "cross-env DB_USER='postgres' DB_PASS='SENG3011-qq' DB_NAME='postgres' DB_HOST='seng3011-qq.c8snggw2wudq.ap-southeast-2.rds.amazonaws.com' node server.js",
+    "start": "DB_USER='postgres' DB_PASS='SENG3011-qq' DB_NAME='postgres' DB_HOST='seng3011-qq.c8snggw2wudq.ap-southeast-2.rds.amazonaws.com' node server.js",
     "test": "DB_USER='postgres' DB_PASS='SENG3011-qq' DB_NAME='postgres' DB_HOST='seng3011-qq.c8snggw2wudq.ap-southeast-2.rds.amazonaws.com' jest"
   },
   "devDependencies": {

@@ -54,7 +54,6 @@ function getDiseaseAliases(disease_id, aliases) {
 }
 
 export default function DiseaseInfoPage({disease, error}) {
-  console.log(disease)
   const ReportMap = useMemo(() => dynamic(
     () => import("../../components/ReportMap"),
     { 
@@ -97,12 +96,12 @@ export default function DiseaseInfoPage({disease, error}) {
               <i style={{ fontSize: "0.8em"}}>* a disease is &quot;high risk&quot; if it has had 10 or more reports in the past 90 days.</i>
 
               <h2>Report Frequency</h2>
-              <i>(graph of report frequency over time)</i>
-              <FrequencyGraph data={disease.reports_by_week}/>
+              <p>Here you will find a graph illustrating the number of ${disease.disease_id} cases reported each week. The date refers to the Monday of that week.</p>
+              <FrequencyGraph data={disease.reports_by_week.map((item) => ({x: new Date(item.x), y: item.y}))} diseaseId={disease.disease_id}/>
 
               <h2>Report Map</h2>
               <div className={styles.mapContainer}>
-                <ReportMap reports={disease.recent_reports} />
+              <ReportMap reports={disease.recent_reports} />
               </div>
 
               <h2>Recent Reports</h2>

@@ -67,7 +67,6 @@ function ReportMap({ reports, hideArticles }) {
 function generateMarker(groupId, group, hideArticles) {
   const diseaseLinks = [];
   let position;
-  console.log(group)
 
   for (const diseaseId in group) {
     const diseaseReports = group[diseaseId];
