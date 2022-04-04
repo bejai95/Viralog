@@ -53,11 +53,11 @@ export default function Diseases({ diseases, diseasesParam, symptomsParam }) {
         <form>
           <label htmlFor="diseases-search">Filter by disease: </label>
           <input id="diseases-search" name="diseases" type="text" placeholder="e.g. Zika,Ebola,Measles" 
-            defaultValue={diseasesParam}></input>
+            defaultValue={diseasesParam || ""}></input>
           <br></br>
           <label htmlFor="symptoms-search">Filter by symptom: </label>
           <input id="symptoms-search" name="symptoms" type="text" placeholder="e.g. fever,cough,fatigue"
-            defaultValue={symptomsParam}></input>
+            defaultValue={symptomsParam || ""}></input>
           <br></br>
           <button type="button">
             <a href="http://localhost:3000/diseases?diseases=&symptoms=">Reset</a>
