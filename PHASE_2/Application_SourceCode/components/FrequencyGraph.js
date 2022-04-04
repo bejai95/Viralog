@@ -57,7 +57,7 @@ const FrequencyGraph = ({data, diseaseId}) => {
       legend: { display: false },
       title: {
         display: true,
-        text: `${diseaseId} cases per week`,
+        text: `${diseaseId} reports per week`,
       },
     },
   };

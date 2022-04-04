@@ -110,7 +110,6 @@ exports.createLog = createLog;
  */
 exports.bundleToWeeks = (items) => {
     let bundled = {}
-    console.log(items)
     for (let i = 0; i < items.length; i++) {
         let d = new Date(items[i].event_date)
         let day = d.getUTCDay()

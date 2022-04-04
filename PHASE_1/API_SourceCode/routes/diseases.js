@@ -57,7 +57,6 @@ exports.diseasesId = async (req, res, conn) => {
     
     try {
         const results = await diseasesId(conn, req.params.id);
-        console.log(results);
         if (results.length == 0) {
             return performError(conn,
                 res, `/diseases/${req.params.id}`, 404,
