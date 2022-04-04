@@ -1,6 +1,6 @@
 
 .contentMain {
-    max-width: 80em;
+    max-width: 46em;
     margin: auto;
     min-height: calc(100vh - 3.6em);
     background: white;
@@ -33,4 +33,11 @@ h3.mainHeading {
     width:100%;
     height: calc(80vh);
     margin: 8px 0;
+}
+
+ul.activeList {
+    list-style: none;
+    margin: 6px auto;
+    padding: 0;
+    width: fit-content;
 }

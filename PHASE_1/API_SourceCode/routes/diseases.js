@@ -96,6 +96,10 @@ async function diseases(
                     .orderBy("report_count", "desc");
             }
         });
+
+    if (diseases.length == 0) {
+        return [];
+    }
     
     // Get the alises of each disease - we still need this because the above
     // select filtered out other non-searched-for aliases of the disease we want to search for
@@ -116,40 +120,31 @@ async function diseases(
         )
         .from("Disease")
         .join("Symptom", "Symptom.disease_id", "=", "Disease.disease_id");
+    
+    let currDate = new Date();
+    const periodEnd = formatDate(currDate);
+    currDate.setDate(currDate.getDate() - 90);
+    const periodStart = formatDate(currDate);
 
-    const results = [];
-    for (let i = 0; i < diseases.length; i++) {
-        const disease = diseases[i];
+    const recentCountRes = await conn("Report")
+        .select("disease_id")
+        .count("*", {as: "count"})
+        .groupBy("disease_id")
+        .where("event_date", ">=", periodStart)
+        .where("event_date", "<=", periodEnd);
 
-        // extract all symptoms relating to the given disease
-        const symps = [];
-        // this is inside the loop as filters applied may not be in alphabetical order
-        for (let s = 0; s < symptoms.length; s++) {
-            const symptom = symptoms[s];
-            if (symptom["disease_id"] == disease["disease_id"]) {
-                symps.push(symptom["symptom"]);
-            }
-        }
+    const results = diseases.map(disease => {
+        const recentCountItems = recentCountRes.filter(entry => entry["disease_id"] == disease["disease_id"]);
 
-        // extract all aliases relating to the given disease
-        const als = [];
-        for (let a = 0; a < aliases.length; a++) {
-            const alias = aliases[a];
-            if (alias["disease_id"] == disease["disease_id"]) {
-                als.push(alias["alias"]);
-            }
-        }
-        
-        // Only add the disease if an alias of that disease was added as a filter
-        if (als.length > 0) {
-            results.push({
-                disease_id: disease["disease_id"],
-                report_count: disease["report_count"],
-                symptoms: symps,
-                aliases: als
-            });
-        }
-    }
+        return {
+            disease_id: disease["disease_id"],
+            symptoms: symptoms.filter(symptom => symptom["disease_id"] == disease["disease_id"]).map(symptom => symptom["symptom"]),
+            aliases: aliases.filter(alias => alias["disease_id"] == disease["disease_id"]).map(alias => alias["alias"]),
+            recent_report_count: recentCountItems.length > 0 ? recentCountItems[0].count : 0,
+            total_report_count: disease["report_count"]
+        };
+    });
+
 
     if (search && search != "") {
         const out = [];
@@ -166,7 +161,7 @@ async function diseases(
             };
 
             const fuse = new Fuse(results, options);
-    
+
             let result = fuse.search(searchItem);
             result = result.filter(x => x.score < 0.5);
 
