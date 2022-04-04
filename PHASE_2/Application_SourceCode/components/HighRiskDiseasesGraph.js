@@ -37,8 +37,18 @@ export default function HighRiskDiseasesGraph( { xValues, yValues } ) {
   const options = {
     scales: {
       y: {
+        title: {
+          display: true,
+          text: "Number of Reports in the Past 90 Days"
+        },
         beginAtZero: true
-      }
+      },
+      x: {
+        title: {
+          display: true,
+          text: "Disease Name"
+        },
+      },  
     }, 
   }
 
