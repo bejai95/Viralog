@@ -9,7 +9,6 @@ import apiurl from "../utils/apiconn";
 import DiseaseRiskInfo from "../components/DiseaseRiskInfo";
 import FrequencyGraph from "../components/FrequencyGraph";
 import DiseaseInfo from "../components/DiseaseInfo";
-const { URL, URLSearchParams } = require("url");
 
 function formatDate(date) {
   return date.toISOString().replace(/\.[0-9]{3}Z$/, "");
