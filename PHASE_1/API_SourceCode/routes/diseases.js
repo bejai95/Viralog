@@ -164,18 +164,18 @@ async function diseases(
         const searchItems = search.split(",")
             .map(item => item.trim());
 
-            for (let i = 0; i < searchItems.length; i++) {
-                const searchItem = searchItems[i];
-                
-                const options = {
-                    includeScore: true,
-                    keys: ["disease_id", "aliases", "symptoms"]
-                };
-                
-                const fuse = new Fuse(results, options);
-                
-                let result = fuse.search(searchItem);
-                result = result.filter(x => x.score < 0.5);
+        for (let i = 0; i < searchItems.length; i++) {
+            const searchItem = searchItems[i];
+            
+            const options = {
+                includeScore: true,
+                keys: ["disease_id", "aliases", "symptoms"]
+            };
+            
+            const fuse = new Fuse(results, options);
+            
+            let result = fuse.search(searchItem);
+            result = result.filter(x => x.score < 0.3);
                 
             
             for (let r in result) {
