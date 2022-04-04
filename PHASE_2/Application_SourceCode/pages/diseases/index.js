@@ -9,8 +9,7 @@ export async function getServerSideProps(context) {
   const searchParam = context.query.search;
   const diseasesParam = context.query.diseases;
   const symptomsParam = context.query.symptoms;
-  const lowRiskParam = context.query.lowRisk;
-  const highRiskParam = context.query.highRisk;
+  const riskLevelParam = context.query.riskLevel;
 
   const paramsData = {};
   if (searchParam) {
@@ -22,7 +21,14 @@ export async function getServerSideProps(context) {
   if (symptomsParam) {
     paramsData["symptoms"] = symptomsParam;
   }
-
+  if (riskLevelParam) {
+    if (riskLevelParam === "low-risk") {
+      paramsData["max_reports"] = 9;
+    } else if (riskLevelParam === "high-risk") {
+      paramsData["min_reports"] = 10;
+    }
+  }
+  
   const url = new URL(`${apiurl}/diseases`);
   url.search = new URLSearchParams(paramsData).toString();
   const res = await fetch(url);
@@ -34,6 +40,7 @@ export async function getServerSideProps(context) {
       searchParam: searchParam || null,
       diseasesParam: diseasesParam || null,
       symptomsParam: symptomsParam || null,
+      riskLevelParam: riskLevelParam || null
     }
   };
 }
@@ -50,9 +57,9 @@ function getDiseaseAliases(disease_id, aliases) {
   return null;
 }
 
-export default function Diseases({ diseases, searchParam, diseasesParam, symptomsParam }) {
+export default function Diseases({ diseases, searchParam, diseasesParam, symptomsParam, riskLevelParam }) {
   let params = false;
-  if (searchParam || diseasesParam || symptomsParam) {
+  if (searchParam || diseasesParam || symptomsParam || riskLevelParam) {
     params = true;
   }
 
@@ -64,31 +71,32 @@ export default function Diseases({ diseases, searchParam, diseasesParam, symptom
       </Head>
       <NavBar search={searchParam}/>
       <div className={styles.contentInner}>
-        <h2>Advanced Disease Filters</h2>
-          <p><i>Please enter a comma seperated list of diseases and/or symptoms. If a field is left blank then results will not be filtered by that field.</i></p>
-          <p><i>*Note that if the symptoms list is not blank, a disease will be returned as long as it has at least one of the symptoms listed.</i></p>
-          
-          <form>
-            <label htmlFor="diseases-search">Search for these diseases: </label>
-            <input id="diseases-search" name="diseases" type="text" placeholder="e.g. Zika,Ebola,Measles" 
-              defaultValue={diseasesParam}></input>
-            <br></br>
-            <label htmlFor="symptoms-search">Search for these symptoms: </label>
-            <input id="symptoms-search" name="symptoms" type="text" placeholder="e.g. fever,cough,fatigue"
-              defaultValue={symptomsParam}></input>
-            <br></br><br></br>
-            <label htmlFor="low-risk">Low-risk:</label>
-            <input id="low-risk" name="lowRisk" type="checkbox" defaultChecked></input>
-            <label htmlFor="high-risk">High-risk:</label>
-            <input id="high-risk" name="highRisk" type="checkbox" defaultChecked></input>
-            <p><i>*Note that a disease is &quot;high risk&quot; if it has had 10 or more reports in the past 90 days.</i></p>
-
-            <button type="button">
-              <a href="/diseases">Reset</a>
-            </button>
-            <button type="submit">Search</button>
-          </form>
         <h2>{params ? "Search Results" : "All Diseases"}</h2>
+        <details>
+          <summary>Advanced Filtering</summary>
+          <form>
+            <label htmlFor="diseases-search">Filter by disease (optional)</label>
+            <input id="diseases-search" name="diseases" type="text" placeholder="Enter comma separated list of diseases..." 
+              defaultValue={diseasesParam ? diseasesParam : ""}></input>
+            <i> e.g. Zika,Ebola,Measles</i>
+            <br></br>
+            <label htmlFor="symptoms-search">Show only these symptoms (optional)</label>
+            <input id="symptoms-search" name="symptoms" type="text" placeholder="Enter comma separated list of symptoms..."
+              defaultValue={symptomsParam}></input>
+            <i> e.g. fever,cough,fatigue</i>
+            <br></br>
+            Risk Level
+            <br></br>
+            <select name="riskLevel" defaultValue={riskLevelParam}>
+              <option value="all">All</option>
+              <option value="high-risk">High Risk</option>
+              <option value="low-risk">Low Risk</option>
+            </select>
+            <div><i>*Note that a disease is &quot;high risk&quot; if it has had 10 or more reports in the past 90 days.</i></div>
+            <button type="submit">Apply Filters</button>
+          </form>
+        </details>
+        <br></br>
         {diseases.map(disease => (
           <Link href={"/diseases/" + encodeURIComponent(disease.disease_id)} key={disease.disease_id}>
             <a className={styles.listItem}>

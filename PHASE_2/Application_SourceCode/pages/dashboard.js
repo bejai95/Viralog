@@ -9,7 +9,7 @@ import apiurl from "../utils/apiconn";
 import DiseaseRiskInfo from "../components/DiseaseRiskInfo";
 import FrequencyGraph from "../components/FrequencyGraph";
 import DiseaseInfo from "../components/DiseaseInfo";
-const { URL, URLSearchParams } = require("url");
+import HighRiskDiseasesGraph from "../components/HighRiskDiseasesGraph"
 
 function formatDate(date) {
   return date.toISOString().replace(/\.[0-9]{3}Z$/, "");
@@ -50,8 +50,30 @@ export async function getServerSideProps(context) {
   };
 }
 
+function getGraphParams(diseases) {
+  // Sort by recent report count instead of total report count
+   diseases.sort(function(a,b) {
+    return b.recent_report_count - a.recent_report_count;
+  })
+
+  // Take the top 7 results and get their names and recent report counts
+  let xValues = [];
+  let yValues = [];
+  const diseasesToGraph = diseases.slice(0,7);
+  diseasesToGraph.forEach(function (item, index) {
+    xValues[index] = item.disease_id;
+    yValues[index] = item.recent_report_count;
+  })
+
+  return {
+    xValues: xValues,
+    yValues: yValues,
+  }
+}
+
 export default function Home({ reports, diseases }) {
   const [errMsg, setError] = useState();
+  const graphParams = getGraphParams(diseases);
 
   const ReportMap = useMemo(() => dynamic(
   () => import("../components/ReportMap"),
@@ -64,13 +86,16 @@ export default function Home({ reports, diseases }) {
   return (
   <>
     <Head>
-    <title>Disease Watch</title>
+    <title>Dashboard</title>
     <link rel="icon" href="/favicon.ico" />
     </Head>
     <NavBar />
     <div className={styles.contentMain}>
     <h1 className={styles.mainHeading}>Dashboard</h1>
     { errMsg && <div><b style={{color: "red"}}>{errMsg}</b></div> }
+    <h2 className={styles.mainHeading}>Graph of Active Diseases in the Past 90 Days</h2>
+    <HighRiskDiseasesGraph xValues={graphParams.xValues} yValues={graphParams.yValues} />
+    
     <h2 className={styles.mainHeading}>Watched Diseases</h2>
     <i>{"(User disease 'watching' is yet to be implemented)"}</i>
     <ul className={styles.activeList}>
