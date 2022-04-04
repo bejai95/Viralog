@@ -198,7 +198,7 @@ async function diseases(
             const fuse = new Fuse(results, options);
 
             let result = fuse.search(symptomItem);
-            // result = result.filter(x => x.score < 0.2);
+            result = result.filter(x => x.score < 0.5);
 
             console.log(symptomItems);
             
