@@ -9,8 +9,7 @@ export async function getServerSideProps(context) {
   const searchParam = context.query.search;
   const diseasesParam = context.query.diseases;
   const symptomsParam = context.query.symptoms;
-  const lowRiskParam = context.query.lowRisk;
-  const highRiskParam = context.query.highRisk;
+  const riskLevelParam = context.query.riskLevel;
 
   const paramsData = {};
   if (searchParam) {
@@ -22,14 +21,19 @@ export async function getServerSideProps(context) {
   if (symptomsParam) {
     paramsData["symptoms"] = symptomsParam;
   }
-  if (lowRiskParam && lowRiskParam === "off") {
-    paramsData["min_reports"] = 10
+  if (riskLevelParam) {
+    if (riskLevelParam === "low-risk") {
+      paramsData["max_reports"] = 9;
+    } else if (riskLevelParam === "high-risk") {
+      paramsData["min_reports"] = 10;
+    }
   }
-
+  
   const url = new URL(`${apiurl}/diseases`);
   url.search = new URLSearchParams(paramsData).toString();
   const res = await fetch(url);
   const diseases = await res.json();
+  console.log(url.href);
 
   return {
     props: {
@@ -37,6 +41,7 @@ export async function getServerSideProps(context) {
       searchParam: searchParam || null,
       diseasesParam: diseasesParam || null,
       symptomsParam: symptomsParam || null,
+      riskLevelParam: riskLevelParam || null
     }
   };
 }
@@ -53,7 +58,7 @@ function getDiseaseAliases(disease_id, aliases) {
   return null;
 }
 
-export default function Diseases({ diseases, searchParam, diseasesParam, symptomsParam }) {
+export default function Diseases({ diseases, searchParam, diseasesParam, symptomsParam, riskLevelParam }) {
   let params = false;
   if (searchParam || diseasesParam || symptomsParam) {
     params = true;
@@ -69,7 +74,7 @@ export default function Diseases({ diseases, searchParam, diseasesParam, symptom
       <div className={styles.contentInner}>
         <h2>{params ? "Search Results" : "All Diseases"}</h2>
         <details>
-          <summary>Additional Filtering</summary>
+          <summary>Advanced Filtering</summary>
           <form>
             <label htmlFor="diseases-search">Diseases (<i>e.g. Zika,Ebola,Measles</i>)</label>
             <input id="diseases-search" name="diseases" type="text" placeholder="Enter comma separated list of diseases..." 
@@ -79,17 +84,18 @@ export default function Diseases({ diseases, searchParam, diseasesParam, symptom
             <input id="symptoms-search" name="symptoms" type="text" placeholder="Enter comma separated list of symptoms..."
               defaultValue={symptomsParam}></input>
             <br></br>
-            <label htmlFor="low-risk">Risk Level</label>
-            <select>
+            Risk Level
+            <br></br>
+            <select name="riskLevel" defaultValue={riskLevelParam}>
               <option value="all">All</option>
               <option value="high-risk">High Risk</option>
               <option value="low-risk">Low Risk</option>
             </select>
             <div><i>*Note that a disease is &quot;high risk&quot; if it has had 10 or more reports in the past 90 days.</i></div>
             <button type="submit">Apply Filters</button>
-            <h2>Results</h2>
           </form>
         </details>
+        <h2>Results:</h2>
         {diseases.map(disease => (
           <Link href={"/diseases/" + encodeURIComponent(disease.disease_id)} key={disease.disease_id}>
             <a className={styles.listItem}>
