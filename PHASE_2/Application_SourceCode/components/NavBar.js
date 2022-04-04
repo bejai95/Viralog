@@ -27,6 +27,7 @@ function NavBar({ search }) {
         </div>
         <div className={styles.navRight}>
           <Link href="/"><a className={right_button_styles}>Map</a></Link>
+          <Link href="/dashboard"><a className={right_button_styles}>Dashboard</a></Link>
           <Link href="/diseases"><a className={right_button_styles}>Diseases</a></Link>
           <Link href="/articles"><a className={right_button_styles}>Articles</a></Link>
         </div>
