@@ -144,26 +144,30 @@ async function diseases(
         }
     }
 
-    let out = [];
-
-    for (let n in names.split(",")) {
-        const options = {
-            includeScore: true,
-            keys: ['disease_id']
-        }
-        const fuse = new Fuse(results, options)
-
-        let result = fuse.search(names.split(",")[n]);
-        result = result.filter(x => x.score < 0.5);
-        
-        for (let r in result) {
-            if (out.indexOf(result[r].item) == -1) {
-                out.push(result[r].item);
+    
+    if (names && names != "") {
+        let out = [];
+        for (let n in names.split(",")) {
+            const options = {
+                includeScore: true,
+                keys: ["disease_id"]
+            };
+            const fuse = new Fuse(results, options);
+    
+            let result = fuse.search(names.split(",")[n]);
+            result = result.filter(x => x.score < 0.5);
+            
+            for (let r in result) {
+                if (out.indexOf(result[r].item) == -1) {
+                    out.push(result[r].item);
+                }
             }
         }
+        return out;
     }
-
-    return out;
+    else {
+        return results;
+    }
 }
 
 async function diseasesId(conn, diseaseId) {
