@@ -46,17 +46,25 @@ exports.diseases = async (req, res, conn) => {
     } catch (error) {
         console.log(error);
         return performError(conn, res, "/diseases", 500,
-            "An internal server error occurred. " + error,
-            req.query, ip
+        "An internal server error occurred. " + error,
+        req.query, ip
         );
     }
 };
 
 exports.diseasesId = async (req, res, conn) => {
     const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
-
+    
     try {
         const results = await diseasesId(conn, req.params.id);
+        console.log(results);
+        if (results.length == 0) {
+            return performError(conn,
+                res, `/diseases/${req.params.id}`, 404,
+                "Disease not found",
+                req.query, ip
+                );
+        }
         createLog(conn, ip, "/diseases/" + req.params.id, req.query, 200, "success");
         res.send(results);
     } catch (error) {
@@ -172,8 +180,9 @@ async function diseases(
 
 async function diseasesId(conn, diseaseId) {
     const diseases = await conn.select("*").from("Disease").where("disease_id", diseaseId);
+
     if (diseases.length == 0) {
-        throw "Disease not found";
+        return [];
     }
 
     const aliases = await conn
