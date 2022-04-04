@@ -9,7 +9,7 @@ import { faSearch } from "@fortawesome/free-solid-svg-icons";
 
 const right_button_styles = [styles.element, styles.hover_darken].join(" ");
 
-function NavBar(props) {
+function NavBar({ search }) {
   return (
     <div className={styles.navbar}>
       <nav>
@@ -19,7 +19,7 @@ function NavBar(props) {
         </div>
         <div className={styles.navCenter}>
           <form className={`${styles.search_container} float_left`} action="/diseases">
-            <input type="text" placeholder="Search diseases..." name="diseases"/>
+            <input type="text" placeholder="Search diseases or symptoms..." name="search" defaultValue={search || ""}/>
             <button type="submit">
               <FontAwesomeIcon icon={faSearch} />
               </button>

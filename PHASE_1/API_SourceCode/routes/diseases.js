@@ -1,6 +1,5 @@
 "use strict";
-
-const Fuse = require('fuse.js')
+const Fuse = require("fuse.js");
 
 const {
     findNull,
@@ -38,7 +37,7 @@ exports.diseases = async (req, res, conn) => {
     try {
         const results = await diseases(
             conn,
-            req.query.names,
+            req.query.search,
             req.query.orderBy
         );
         createLog(conn, ip, "/diseases", req.query, 200, "success", req.query.team);
@@ -70,7 +69,7 @@ exports.diseasesId = async (req, res, conn) => {
 
 async function diseases(
     conn,
-    names,
+    search,
     orderBy
 ) {
     // Get diseases (and be able to filter by aliases)
@@ -144,19 +143,25 @@ async function diseases(
         }
     }
 
-    
-    if (names && names != "") {
-        let out = [];
-        for (let n in names.split(",")) {
+    if (search && search != "") {
+        const out = [];
+        // Split and trim search string.
+        const searchItems = search.split(",")
+            .map(item => item.trim());
+
+        for (let i = 0; i < searchItems.length; i++) {
+            const searchItem = searchItems[i];
+
             const options = {
                 includeScore: true,
-                keys: ["disease_id"]
+                keys: ["disease_id", "aliases", "symptoms"]
             };
+
             const fuse = new Fuse(results, options);
     
-            let result = fuse.search(names.split(",")[n]);
+            let result = fuse.search(searchItem);
             result = result.filter(x => x.score < 0.5);
-            
+
             for (let r in result) {
                 if (out.indexOf(result[r].item) == -1) {
                     out.push(result[r].item);
