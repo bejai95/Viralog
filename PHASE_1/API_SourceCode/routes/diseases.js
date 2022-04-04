@@ -129,17 +129,17 @@ async function diseases(
     const periodEnd = formatDate(currDate);
     currDate.setDate(currDate.getDate() - 90);
     const periodStart = formatDate(currDate);
-
+    
     const recentCountRes = await conn("Report")
-        .select("disease_id")
-        .count("*", {as: "count"})
-        .groupBy("disease_id")
-        .where("event_date", ">=", periodStart)
-        .where("event_date", "<=", periodEnd);
-
-    const results = diseases.map(disease => {
+    .select("disease_id")
+    .count("*", {as: "count"})
+    .groupBy("disease_id")
+    .where("event_date", ">=", periodStart)
+    .where("event_date", "<=", periodEnd);
+    
+    let results = diseases.map(disease => {
         const recentCountItems = recentCountRes.filter(entry => entry["disease_id"] == disease["disease_id"]);
-
+        
         return {
             disease_id: disease["disease_id"],
             symptoms: symptoms.filter(symptom => symptom["disease_id"] == disease["disease_id"]).map(symptom => symptom["symptom"]),
@@ -149,6 +149,12 @@ async function diseases(
         };
     });
 
+    console.log(results);
+    if (min_reports) {
+        results = results.filter(x => parseInt(x["total_report_count"]) >= min_reports);
+    }
+
+    if (!search && !symptoms_list) return results;
 
     let searchResults = [];
     if (search && search != "") {
@@ -156,22 +162,20 @@ async function diseases(
         const searchItems = search.split(",")
             .map(item => item.trim());
 
-        for (let i = 0; i < searchItems.length; i++) {
-            const searchItem = searchItems[i];
-
-            const options = {
-                includeScore: true,
-                keys: ["disease_id", "aliases"]
-            };
-
-            const fuse = new Fuse(results, options);
-
-            let result = fuse.search(searchItem);
-            result = result.filter(x => x.score < 0.5);
-            if (min_reports) {
-                result = result.filter(x => x.item.recent_report_count >= min_reports);
-            }
-
+            for (let i = 0; i < searchItems.length; i++) {
+                const searchItem = searchItems[i];
+                
+                const options = {
+                    includeScore: true,
+                    keys: ["disease_id", "aliases"]
+                };
+                
+                const fuse = new Fuse(results, options);
+                
+                let result = fuse.search(searchItem);
+                result = result.filter(x => x.score < 0.5);
+                
+            
             for (let r in result) {
                 if (searchResults.indexOf(result[r].item) == -1) {
                     searchResults.push(result[r].item);
@@ -180,30 +184,26 @@ async function diseases(
         }
         
     }
-
+    
     let symptomResults = [];
     if (symptoms_list && symptoms_list != "") {
         const symptomItems = symptoms_list.split(",")
         .map(item => item.trim());
-
+        
         for (let i = 0; i < symptomItems.length; i++) {
             const symptomItem = symptomItems[i];
-
-
+            
+            
             const options = {
                 includeScore: true,
                 keys: ["symptoms"]
             };
-
+            
             const fuse = new Fuse(results, options);
-
+            
             let result = fuse.search(symptomItem);
             // console.log(result);
             result = result.filter(x => x.score < 0.5);
-
-            if (min_reports) {
-                result = result.filter(x => x.item.recent_report_count >= min_reports);
-            }
             
             for (let r in result) {
                 if (symptomResults.indexOf(result[r].item) == -1) {
@@ -212,34 +212,33 @@ async function diseases(
             }  
         }
     }
-
+    
     // console.log(searchResults);
-    console.log(symptomResults);
+    // console.log(symptomResults);
     // consozle.log();
-
-
-
+    
+    
     if (search && !symptoms_list) return searchResults;
     if (symptoms_list && !search) return symptomResults;
     
     const out = searchResults.filter(value => symptomResults.includes(value));
-
+    
     return out;
-
+    
 }
 
 async function diseasesId(conn, diseaseId) {
     const diseases = await conn.select("*").from("Disease").where("disease_id", diseaseId);
-
+    
     if (diseases.length == 0) {
         return [];
     }
-
+    
     const aliases = await conn
-        .select("DiseaseAlias.alias")
-        .from("DiseaseAlias")
-        .where("DiseaseAlias.disease_id", "=", diseaseId);
-
+    .select("DiseaseAlias.alias")
+    .from("DiseaseAlias")
+    .where("DiseaseAlias.disease_id", "=", diseaseId);
+    
     const symptoms = await conn
         .select("Symptom.symptom")
         .from("Symptom")
