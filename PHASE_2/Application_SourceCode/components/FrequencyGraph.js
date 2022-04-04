@@ -76,6 +76,8 @@ const FrequencyGraph = ({data, diseaseId}) => {
         borderColor: 'rgb(53, 162, 235)',
         backgroundColor: 'rgba(53, 162, 235, 0.5)',
         showLine: true,
+        lineTension: 0.4,
+        radius: 2
       },
     ],
   };
@@ -93,17 +95,18 @@ const FrequencyGraph = ({data, diseaseId}) => {
 
   return (
     <div className={styles.container}>
-      See cases from the previous: {" "}
+      <Line options={options} data={chartData} />
+      <i>See reports from previous </i> {" "}
       <select className={styles.dropdown} onChange={updateTimeline}>
-        <option value={30}>1 month</option>
+        <option value={30} selected>1 month</option>
         <option value={60}>2 months</option>
         <option value={90}>3 months</option>
         <option value={180}>6 months</option>
         <option value={365}>1 year</option>
         <option value={365 * 2}>2 years</option>
+        <option value={365 * 3}>3 years</option>
         <option value={365 * 5}>5 years</option>
       </select>
-      <Line options={options} data={chartData} />
     </div> 
   )
 }
