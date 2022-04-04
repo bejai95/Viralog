@@ -77,7 +77,7 @@ export default function Diseases({ diseases, searchParam, diseasesParam, symptom
           <form>
             <label htmlFor="diseases-search">Filter by disease (optional)</label>
             <input id="diseases-search" name="diseases" type="text" placeholder="Enter comma separated list of diseases..." 
-              defaultValue={diseasesParam}></input>
+              defaultValue={diseasesParam ? diseasesParam : ""}></input>
             <i> e.g. Zika,Ebola,Measles</i>
             <br></br>
             <label htmlFor="symptoms-search">Show only these symptoms (optional)</label>
