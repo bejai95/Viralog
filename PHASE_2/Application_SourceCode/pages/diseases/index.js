@@ -67,31 +67,29 @@ export default function Diseases({ diseases, searchParam, diseasesParam, symptom
       </Head>
       <NavBar search={searchParam}/>
       <div className={styles.contentInner}>
-        <h2>Advanced Disease Filters</h2>
-          <p><i>Please enter a comma seperated list of diseases and/or symptoms. If a field is left blank then results will not be filtered by that field.</i></p>
-          <p><i>*Note that if the symptoms list is not blank, a disease will be returned as long as it has at least one of the symptoms listed.</i></p>
-          
+        <h2>{params ? "Search Results" : "All Diseases"}</h2>
+        <details>
+          <summary>Additional Filtering</summary>
           <form>
-            <label htmlFor="diseases-search">Search for these diseases: </label>
-            <input id="diseases-search" name="diseases" type="text" placeholder="e.g. Zika,Ebola,Measles" 
+            <label htmlFor="diseases-search">Diseases (<i>e.g. Zika,Ebola,Measles</i>)</label>
+            <input id="diseases-search" name="diseases" type="text" placeholder="Enter comma separated list of diseases..." 
               defaultValue={diseasesParam}></input>
             <br></br>
-            <label htmlFor="symptoms-search">Search for these symptoms: </label>
-            <input id="symptoms-search" name="symptoms" type="text" placeholder="e.g. fever,cough,fatigue"
+            <label htmlFor="symptoms-search">Symptoms (<i>e.g. fever,cough,fatigue</i>)</label>
+            <input id="symptoms-search" name="symptoms" type="text" placeholder="Enter comma separated list of symptoms..."
               defaultValue={symptomsParam}></input>
-            <br></br><br></br>
-            <label htmlFor="low-risk">Low-risk:</label>
-            <input id="low-risk" name="lowRisk" type="checkbox" defaultChecked></input>
-            <label htmlFor="high-risk">High-risk:</label>
-            <input id="high-risk" name="highRisk" type="checkbox" defaultChecked></input>
-            <p><i>*Note that a disease is &quot;high risk&quot; if it has had 10 or more reports in the past 90 days.</i></p>
-
-            <button type="button">
-              <a href="/diseases">Reset</a>
-            </button>
-            <button type="submit">Search</button>
+            <br></br>
+            <label htmlFor="low-risk">Risk Level</label>
+            <select>
+              <option value="all">All</option>
+              <option value="high-risk">High Risk</option>
+              <option value="low-risk">Low Risk</option>
+            </select>
+            <div><i>*Note that a disease is &quot;high risk&quot; if it has had 10 or more reports in the past 90 days.</i></div>
+            <button type="submit">Apply Filters</button>
+            <h2>Results</h2>
           </form>
-        <h2>{params ? "Search Results" : "All Diseases"}</h2>
+        </details>
         {diseases.map(disease => (
           <Link href={"/diseases/" + encodeURIComponent(disease.disease_id)} key={disease.disease_id}>
             <a className={styles.listItem}>

@@ -39,6 +39,7 @@ exports.diseases = async (req, res, conn) => {
         const results = await diseases(
             conn,
             req.query.search,
+            req.query.diseases,
             req.query.symptoms,
             req.query.min_reports,
             req.query.orderBy
@@ -80,6 +81,7 @@ exports.diseasesId = async (req, res, conn) => {
 async function diseases(
     conn,
     search,
+    diseases_list,
     symptoms_list,
     min_reports,
     orderBy
@@ -167,7 +169,7 @@ async function diseases(
                 
                 const options = {
                     includeScore: true,
-                    keys: ["disease_id", "aliases"]
+                    keys: ["disease_id", "aliases", "symptoms"]
                 };
                 
                 const fuse = new Fuse(results, options);
@@ -183,7 +185,37 @@ async function diseases(
             }
         }
         
+        return searchResults;
+
     }
+
+    let diseasesResults = [];
+    if (diseases_list && diseases_list != "") {
+    
+        const diseasesItems = diseases_list.split(",")
+            .map(item => item.trim());
+
+        for (let i = 0; i < diseasesItems.length; i++) {
+            const diseaseItem = diseasesItems[i];
+
+            const options = {
+                includeScore: true,
+                keys: ["disease_id", "aliases"]
+            };
+
+            const fuse = new Fuse(results, options);
+
+            let result = fuse.search(diseaseItem);
+            result = result.filter(x => x.score < 0.5);
+
+            for (let r in result) {
+                if (diseasesResults.indexOf(result[r].item) == -1) {
+                    diseasesResults.push(result[r].item);
+                }
+            }
+        }
+    }
+
     
     let symptomResults = [];
     if (symptoms_list && symptoms_list != "") {
@@ -218,10 +250,10 @@ async function diseases(
     // consozle.log();
     
     
-    if (search && !symptoms_list) return searchResults;
-    if (symptoms_list && !search) return symptomResults;
+    if (diseases_list && !symptoms_list) return diseasesResults;
+    if (symptoms_list && !diseases_list) return symptomResults;
     
-    const out = searchResults.filter(value => symptomResults.includes(value));
+    const out = diseasesResults.filter(value => symptomResults.includes(value));
     
     return out;
     
