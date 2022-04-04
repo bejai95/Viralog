@@ -20,7 +20,6 @@ export async function getServerSideProps(context) {
   
   const diseaseId = context.params.disease;
   const reqUrl = `${apiurl}/diseases/` + encodeURIComponent(diseaseId);
-  console.log(`${apiurl}/diseases/` + encodeURIComponent(diseaseId))
   const res = await fetch(reqUrl);
   const result = await res.json();
   
@@ -28,7 +27,7 @@ export async function getServerSideProps(context) {
   if (result.status && result.status != 200) {
     return { props: { error: result.message } };
   } else if (result.length === 0) {
-    return {props: { error: "The disease you are searching for does not exist."}}
+    return {props: { error: "The disease you are searching for does not exist."}};
   }
 
   return {
@@ -101,7 +100,7 @@ export default function DiseaseInfoPage({disease, error}) {
 
               <h2>Report Map</h2>
               <div className={styles.mapContainer}>
-              <ReportMap reports={disease.recent_reports} />
+                <ReportMap reports={disease.recent_reports} zoom={2}/>
               </div>
 
               <h2>Recent Reports</h2>

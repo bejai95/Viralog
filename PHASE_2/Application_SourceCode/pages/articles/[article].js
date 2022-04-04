@@ -67,7 +67,7 @@ export default function ArticleInfoPage({ article, error }) {
             <h2>Reports</h2>
             <ReportList reports={article.reports}/>
             <div className={styles.mapContainer}>
-              <ReportMap reports={article.reports} hideArticles={true}/>
+              <ReportMap reports={article.reports} hideArticles={true} zoom={2}/>
             </div>
           </div>
         }

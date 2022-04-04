@@ -1,6 +1,5 @@
 "use strict";
-
-const Fuse = require('fuse.js')
+const Fuse = require("fuse.js");
 
 const {
     findNull,
@@ -39,7 +38,7 @@ exports.diseases = async (req, res, conn) => {
     try {
         const results = await diseases(
             conn,
-            req.query.names,
+            req.query.search,
             req.query.orderBy
         );
         createLog(conn, ip, "/diseases", req.query, 200, "success", req.query.team);
@@ -47,17 +46,25 @@ exports.diseases = async (req, res, conn) => {
     } catch (error) {
         console.log(error);
         return performError(conn, res, "/diseases", 500,
-            "An internal server error occurred. " + error,
-            req.query, ip
+        "An internal server error occurred. " + error,
+        req.query, ip
         );
     }
 };
 
 exports.diseasesId = async (req, res, conn) => {
     const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
-
+    
     try {
         const results = await diseasesId(conn, req.params.id);
+        console.log(results);
+        if (results.length == 0) {
+            return performError(conn,
+                res, `/diseases/${req.params.id}`, 404,
+                "Disease not found",
+                req.query, ip
+                );
+        }
         createLog(conn, ip, "/diseases/" + req.params.id, req.query, 200, "success");
         res.send(results);
     } catch (error) {
@@ -71,7 +78,7 @@ exports.diseasesId = async (req, res, conn) => {
 
 async function diseases(
     conn,
-    names,
+    search,
     orderBy
 ) {
     // Get diseases (and be able to filter by aliases)
@@ -145,32 +152,43 @@ async function diseases(
         }
     }
 
-    let out = [];
+    if (search && search != "") {
+        const out = [];
+        // Split and trim search string.
+        const searchItems = search.split(",")
+            .map(item => item.trim());
 
-    for (let n in names.split(",")) {
-        const options = {
-            includeScore: true,
-            keys: ['disease_id']
-        }
-        const fuse = new Fuse(results, options)
+        for (let i = 0; i < searchItems.length; i++) {
+            const searchItem = searchItems[i];
 
-        let result = fuse.search(names.split(",")[n]);
-        result = result.filter(x => x.score < 0.5);
-        
-        for (let r in result) {
-            if (out.indexOf(result[r].item) == -1) {
-                out.push(result[r].item);
+            const options = {
+                includeScore: true,
+                keys: ["disease_id", "aliases", "symptoms"]
+            };
+
+            const fuse = new Fuse(results, options);
+    
+            let result = fuse.search(searchItem);
+            result = result.filter(x => x.score < 0.5);
+
+            for (let r in result) {
+                if (out.indexOf(result[r].item) == -1) {
+                    out.push(result[r].item);
+                }
             }
         }
+        return out;
     }
-
-    return out;
+    else {
+        return results;
+    }
 }
 
 async function diseasesId(conn, diseaseId) {
     const diseases = await conn.select("*").from("Disease").where("disease_id", diseaseId);
+
     if (diseases.length == 0) {
-        throw "Disease not found";
+        return [];
     }
 
     const aliases = await conn
