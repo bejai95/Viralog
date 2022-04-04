@@ -8,6 +8,7 @@ import dynamic from "next/dynamic";
 import apiurl from "../utils/apiconn";
 import DiseaseRiskInfo from "../components/DiseaseRiskInfo";
 import FrequencyGraph from "../components/FrequencyGraph";
+import DiseaseInfo from "../components/DiseaseInfo";
 const { URL, URLSearchParams } = require("url");
 
 function formatDate(date) {
@@ -70,24 +71,13 @@ export default function Home({ reports, diseases }) {
     <div className={styles.contentMain}>
     <h1 className={styles.mainHeading}>Dashboard</h1>
     { errMsg && <div><b style={{color: "red"}}>{errMsg}</b></div> }
+    <h2 className={styles.mainHeading}>Watched Diseases</h2>
     <ul className={styles.activeList}>
-      <h2 className={styles.mainHeading}>Active Diseases</h2>
-      {
-        diseases.slice(0, 10).map(disease => 
-        <li key={disease.disease_id}>
-          <Link href={"/diseases/" + encodeURIComponent(disease.disease_id)}>
-          <a className={styles.diseaseLink}>{disease.disease_id}</a>
-          </Link>
-            <DiseaseRiskInfo disease={disease}/>
-          <FrequencyGraph data={disease.reports_by_week ?
-            disease.reports_by_week.map((item) => ({x: new Date(item.x), y: item.y}))
-            : []
-          }
-          diseaseId={disease.disease_id}
-          />
-        </li>
-        )
-      }
+      { diseases.slice(0, 2).map(disease => <DiseaseInfo key={disease.disease_id} disease={disease}/>) }
+    </ul>
+    <h2 className={styles.mainHeading}>Active Diseases</h2>
+    <ul className={styles.activeList}>
+      { diseases.slice(0, 10).map(disease => <DiseaseInfo key={disease.disease_id} disease={disease}/>) }
     </ul>
 
     </div>

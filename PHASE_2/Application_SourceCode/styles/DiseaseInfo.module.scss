@@ -1,0 +1,22 @@
+
+.listItem {
+    display: block;
+    margin: 16px 0;
+    border: 1px solid #e0e0e0;
+    padding: 20px;
+    border-radius: 6px;
+}
+
+.listItem a.diseaseLink {
+    font-size: 1em;
+    font-weight: bold;
+}
+
+.listItem a.diseaseLink:hover {
+    text-decoration: underline;
+}
+
+.riskContainer {
+    display: block;
+    margin: auto;
+}

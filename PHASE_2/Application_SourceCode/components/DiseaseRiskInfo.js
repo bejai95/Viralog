@@ -9,9 +9,9 @@ function determineRisk(numReports) {
 	}
 }
 
-function DiseaseRiskInfo({disease}) {
+function DiseaseRiskInfo({disease, flexStyle}) {
   return (
-    <div className={styles.riskInfo}>
+    <div className={styles.riskInfo} style={flexStyle}>
       <span>
         <b>{disease.recent_report_count}</b>
         <i>reports in the past 90 days</i>

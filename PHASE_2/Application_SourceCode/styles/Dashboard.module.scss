@@ -1,6 +1,6 @@
 
 .contentMain {
-    max-width: 52em;
+    max-width: 46em;
     margin: auto;
     min-height: calc(100vh - 3.6em);
     background: white;
@@ -40,26 +40,4 @@ ul.activeList {
     margin: 6px auto;
     padding: 0;
     width: fit-content;
-}
-
-ul.activeList li {
-    display: block;
-    margin: 16px 0;
-    border: 1px solid #e0e0e0;
-    padding: 20px;
-    border-radius: 6px;
-}
-
-ul.activeList a.diseaseLink {
-    font-size: 1em;
-    font-weight: bold;
-}
-
-ul.activeList a.diseaseLink:hover {
-    text-decoration: underline;
-}
-
-.riskContainer {
-    display: block;
-    margin: auto;
 }
