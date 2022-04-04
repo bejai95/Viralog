@@ -72,6 +72,7 @@ export default function Home({ reports, diseases }) {
     <h1 className={styles.mainHeading}>Dashboard</h1>
     { errMsg && <div><b style={{color: "red"}}>{errMsg}</b></div> }
     <h2 className={styles.mainHeading}>Watched Diseases</h2>
+    <i>{"(User disease 'watching' is yet to be implemented)"}</i>
     <ul className={styles.activeList}>
       { diseases.slice(0, 2).map(disease => <DiseaseInfo key={disease.disease_id} disease={disease}/>) }
     </ul>
