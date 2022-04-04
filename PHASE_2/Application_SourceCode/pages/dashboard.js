@@ -70,11 +70,6 @@ export default function Home({ reports, diseases }) {
     <div className={styles.contentMain}>
     <h1 className={styles.mainHeading}>Dashboard</h1>
     { errMsg && <div><b style={{color: "red"}}>{errMsg}</b></div> }
-    <h2 className={styles.mainHeading}>Interactive Report Map</h2>
-    <i>Showing past 90 days...</i>
-    <div className={styles.mapContainer}>
-      <ReportMap reports={reports} zoom={2}/>
-    </div>
     <ul className={styles.activeList}>
       <h2 className={styles.mainHeading}>Active Diseases</h2>
       {
