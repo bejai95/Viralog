@@ -22,6 +22,9 @@ export async function getServerSideProps(context) {
   if (symptomsParam) {
     paramsData["symptoms"] = symptomsParam;
   }
+  if (lowRiskParam && lowRiskParam === "off") {
+    paramsData["min_reports"] = 10
+  }
 
   const url = new URL(`${apiurl}/diseases`);
   url.search = new URLSearchParams(paramsData).toString();
