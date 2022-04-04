@@ -9,12 +9,30 @@ function formatDate(date) {
   return date.toISOString().replace(/\.[0-9]{3}Z$/, "");
 }
 
-export async function getServerSideProps() {
+export async function getServerSideProps(context) {
+  let time = context.query.time;
+  let numDays;
+  if (time) {
+    if (time === "week") {
+      numDays = 7;
+    } else if (time === "month") {
+      numDays = 30;
+    } else if (time === "3-months") {
+      numDays = 90;
+    } else if (time === "year") {
+      numDays = 365;
+    } else if (time === "all-time") {
+      numDays = 100000;
+    } 
+  } else { 
+    numDays = 90;
+    time = "3-months";
+  }
   
-  // Get past 30 days.
+  // Get past [amount] of days
   let currDate = new Date();
   const periodEnd = formatDate(currDate);
-  currDate.setDate(currDate.getDate() - 30);
+  currDate.setDate(currDate.getDate() - numDays);
   const periodStart = formatDate(currDate);
 
   const paramsData = {
@@ -30,12 +48,19 @@ export async function getServerSideProps() {
   const articles = await res.json();
 
   return {
-    props: { articles: articles },
+    props: { 
+      articles: articles,
+      time: time,
+    },
   };
 }
 
-export default function Articles( { articles } ) {
-  
+export default function Articles( { articles, time } ) {
+  let notAllTime = true;
+  if (time === "all-time") {
+    notAllTime = false;
+  }
+
   return (
     <>
       <Head>
@@ -45,7 +70,30 @@ export default function Articles( { articles } ) {
       <NavBar />
       <div className={styles.contentInner}>
         <h2>Recent Articles</h2>
-        <i>Articles from the past 30 days...</i>
+        <br></br>
+        Show articles from the past:
+        <form>
+          <label htmlFor="week">Week:</label>
+          <input id="week" name="time" type="radio" value="week"></input>
+          <br></br>
+          <label htmlFor="month">Month:</label>
+          <input id="month" name="time" type="radio" value="month"></input>
+          <br></br>
+          <label htmlFor="3-months">3 months:</label>
+          <input id="3-months" name="time" type="radio" value="3-months"></input>
+          <br></br>
+          <label htmlFor="year">Year:</label>
+          <input id="year" name="time" type="radio" value="year"></input>
+          <br></br>
+          <label htmlFor="all-time">All-time:</label>
+          <input id="all-time" name="time" type="radio" value="all-time"></input>
+          <br></br>
+          <button type="submit">Search</button>
+          <br></br>
+        </form>
+        <br></br>
+        {notAllTime && <i>Articles from the past {time}... </i>}
+        {!notAllTime && <i>Every single article...</i>}
         {articles.map(article => (
             <Link href={"/articles/" + encodeURIComponent(article.article_id)} key={article.article_id}>
               <a className={styles.listItem}>

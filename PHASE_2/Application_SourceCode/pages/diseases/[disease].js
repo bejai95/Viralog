@@ -10,6 +10,7 @@ import dynamic from "next/dynamic";
 import DiseaseImage from "../../public/logo-icon.png";
 import Image from "next/image";
 import apiurl from "../../utils/apiconn";
+import FrequencyGraph from "../../components/FrequencyGraph";
 
 function formatDate(date) {
   return date.toISOString().replace(/\.[0-9]{3}Z$/, "");
@@ -94,7 +95,8 @@ export default function DiseaseInfoPage({disease, error}) {
               <i style={{ fontSize: "0.8em"}}>* a disease is &quot;high risk&quot; if it has had 10 or more reports in the past 90 days.</i>
 
               <h2>Report Frequency</h2>
-              <i>(graph of report frequency over time)</i>
+              <FrequencyGraph data={disease.reports_by_week.map((item) => ({x: new Date(item.x), y: item.y}))} diseaseId={disease.disease_id}/>
+              <i>Note: The date shown refers to the Monday of that week.</i>
 
               <h2>Report Map</h2>
               <div className={styles.mapContainer}>

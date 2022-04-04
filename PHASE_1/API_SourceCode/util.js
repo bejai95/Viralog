@@ -103,3 +103,22 @@ async function createLog(conn, ip, route, queryParams, status, message) {
 }
 
 exports.createLog = createLog;
+
+/**
+ * Groups list of objects by week.
+ * @param {{report_id: number, event_date: string}} items 
+ */
+exports.bundleToWeeks = (items) => {
+    let bundled = {}
+    for (let i = 0; i < items.length; i++) {
+        let d = new Date(items[i].event_date)
+        let day = d.getUTCDay()
+        d.setDate(d.getDate() - day)
+        if (d.toISOString() in bundled) {
+            bundled[d.toISOString()]++;
+        } else {
+            bundled[d.toISOString()] = 1;
+        }
+    }
+    return Object.keys(bundled).map((item) => ({x: item, y: bundled[item]}))
+}

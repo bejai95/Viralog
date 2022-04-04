@@ -1,0 +1,43 @@
+
+.contentMain {
+    max-width: 46em;
+    margin: auto;
+    min-height: calc(100vh - 3.6em);
+    background: white;
+    border-left: 1px solid #eee;
+    border-right: 1px solid #eee;
+    border-top: 1px solid #eee;
+    margin-top: 16px;
+
+    padding: 0 32px;
+}
+
+h1.mainHeading {
+    margin: 24px 0 2px 0;
+    font-size: 1.4em;
+}
+
+h2.mainHeading {
+    margin: 12px 0 2px 0;
+    font-size: 1em;
+    font-weight: bold;
+}
+
+h3.mainHeading {
+    margin: 16px 0 2px 0;
+    font-size: 0.9em;
+    font-weight: bold;
+}
+
+.mapContainer {
+    width:100%;
+    height: calc(80vh);
+    margin: 8px 0;
+}
+
+ul.activeList {
+    list-style: none;
+    margin: 6px auto;
+    padding: 0;
+    width: fit-content;
+}
