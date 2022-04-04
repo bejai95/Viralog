@@ -151,12 +151,12 @@ async function diseases(
         };
     });
 
-    console.log(results);
     if (min_reports) {
         results = results.filter(x => parseInt(x["total_report_count"]) >= min_reports);
     }
-
-    if (!search && !symptoms_list) return results;
+    console.log("search: " + search);
+    console.log("symptoms: " + symptoms_list);
+    if (!diseases_list && !symptoms_list) return results;
 
     let searchResults = [];
     if (search && search != "") {
@@ -175,7 +175,7 @@ async function diseases(
                 const fuse = new Fuse(results, options);
                 
                 let result = fuse.search(searchItem);
-                result = result.filter(x => x.score < 0.5);
+                result = result.filter(x => x.score < 0.2);
                 
             
             for (let r in result) {
@@ -184,7 +184,6 @@ async function diseases(
                 }
             }
         }
-        
         return searchResults;
 
     }
@@ -206,7 +205,7 @@ async function diseases(
             const fuse = new Fuse(results, options);
 
             let result = fuse.search(diseaseItem);
-            result = result.filter(x => x.score < 0.5);
+            result = result.filter(x => x.score < 0.2);
 
             for (let r in result) {
                 if (diseasesResults.indexOf(result[r].item) == -1) {
@@ -215,6 +214,7 @@ async function diseases(
             }
         }
     }
+    // console.log(diseasesResults);
 
     
     let symptomResults = [];
