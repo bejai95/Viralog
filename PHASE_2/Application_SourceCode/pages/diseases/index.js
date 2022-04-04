@@ -90,7 +90,7 @@ export default function Diseases({ diseases, searchParam, diseasesParam, symptom
                 {disease.symptoms.length > 0 &&
                   <i>symptoms include {disease.symptoms.join(", ")}.</i>
                 }
-                <div className="float_right" style={{fontSize: "0.9em"}}>{disease.report_count} reports</div>
+                <div className="float_right" style={{fontSize: "0.9em"}}>{disease.total_report_count} reports</div>
               </div>
               <div style={{clear: "both"}}></div>
             </a>

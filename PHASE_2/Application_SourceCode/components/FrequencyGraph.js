@@ -62,8 +62,8 @@ const FrequencyGraph = ({data, diseaseId}) => {
     },
   };
   
-  // Begin 3 months in the past
-  const [startDate, setStartDate] = useState(new Date().setDate(today.getDate() - 30))
+  // Begin 3 years in the past
+  const [startDate, setStartDate] = useState(new Date().setDate(today.getDate() - 365 * 3))
   const [dataPoints, setDataPoints] = useState(data.filter((a) => a.x >= startDate))
   const [options] = useState(baseOptions)
   
@@ -97,8 +97,8 @@ const FrequencyGraph = ({data, diseaseId}) => {
     <div className={styles.container}>
       <Line options={options} data={chartData} />
       <i>See reports from previous </i> {" "}
-      <select className={styles.dropdown} onChange={updateTimeline}>
-        <option value={30} selected>1 month</option>
+      <select className={styles.dropdown} onChange={updateTimeline} defaultValue={365 * 3}>
+        <option value={30}>1 month</option>
         <option value={60}>2 months</option>
         <option value={90}>3 months</option>
         <option value={180}>6 months</option>
