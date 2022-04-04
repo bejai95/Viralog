@@ -10,7 +10,7 @@ import { faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
 const pinIcon = new L.Icon.Default();
 pinIcon.options.shadowSize = [0, 0];
 
-function ReportMap({ reports, hideArticles }) {
+function ReportMap({ reports, hideArticles, zoom }) {
 	const accessToken = "pk.eyJ1IjoiYWxleGFuZGVybWJyb3duIiwiYSI6ImNsMWJwcWt6bDAwMHkzYm1yOHBuZWM3dHIifQ.7d3DkVxbfJJ8XknsbJYlag";
 
   const groups = {};
@@ -54,7 +54,7 @@ function ReportMap({ reports, hideArticles }) {
   }
 
   return (
-    <MapContainer center={center} zoom={3} style={{ height: "100%", width: "100%", backgroundColor:"#f3f3f3" }}>
+    <MapContainer center={center} zoom={zoom || 3} style={{ height: "100%", width: "100%", backgroundColor:"#f3f3f3" }}>
       <TileLayer
         url={`https://api.mapbox.com/styles/v1/alexandermbrown/cl1bq5umd000l14pjnqb7e0dm/tiles/256/{z}/{x}/{y}@2x?access_token=${accessToken}`}
         attribution="Map data &copy; <a href=&quot;https://www.openstreetmap.org/&quot;>OpenStreetMap</a> contributors, <a href=&quot;https://creativecommons.org/licenses/by-sa/2.0/&quot;>CC-BY-SA</a>, Imagery &copy; <a href=&quot;https://www.mapbox.com/&quot;>Mapbox</a>"
