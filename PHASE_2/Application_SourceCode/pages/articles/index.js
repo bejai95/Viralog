@@ -55,7 +55,7 @@ export default function Articles( { articles } ) {
                   <i>Reporting {article.reports.map(
                     report => report.diseases[0] + " in " + report.location.location
                     ).join(", ")}...</i>
-                  <span className="float_right" style={{fontSize: "0.9em"}}>{new Date(article.date_of_publication).toLocaleDateString()}</span>
+                  <span className="float_right" style={{fontSize: "0.8em", marginTop: "6px"}}>{new Date(article.date_of_publication).toLocaleDateString()}</span>
                 </div>
                 <div style={{clear: "both"}} />
               </a>
