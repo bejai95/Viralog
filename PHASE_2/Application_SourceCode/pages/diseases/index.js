@@ -9,6 +9,8 @@ export async function getServerSideProps(context) {
   const searchParam = context.query.search;
   const diseasesParam = context.query.diseases;
   const symptomsParam = context.query.symptoms;
+  const lowRiskParam = context.query.lowRisk;
+  const highRiskParam = context.query.highRisk;
 
   const paramsData = {};
   if (searchParam) {
@@ -63,8 +65,8 @@ export default function Diseases({ diseases, searchParam, diseasesParam, symptom
       <NavBar search={searchParam}/>
       <div className={styles.contentInner}>
         <h2>Advanced Disease Filters</h2>
-          <p>Please enter a comma seperated list of diseases and/or symptoms. If a field is left blank then results will not be filtered by that field.</p>
-          <p>*Note that if the symptoms list is not blank, a disease will be returned as long as it has at least one of the symptoms listed.</p>
+          <p><i>Please enter a comma seperated list of diseases and/or symptoms. If a field is left blank then results will not be filtered by that field.</i></p>
+          <p><i>*Note that if the symptoms list is not blank, a disease will be returned as long as it has at least one of the symptoms listed.</i></p>
           
           <form>
             <label htmlFor="diseases-search">Search for these diseases: </label>
@@ -74,7 +76,13 @@ export default function Diseases({ diseases, searchParam, diseasesParam, symptom
             <label htmlFor="symptoms-search">Search for these symptoms: </label>
             <input id="symptoms-search" name="symptoms" type="text" placeholder="e.g. fever,cough,fatigue"
               defaultValue={symptomsParam}></input>
-            <br></br>
+            <br></br><br></br>
+            <label htmlFor="low-risk">Low-risk:</label>
+            <input id="low-risk" name="lowRisk" type="checkbox" defaultChecked></input>
+            <label htmlFor="high-risk">High-risk:</label>
+            <input id="high-risk" name="highRisk" type="checkbox" defaultChecked></input>
+            <p><i>*Note that a disease is &quot;high risk&quot; if it has had 10 or more reports in the past 90 days.</i></p>
+
             <button type="button">
               <a href="/diseases">Reset</a>
             </button>
