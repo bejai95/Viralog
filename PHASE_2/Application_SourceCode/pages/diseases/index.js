@@ -69,11 +69,11 @@ export default function Diseases({ diseases, searchParam, diseasesParam, symptom
           <summary>Additional Filtering</summary>
           <form>
             <label htmlFor="diseases-search">Diseases (<i>e.g. Zika,Ebola,Measles</i>)</label>
-            <input id="diseases-search" name="diseases" type="text" placeholder="Enter diseases..." 
+            <input id="diseases-search" name="diseases" type="text" placeholder="Enter comma separated list of diseases..." 
               defaultValue={diseasesParam}></input>
             <br></br>
             <label htmlFor="symptoms-search">Symptoms (<i>e.g. fever,cough,fatigue</i>)</label>
-            <input id="symptoms-search" name="symptoms" type="text" placeholder="Enter symptoms..."
+            <input id="symptoms-search" name="symptoms" type="text" placeholder="Enter comma separated list of symptoms..."
               defaultValue={symptomsParam}></input>
             <br></br>
             <label htmlFor="low-risk">Risk Level</label>
