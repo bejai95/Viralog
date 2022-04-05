@@ -1,9 +1,10 @@
 import React from 'react';
-import { BarElement, Chart as ChartJS } from 'chart.js';
+import { BarElement, LogarithmicScale, Chart as ChartJS } from 'chart.js';
 import {Bar} from 'react-chartjs-2';
 
 ChartJS.register(
-  BarElement
+  BarElement,
+  LogarithmicScale,
 );
 
 export default function HighRiskDiseasesGraph( { xValues, yValues } ) {
@@ -41,7 +42,8 @@ export default function HighRiskDiseasesGraph( { xValues, yValues } ) {
           display: true,
           text: "Number of Reports in the Past 90 Days"
         },
-        beginAtZero: true
+        beginAtZero: true,
+        type: 'logarithmic',
       },
       x: {
         title: {
