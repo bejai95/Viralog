@@ -59,9 +59,14 @@
 	padding: 0;
 }
 
-.contentInner select {
+.contentInner details select {
 	padding: 4px;
 	width: 280px;
+}
+
+select.timeSelect {
+	margin-left: 4px;
+	padding: 3px;
 }
 
 .contentInner button {
