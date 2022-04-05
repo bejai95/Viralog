@@ -4,6 +4,7 @@ import Link from "next/link";
 import NavBar from "../../components/NavBar";
 import styles from "../../styles/ListPage.module.scss";
 import apiurl from "../../utils/apiconn";
+import { useRouter } from "next/router";
 
 function formatDate(date) {
   return date.toISOString().replace(/\.[0-9]{3}Z$/, "");
@@ -21,9 +22,7 @@ export async function getServerSideProps(context) {
       numDays = 90;
     } else if (time === "year") {
       numDays = 365;
-    } else if (time === "all-time") {
-      numDays = 100000;
-    } 
+    }
   } else { 
     numDays = 90;
     time = "3-months";
@@ -56,10 +55,7 @@ export async function getServerSideProps(context) {
 }
 
 export default function Articles( { articles, time } ) {
-  let notAllTime = true;
-  if (time === "all-time") {
-    notAllTime = false;
-  }
+  const router = useRouter();
 
   return (
     <>
@@ -70,23 +66,19 @@ export default function Articles( { articles, time } ) {
       <NavBar />
       <div className={styles.contentInner}>
         <h2>Recent Articles</h2>
-        <br></br>
-        Show articles from the past:
-        <form>
-          <select name="time" defaultValue={time}>
+        <div>
+          <i>Show articles from the past </i>
+          <select name="time" defaultValue={time} className={styles.timeSelect} onChange={select => {
+           console.log(select.target.value);
+            router.query.time = select.target.value;
+            router.push(router);
+          }}>
             <option value="week">Week</option>
             <option value="month">Month</option>
             <option value="3-months">3-months</option>
             <option value="year">Year</option>
-            <option value="all-time">All-time</option>
           </select>
-          <br></br>
-          <button type="submit">Go</button>
-          <br></br>
-        </form>
-        <br></br>
-        {notAllTime && <i>Articles from the past {time}... </i>}
-        {!notAllTime && <i>Every single article...</i>}
+        </div>
         {articles.map(article => (
             <Link href={"/articles/" + encodeURIComponent(article.article_id)} key={article.article_id}>
               <a className={styles.listItem}>
