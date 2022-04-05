@@ -1,13 +1,18 @@
 import React from 'react';
-import { BarElement, LogarithmicScale, Chart as ChartJS } from 'chart.js';
+import { useState } from "react";
+import { BarElement, LogarithmicScale, Chart as ChartJS, LinearScale } from 'chart.js';
 import {Bar} from 'react-chartjs-2';
+import styles from "../styles/HighRiskDiseaseGraph.module.scss";
 
 ChartJS.register(
   BarElement,
+  LinearScale,
   LogarithmicScale,
 );
 
 export default function HighRiskDiseasesGraph( { xValues, yValues } ) {
+  const [scaleType, setScaleType] = useState("linear");
+  
   const data = {
     labels: xValues,
     datasets: [{
@@ -43,7 +48,7 @@ export default function HighRiskDiseasesGraph( { xValues, yValues } ) {
           text: "Number of Reports in the Past 90 Days"
         },
         beginAtZero: true,
-        //type: 'logarithmic',
+        type: scaleType,
       },
       x: {
         title: {
@@ -54,9 +59,18 @@ export default function HighRiskDiseasesGraph( { xValues, yValues } ) {
     }, 
   }
 
+  function changeScale( { target }) {
+    setScaleType(target.value);
+  }
+
   return (
     <div>
       <Bar data={data} options={options} />
+      <i>Graph scale type:  </i> {" "}
+      <select className={styles.dropdown} onChange={changeScale} defaultValue="linear">
+        <option value="linear">Linear Scale</option>
+        <option value="logarithmic">Logarithmic Scale</option>
+      </select>
     </div>
   );
 }
