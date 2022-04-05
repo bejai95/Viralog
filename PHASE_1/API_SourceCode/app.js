@@ -8,8 +8,11 @@ const { logs } = require("./routes/logs");
 const { predictions } = require("./routes/predictions");
 const { reports, reportsId } = require("./routes/reports");
 const app = express();
+const cors = require('cors')
 app.enable("trust proxy");
 
+// Enable cors
+app.use(cors())
 // Automatically parse request body as form data.
 app.use(express.urlencoded({ extended: false }));
 // This middleware is available in Express v4.16.0 onwards

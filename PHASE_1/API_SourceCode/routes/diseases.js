@@ -60,7 +60,7 @@ exports.diseasesId = async (req, res, conn) => {
     const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
     
     try {
-        const results = await diseasesId(conn, req.params.id);
+        const results = (req.query.weekly_reports === 'true') ? await getReportsByWeek(conn, req.params.id) : await diseasesId(conn, req.params.id);
         if (results.length == 0) {
             return performError(conn,
                 res, `/diseases/${req.params.id}`, 404,
@@ -78,6 +78,27 @@ exports.diseasesId = async (req, res, conn) => {
         );
     }
 };
+
+async function getReportsByWeek(conn, diseaseId) {
+    const diseases = await conn.select("*").from("Disease").where("disease_id", diseaseId);
+    
+    if (diseases.length == 0) {
+        return [];
+    }
+
+    const visualisationReports = await conn("Report")
+        .select(
+            "Report.report_id",
+            "Report.event_date"
+        )
+        .where("disease_id", "=", diseaseId)
+        .orderBy("event_date", "desc")
+    return {
+        reports_by_week: bundleToWeeks(visualisationReports),
+        diseaseId: diseaseId
+
+    }
+}
 
 async function diseases(
     conn,
@@ -309,14 +330,6 @@ async function diseasesId(conn, diseaseId) {
         .orderBy("event_date", "desc")
         .limit(16);
     
-    const visualisationReports = await conn("Report")
-        .select(
-            "Report.report_id",
-            "Report.event_date"
-        )
-        .where("disease_id", "=", diseaseId)
-        .orderBy("event_date", "desc")
-    
 
     return {
         disease_id: diseaseId,
@@ -336,6 +349,5 @@ async function diseasesId(conn, diseaseId) {
             article_id: report.article_id,
             headline: report.headline
         })),
-        reports_by_week: bundleToWeeks(visualisationReports)
     };
 }
