@@ -114,11 +114,26 @@ exports.bundleToWeeks = (items) => {
         let d = new Date(items[i].event_date)
         let day = d.getUTCDay()
         d.setDate(d.getDate() - day)
-        if (d.toISOString() in bundled) {
-            bundled[d.toISOString()]++;
+        if (d.toISOString().split('T')[0] in bundled) {
+            bundled[d.toISOString().split('T')[0]]++;
         } else {
-            bundled[d.toISOString()] = 1;
+            bundled[d.toISOString().split('T')[0]] = 1;
         }
     }
-    return Object.keys(bundled).map((item) => ({x: item, y: bundled[item]}))
+
+    let curr = new Date()
+    curr.setFullYear(curr.getFullYear() - 5);
+    let day = curr.getUTCDay()
+    curr.setDate(curr.getDate() - day)
+    while (curr < Date.now()) {
+        curr.setDate(curr.getDate() + 7)
+        let ind = curr.toISOString().split('T')[0]
+        if (!(ind in bundled)) bundled[ind] = 0;
+    }
+    
+    let listItems = Object.keys(bundled).map((item) => ({x: item, y: bundled[item]}))
+    listItems = listItems.sort((a, b) => (a.x < b.x) ? 1 : -1)
+
+
+    return listItems
 }
