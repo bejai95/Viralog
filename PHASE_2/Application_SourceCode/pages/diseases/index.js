@@ -96,7 +96,6 @@ export default function Diseases({ diseases, searchParam, diseasesParam, symptom
             <button type="submit">Apply Filters</button>
           </form>
         </details>
-        <br></br>
         {diseases.map(disease => (
           <Link href={"/diseases/" + encodeURIComponent(disease.disease_id)} key={disease.disease_id}>
             <a className={styles.listItem}>
