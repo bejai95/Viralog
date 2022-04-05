@@ -156,10 +156,6 @@ async function diseases(
     if (min_reports) results = results.filter(x => parseInt(x["recent_report_count"]) >= min_reports);
     if (max_reports) results = results.filter(x => parseInt(x["recent_report_count"]) <= max_reports);
 
-    console.log("search: " + search);
-    console.log("symptoms: " + symptoms_list);
-    if (!diseases_list && !symptoms_list) return results;
-
     let searchResults = [];
     if (search && search != "") {
         // Split and trim search string.
@@ -187,7 +183,9 @@ async function diseases(
             }
         }
         return searchResults;
-
+    }
+    else if (!diseases_list && !symptoms_list) {
+        return results;
     }
 
     let diseasesResults = [];
