@@ -237,7 +237,7 @@ async function diseases(
             
             let result = fuse.search(symptomItem);
             // console.log(result);
-            result = result.filter(x => x.score < 0.5);
+            result = result.filter(x => x.score < 0.2);
             
             for (let r in result) {
                 if (symptomResults.indexOf(result[r].item) == -1) {
