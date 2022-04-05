@@ -43,7 +43,7 @@ export default function HighRiskDiseasesGraph( { xValues, yValues } ) {
           text: "Number of Reports in the Past 90 Days"
         },
         beginAtZero: true,
-        type: 'logarithmic',
+        //type: 'logarithmic',
       },
       x: {
         title: {
