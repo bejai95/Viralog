@@ -66,7 +66,7 @@ export default function HighRiskDiseasesGraph( { xValues, yValues } ) {
   return (
     <div>
       <Bar data={data} options={options} />
-      <i>Graph scale type:  </i> {" "}
+      <i>Graph scale type  </i> {" "}
       <select className={styles.dropdown} onChange={changeScale} defaultValue="linear">
         <option value="linear">Linear Scale</option>
         <option value="logarithmic">Logarithmic Scale</option>
