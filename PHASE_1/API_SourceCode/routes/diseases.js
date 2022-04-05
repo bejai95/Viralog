@@ -42,6 +42,7 @@ exports.diseases = async (req, res, conn) => {
             req.query.diseases,
             req.query.symptoms,
             req.query.min_reports,
+            req.query.max_reports,
             req.query.orderBy
         );
         createLog(conn, ip, "/diseases", req.query, 200, "success", req.query.team);
@@ -84,6 +85,7 @@ async function diseases(
     diseases_list,
     symptoms_list,
     min_reports,
+    max_reports,
     orderBy
 ) {
     // Get diseases (and be able to filter by aliases)
@@ -151,9 +153,9 @@ async function diseases(
         };
     });
 
-    if (min_reports) {
-        results = results.filter(x => parseInt(x["total_report_count"]) >= min_reports);
-    }
+    if (min_reports) results = results.filter(x => parseInt(x["recent_report_count"]) >= min_reports);
+    if (max_reports) results = results.filter(x => parseInt(x["recent_report_count"]) <= max_reports);
+
     console.log("search: " + search);
     console.log("symptoms: " + symptoms_list);
     if (!diseases_list && !symptoms_list) return results;
