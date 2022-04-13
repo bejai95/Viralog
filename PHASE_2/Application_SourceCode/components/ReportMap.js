@@ -33,12 +33,15 @@ function ReportMap({ reports, hideArticles, zoom }) {
       maxLong = Math.max(maxLong, report.location.long);
 
       if (!groups[groupId]) {
-        groups[groupId] = {};
+        groups[groupId] = { 
+          location: report.location.location,
+          diseases: {}
+        };
       }
       if (!groups[groupId][diseaseId]) {
-        groups[groupId][diseaseId] = [];
+        groups[groupId].diseases[diseaseId] = [];
       }
-      groups[groupId][diseaseId].push(report);
+      groups[groupId].diseases[diseaseId].push(report);
     }
   }
 
@@ -68,8 +71,8 @@ function generateMarker(groupId, group, hideArticles) {
   const diseaseLinks = [];
   let position;
 
-  for (const diseaseId in group) {
-    const diseaseReports = group[diseaseId];
+  for (const diseaseId in group.diseases) {
+    const diseaseReports = group.diseases[diseaseId];
 
     const reportLinks = [];
     if (!hideArticles) {
@@ -81,7 +84,7 @@ function generateMarker(groupId, group, hideArticles) {
         }
         reportLinks.push(
           <Link href={"/articles/" + report.article_id} key={report.report_id}>
-            <a className={styles.report}>{new Date(report.event_date).toLocaleDateString()} - {headline}</a>
+            <a className={styles.report}>{new Date(report.event_date).toLocaleDateString()} - <i>{headline}</i></a>
           </Link>
         );
       }
@@ -103,10 +106,10 @@ function generateMarker(groupId, group, hideArticles) {
 
   return (
     <Marker key={groupId} position={position} icon={pinIcon}>
-      <Popup>
+      <Popup maxWidth={"40em"}>
         <div className={styles.mapPopup}>
           <FontAwesomeIcon className={styles.warn} icon={faTriangleExclamation} size="lg" />
-          <h1>Diseases Reported</h1>
+          <h1>Diseases Reported in {group.location}</h1>
           <ul className={styles.diseaseLinks}>
             {diseaseLinks}
           </ul>
