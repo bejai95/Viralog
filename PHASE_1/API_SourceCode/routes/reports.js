@@ -143,6 +143,7 @@ async function reports(
             "Report.article_id",
             "Article.article_url",
             "Article.headline",
+            "Article.source"
         )
         .from("Report")
         .modify((queryBuilder) => {
@@ -160,7 +161,8 @@ async function reports(
         .where("Report.event_date", ">=", period_of_interest_start)
         .where("Report.event_date", "<=", period_of_interest_end)
         .join("Disease", "Report.disease_id", "=", "Disease.disease_id")
-        .join("Article", "Article.article_id", "=", "Report.article_id");
+        .join("Article", "Article.article_id", "=", "Report.article_id")
+        .orderBy("Report.event_date", "desc");
 
     const symptoms = await getDiseaseSymptoms(conn);
 
@@ -181,6 +183,7 @@ async function reports(
             article_id: reportRecord.article_id,
             article_url: reportRecord.article_url,
             headline: reportRecord.headline,
+            source: reportRecord.source
         });
     }
 

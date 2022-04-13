@@ -97,6 +97,5 @@ th, td {
 .leaflet-popup .leaflet-popup-content-wrapper {
     border-radius: 4px;
     box-shadow: none;
-    width: 40em;
-    min-height: 10em;
+    width: 38em;
 }

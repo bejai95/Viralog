@@ -38,7 +38,7 @@ function ReportMap({ reports, hideArticles, zoom }) {
           diseases: {}
         };
       }
-      if (!groups[groupId][diseaseId]) {
+      if (!groups[groupId].diseases[diseaseId]) {
         groups[groupId].diseases[diseaseId] = [];
       }
       groups[groupId].diseases[diseaseId].push(report);
@@ -67,6 +67,11 @@ function ReportMap({ reports, hideArticles, zoom }) {
   );
 }
 
+function formatDate(date) {
+  const dateArr = date.toDateString().split(" ");
+  return dateArr[2] + " " + dateArr[1] + " " + dateArr[3];
+}
+
 function generateMarker(groupId, group, hideArticles) {
   const diseaseLinks = [];
   let position;
@@ -79,13 +84,19 @@ function generateMarker(groupId, group, hideArticles) {
       for (let i = 0; i < diseaseReports.length; i++) {
         const report = diseaseReports[i];
         let headline = report.headline;
-        if (headline.length > 46) {
-          headline = headline.substr(0,46) + "...";
+        const MAX_HEADLINE_LENGTH = 54;
+        if (headline.length > MAX_HEADLINE_LENGTH) {
+          headline = headline.substr(0,MAX_HEADLINE_LENGTH) + "...";
         }
         reportLinks.push(
-          <Link href={"/articles/" + report.article_id} key={report.report_id}>
-            <a className={styles.report}>{new Date(report.event_date).toLocaleDateString()} - <i>{headline}</i></a>
-          </Link>
+          <li>
+            <Link href={"/articles/" + report.article_id} key={report.report_id}>
+              <a className={styles.report}>
+                <div>{headline}</div>
+                <span>{report.source}, {formatDate(new Date(report.event_date))}</span>
+              </a>
+            </Link>
+          </li>
         );
       }
     }
@@ -95,21 +106,27 @@ function generateMarker(groupId, group, hideArticles) {
         <Link href={"/diseases/" + diseaseId} >
           <a className={styles.diseaseLink}>{diseaseReports[0].diseases[0]}</a>
         </Link>
-        <div>
+        <ul className={styles.articleList}>
           {reportLinks}
-        </div>
+        </ul>
       </li>
     );
 
     position = [diseaseReports[0].location.lat, diseaseReports[0].location.long];
   }
 
+  let location = group.location;
+  const MAX_LOCATION_LENGTH = 20;
+  if (location.length > MAX_LOCATION_LENGTH) {
+    location = location.substr(0,MAX_LOCATION_LENGTH) + "...";
+  }
+
   return (
     <Marker key={groupId} position={position} icon={pinIcon}>
-      <Popup maxWidth={"40em"}>
+      <Popup maxWidth={"38em"}>
         <div className={styles.mapPopup}>
           <FontAwesomeIcon className={styles.warn} icon={faTriangleExclamation} size="lg" />
-          <h1>Diseases Reported in {group.location}</h1>
+          <h1>Disease Reports in {location}</h1>
           <ul className={styles.diseaseLinks}>
             {diseaseLinks}
           </ul>
