@@ -15,7 +15,7 @@ function NavBar({ search }) {
       <nav>
         <div style={{clear: "both"}}></div>
         <div className={styles.navLeft}>
-          <Link href="/"><a className={styles.title}><Image src={logo} alt="Disease Watch" layout="fill"></Image></a></Link>
+          <Link href="/"><a className={styles.title}><Image src={logo} alt="Viralog" layout="fill"></Image></a></Link>
         </div>
         <div className={styles.navCenter}>
           <form className={`${styles.search_container} float_left`} action="/diseases">

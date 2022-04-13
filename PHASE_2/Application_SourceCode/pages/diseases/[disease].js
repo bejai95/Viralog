@@ -7,7 +7,7 @@ import DiseaseRiskInfo from "../../components/DiseaseRiskInfo";
 import ReportList from "../../components/ReportList";
 import { useContext, useState, useMemo } from "react";
 import dynamic from "next/dynamic";
-import DiseaseImage from "../../public/logo-icon.png";
+import DiseaseImage from "../../public/disease-icon.png";
 import Image from "next/image";
 import apiurl from "../../utils/apiconn";
 import FrequencyGraph from "../../components/FrequencyGraph";
@@ -64,7 +64,7 @@ export default function DiseaseInfoPage({disease, error}) {
   return (
     <>
       <Head>
-        <title>{error ? "Invalid Page" : disease.disease_id + " - Disease Watch"}</title>
+        <title>{error ? "Invalid Page" : disease.disease_id + " - Viralog"}</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <NavBar />

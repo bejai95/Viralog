@@ -49,7 +49,7 @@ export default function Home({ reports }) {
   return (
     <>
       <Head>
-        <title>Disease Watch</title>
+        <title>Viralog</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className={styles.box}>

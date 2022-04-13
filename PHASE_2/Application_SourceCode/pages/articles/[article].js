@@ -39,7 +39,7 @@ export default function ArticleInfoPage({ article, error }) {
   return (
     <>
       <Head>
-        <title>{error ? "Invalid Page" : article.headline + " - Disease Watch"}</title>
+        <title>{error ? "Invalid Page" : article.headline + " - Viralog"}</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <NavBar />
