@@ -15,6 +15,7 @@
     "chart.js": "^3.7.1",
     "chartjs": "^0.3.24",
     "chartjs-adapter-moment": "^1.0.0",
+    "cookies-next": "^2.0.4",
     "leaflet": "^1.7.1",
     "leaflet-defaulticon-compatibility": "^0.1.1",
     "moment": "^2.29.2",
