@@ -3,6 +3,11 @@
     padding: 10px;
     border-radius: 5px;
     transition: 0.1s;
+    flex-grow: 1;
+}
+
+.watchedLabel:hover {
+    transform: scale(1.05);
 }
 
 .watchedContainer {
@@ -12,7 +17,6 @@
 
     button:hover {
         cursor: pointer;
-        transform: scale(1.05);
     }
 }
 
@@ -25,4 +29,6 @@
 
 .activeWatched {
     background-color: #267CED;
+    font-weight: bold;
+    color: white;
 }

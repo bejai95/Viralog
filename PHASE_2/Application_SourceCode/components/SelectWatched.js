@@ -2,6 +2,8 @@ import { setCookies } from "cookies-next";
 import { useState } from "react";
 import styles from "../styles/SelectWatched.module.scss";
 import { inList, removeFromList } from "../utils/lists";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus, faAnglesLeft } from "@fortawesome/free-solid-svg-icons";
 
 const toggleDisease = (disease, watched, setWatched) => {
     if (inList(watched, disease)) {
@@ -38,7 +40,6 @@ const SelectWatched = ({ watched, setWatched, allDiseases }) => {
                         ${styles.watchedLabel}`}
                         onClick={() => {
                             toggleDisease(item, watched, setWatched);
-                            console.log("oops");
                         }}>
                         {item}
                     </button>
@@ -46,7 +47,7 @@ const SelectWatched = ({ watched, setWatched, allDiseases }) => {
             <button
                 className={styles.expandButton}
                 onClick={() => setExpanded(!expanded)}>
-                {expanded ? "<<" : ">>"}
+                <FontAwesomeIcon icon={expanded ? faAnglesLeft : faPlus} size="lg"/>
             </button>
         </div>
     );
