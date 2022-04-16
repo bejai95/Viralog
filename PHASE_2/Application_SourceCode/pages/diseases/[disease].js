@@ -5,12 +5,16 @@ import NavBar from "../../components/NavBar";
 import styles from "../../styles/InfoPage.module.scss";
 import DiseaseRiskInfo from "../../components/DiseaseRiskInfo";
 import ReportList from "../../components/ReportList";
-import { useContext, useState, useMemo } from "react";
+import { useContext, useState, useMemo, useEffect } from "react";
 import dynamic from "next/dynamic";
 import DiseaseImage from "../../public/disease-icon.png";
 import Image from "next/image";
 import apiurl from "../../utils/apiconn";
 import FrequencyGraph from "../../components/FrequencyGraph";
+import { getCookie, setCookies } from 'cookies-next';
+import {inList, removeFromList } from '../../utils/lists'
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus, faMinus } from "@fortawesome/free-solid-svg-icons";
 
 function formatDate(date) {
   return date.toISOString().replace(/\.[0-9]{3}Z$/, "");
@@ -53,6 +57,7 @@ function getDiseaseAliases(disease_id, aliases) {
 }
 
 export default function DiseaseInfoPage({disease, error}) {
+  const [watched, setWatched] = useState(false);
   const ReportMap = useMemo(() => dynamic(
     () => import("../../components/ReportMap"),
     { 
@@ -60,6 +65,22 @@ export default function DiseaseInfoPage({disease, error}) {
       ssr: false
     }
   ), []);
+
+  useEffect(async () => {
+    // Initialise watched value
+    let cookie = await JSON.parse(getCookie('watched'))
+    setWatched(inList(cookie, disease.disease_id))
+  }, [])
+
+  const toggleWatch = async (disease_id) => {
+    let cookie = await JSON.parse(getCookie('watched'))
+    if (inList(cookie, disease_id)) {
+      setCookies('watched', removeFromList(cookie, disease_id))
+    } else {
+      setCookies('watched', [...cookie, disease_id])
+    }
+    setWatched(!watched)
+  }
 
   return (
     <>
@@ -81,8 +102,17 @@ export default function DiseaseInfoPage({disease, error}) {
           {disease &&
             <>
               <div className={styles.title}>
-                <span className={styles.diseaseIcon}><Image src={DiseaseImage} alt="" width={32} height={31} /></span>
-                <h1>{capitalizeFirstLetter(disease.disease_id)}</h1>
+                <div className={styles.leftTitle}>
+                  <span className={styles.diseaseIcon}><Image src={DiseaseImage} alt="" width={32} height={31} /></span>
+                  <h1>{capitalizeFirstLetter(disease.disease_id)}</h1>
+                </div>
+                <div className={styles.rightTitle}>
+                  <button className={watched ? styles.activeWatch : styles.inactiveWatch} onClick={() => toggleWatch(disease.disease_id)}>
+                    {watched ? "Unwatch" : "Watch"} disease
+                    &nbsp; 
+                    <FontAwesomeIcon icon={watched ? faMinus : faPlus} size="lg"/>
+                  </button>
+                </div>
               </div>
               
               {getDiseaseAliases(disease.disease_id, disease.aliases)}

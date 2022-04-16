@@ -1,4 +1,3 @@
-
 .infoPage h2 {
   margin: 16px 0 2px 0;
   font-size: 1em;
@@ -27,16 +26,12 @@
 }
 
 .mapContainer {
-  width:100%;
+  width: 100%;
   height: 512px;
   margin-top: 6px;
 }
 
 .diseaseIcon {
-  margin-top: 10px;
-}
-
-.title {
   margin-top: 10px;
 }
 
@@ -50,4 +45,30 @@
   display: block;
   float: left;
   transform: translateY(-6px);
+}
+
+.title {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.rightTitle {
+  padding-right: 20px;
+
+  button {
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+  }
+
+  button:hover {
+    cursor: pointer;
+  }
+}
+
+.inactiveWatch {
+  background-color: #267CED;
+  color: white;
 }
