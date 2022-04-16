@@ -1,0 +1,28 @@
+.watchedLabel {
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    transition: 0.1s;
+}
+
+.watchedContainer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+
+    button:hover {
+        cursor: pointer;
+        transform: scale(1.05);
+    }
+}
+
+.expandButton {
+    background-color: none;
+    border: none;
+    background-color: transparent;
+    font-weight: bolder;
+}
+
+.activeWatched {
+    background-color: #267CED;
+}
