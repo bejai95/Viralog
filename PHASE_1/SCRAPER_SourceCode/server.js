@@ -3,7 +3,6 @@
 const db = require("./database");
 const scraper = require("./scraper");
 const processor = require("./article-processor");
-const { default: knex } = require("knex");
 
 async function scrape(message, context) {
     let conn;
