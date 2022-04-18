@@ -69,40 +69,32 @@ async function predictions(conn, minReportCount, dayCount) {
     currDate.setDate(currDate.getDate() - dayCount);
 
     let results = await conn
-        .select("*")
+        .select("disease_id")
         .from("Report")
         .where("event_date", ">", formatDate(currDate))
         .orderBy(["disease_id", "location"]);
 
     // Put results into an object indexed by disease name
     let collatedResults = {};
+
     for (let i = 0; i < results.length; i++) {
         const result = results[i];
         if (!(result.disease_id in collatedResults)) {
             collatedResults[result.disease_id] = {
-                disease: result.disease_id,
-                reports: [],
+                disease_id: result.disease_id,
+                report_count: 1
             };
         }
-        collatedResults[result.disease_id].reports.push({
-            report_id: result.report_id,
-            disease_id: result.disease_id,
-            event_date: result.event_date,
-            location: {
-                location: result.location,
-                lat: parseFloat(result.lat),
-                long: parseFloat(result.long),
-            },
-        });
+        else {
+            collatedResults[result.disease_id].report_count++;
+        }
     }
 
     // Add the threshold into each item
-    let returnRes = [];
+    let returnRes = []
     for (let key in collatedResults) {
-        let item = collatedResults[key];
-        if (item.reports.length > minReportCount) {
-            item.report_count = item.reports.length;
-            returnRes.push(item);
+        if (collatedResults[key].report_count > minReportCount) {
+            returnRes.push(collatedResults[key])
         }
     }
     return returnRes;

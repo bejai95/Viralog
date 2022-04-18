@@ -1,4 +1,3 @@
-
 .contentMain {
     max-width: 46em;
     margin: auto;
@@ -30,11 +29,22 @@ h3.mainHeading {
 }
 
 .mapContainer {
-    width:100%;
+    width: 100%;
     height: calc(80vh);
     margin: 8px 0;
 }
 
 .activeList {
     padding: 10px;
+}
+
+.activeSelector {
+    display: flex;
+    align-items: center;
+    justify-content: c;
+    gap: 5px;
+
+    p {
+        margin: 0px;
+    }
 }

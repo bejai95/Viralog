@@ -89,7 +89,7 @@ function generateMarker(groupId, group, hideArticles) {
           headline = headline.substr(0,MAX_HEADLINE_LENGTH) + "...";
         }
         reportLinks.push(
-          <li>
+          <li key={i}>
             <Link href={"/articles/" + report.article_id} key={report.report_id}>
               <a className={styles.report}>
                 <div>{headline}</div>

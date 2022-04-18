@@ -18,6 +18,7 @@ import {
 } from "cookies-next";
 import { inList } from "../utils/lists";
 import SelectWatched from "../components/SelectWatched";
+import Dropdown from "../components/Dropdown";
 
 function formatDate(date) {
     return date.toISOString().replace(/\.[0-9]{3}Z$/, "");
@@ -47,6 +48,13 @@ async function getDiseases() {
     const res = await fetch(url);
     const diseases = await res.json();
     return diseases;
+}
+
+async function getPredictions() {
+    const url = new URL(`${apiurl}/predictions?min_report_count=5&day_count=90`);
+    const res = await fetch(url);
+    const predictions = await res.json();
+    return predictions
 }
 
 export async function getServerSideProps(context) {
@@ -79,10 +87,13 @@ function getGraphParams(diseases) {
     };
 }
 
-export default function Home({ reports, diseases }) {
+export default function Home({ reports, diseases, predictions }) {
     const [errMsg, setError] = useState();
     const graphParams = getGraphParams(diseases);
     const [watched, setWatched] = useState([]);
+    const [minReportCount, setMinReportCount] = useState(5);
+    const [dayCount, setDayCount] = useState(90);
+    const [pred, setPred] = useState(predictions)
 
     const possibleDiseases = diseases.map((f) => f.disease_id).sort();
 
@@ -98,14 +109,15 @@ export default function Home({ reports, diseases }) {
         setCookies("watched", watched);
     }, [watched]);
 
-    const ReportMap = useMemo(
-        () =>
-            dynamic(() => import("../components/ReportMap"), {
-                loading: () => <p>Map is loading...</p>,
-                ssr: false,
-            }),
-        []
-    );
+    useEffect(() => {
+        const url = new URL(`${apiurl}/predictions?min_report_count=${minReportCount}&day_count=${dayCount}`);
+        fetch(url)
+            .then((res) => res.json())
+            .then((result) => {console.log(result); setPred(result)});
+    }, [dayCount, minReportCount])
+
+    const dayOptions = [15, 30, 60, 90, 120, 365];
+    const minReportOptions = [1, 2, 3, 4, 5, 10, 20, 50, 100]
 
     return (
         <>
@@ -153,9 +165,17 @@ export default function Home({ reports, diseases }) {
 
                 {/* ******** ACTIVE DISEASES ******* */}
                 <h2 className={styles.mainHeading}>Active Diseases</h2>
+                <div className={styles.activeSelector}>
+                    <p>Find diseases which have had at least</p>
+                    <Dropdown options={minReportOptions} setValue={setMinReportCount} defaultValueIndex={1}/>
+                    <p>reports in the last </p>
+                    <Dropdown options={dayOptions} setValue={setDayCount} defaultValueIndex={1}/>
+                    <p>days.</p>
+                </div>
                 <div className={styles.activeList}>
-                    {diseases.slice(0, 10).map((disease) => (
+                    {pred && pred.length > 0 && pred.map((disease) => (
                         <DiseaseInfo
+                            simplified={true}
                             key={disease.disease_id}
                             disease={disease}
                         />

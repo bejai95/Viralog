@@ -11,7 +11,7 @@ ChartJS.register(
 );
 
 export default function HighRiskDiseasesGraph( { xValues, yValues } ) {
-  const [scaleType, setScaleType] = useState("linear");
+  const [scaleType, setScaleType] = useState("logarithmic");
   
   const data = {
     labels: xValues,
@@ -67,7 +67,7 @@ export default function HighRiskDiseasesGraph( { xValues, yValues } ) {
     <div>
       <Bar data={data} options={options} />
       <i>Graph scale type  </i> {" "}
-      <select className={styles.dropdown} onChange={changeScale} defaultValue="linear">
+      <select className={styles.dropdown} onChange={changeScale} defaultValue="logarithmic">
         <option value="linear">Linear Scale</option>
         <option value="logarithmic">Logarithmic Scale</option>
       </select>
