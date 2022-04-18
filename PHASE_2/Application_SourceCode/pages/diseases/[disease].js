@@ -15,6 +15,8 @@ import { getCookie, setCookies } from 'cookies-next';
 import {inList, removeFromList } from '../../utils/lists'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faMinus } from "@fortawesome/free-solid-svg-icons";
+import { MdInfoOutline } from "react-icons/md";
+import { IconContext } from "react-icons";
 
 function formatDate(date) {
   return date.toISOString().replace(/\.[0-9]{3}Z$/, "");
@@ -122,9 +124,15 @@ export default function DiseaseInfoPage({disease, error}) {
               
               <h2>Risk Analysis</h2>
               <DiseaseRiskInfo disease={disease}/>
-              <i style={{ fontSize: "0.8em"}}>* a disease is &quot;high risk&quot; if it has had 10 or more reports in the past 90 days.</i>
+              <i className={styles.hint}>
+                * a disease is &quot;high risk&quot; if it has had 10 or more reports in the past 90 days.
+              </i>
 
               <h2>Report Frequency</h2>
+              <div className={styles.hint}>
+                <IconContext.Provider value={{size: "1.4em"}}><MdInfoOutline /></IconContext.Provider>
+                <span>these reports relating to {disease.disease_id} were found on news articles around the world.</span>
+              </div>
               <FrequencyGraph  diseaseId={disease.disease_id}/>
               <i>Note: The date shown refers to the Monday of that week.</i>
 

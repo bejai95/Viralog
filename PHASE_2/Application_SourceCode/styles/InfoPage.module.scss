@@ -72,3 +72,12 @@
   background-color: #267CED;
   color: white;
 }
+
+.hint {
+  font-size: 0.8em;
+
+  svg {
+    transform: translateY(4px);
+    margin-right: 2px;
+  }
+}
