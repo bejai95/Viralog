@@ -11,8 +11,8 @@ import DiseaseImage from "../../public/disease-icon.png";
 import Image from "next/image";
 import apiurl from "../../utils/apiconn";
 import FrequencyGraph from "../../components/FrequencyGraph";
-import { getCookie, setCookies } from 'cookies-next';
-import {inList, removeFromList } from '../../utils/lists'
+import { getCookie, setCookies } from "cookies-next";
+import {inList, removeFromList } from "../../utils/lists";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faMinus } from "@fortawesome/free-solid-svg-icons";
 import { MdInfoOutline } from "react-icons/md";
@@ -70,16 +70,16 @@ export default function DiseaseInfoPage({disease, error}) {
 
   useEffect(async () => {
     // Initialise watched value
-    let cookie = await JSON.parse(getCookie('watched'))
+    let cookie = await JSON.parse(getCookie("watched"))
     setWatched(inList(cookie, disease.disease_id))
   }, [])
 
   const toggleWatch = async (disease_id) => {
-    let cookie = await JSON.parse(getCookie('watched'))
+    let cookie = await JSON.parse(getCookie("watched"))
     if (inList(cookie, disease_id)) {
-      setCookies('watched', removeFromList(cookie, disease_id))
+      setCookies("watched", removeFromList(cookie, disease_id))
     } else {
-      setCookies('watched', [...cookie, disease_id])
+      setCookies("watched", [...cookie, disease_id])
     }
     setWatched(!watched)
   }
