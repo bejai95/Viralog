@@ -322,6 +322,7 @@ async function diseasesId(conn, diseaseId) {
             "Report.long",
             "Article.article_id",
             "Article.headline",
+            "Article.source"
         )
         .join("Article", "Article.article_id", "=", "Report.article_id")
         .where("disease_id", "=", diseaseId)
@@ -345,7 +346,8 @@ async function diseasesId(conn, diseaseId) {
                 long: parseFloat(report.long),
             },
             article_id: report.article_id,
-            headline: report.headline
+            headline: report.headline,
+            source: report.source
         })),
     };
 }
