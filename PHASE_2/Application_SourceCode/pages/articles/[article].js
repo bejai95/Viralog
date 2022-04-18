@@ -7,6 +7,8 @@ import styles from "../../styles/InfoPage.module.scss";
 import { useContext, useState, useMemo } from "react";
 import dynamic from "next/dynamic";
 import apiurl from "../../utils/apiconn";
+import { MdInfoOutline } from "react-icons/md";
+import { IconContext } from "react-icons";
 
 export async function getServerSideProps(context) {
   
@@ -65,6 +67,10 @@ export default function ArticleInfoPage({ article, error }) {
             <h2>Source</h2>
             <div className={styles.info}>{article.source}</div>
             <h2>Reports</h2>
+            <div className={styles.hint}>
+              <IconContext.Provider value={{size: "1.4em"}}><MdInfoOutline /></IconContext.Provider>
+              <span>the following diseases were found in this article.</span>
+            </div>
             <ReportList reports={article.reports}/>
             <div className={styles.mapContainer}>
               <ReportMap reports={article.reports} hideArticles={true} zoom={2}/>
