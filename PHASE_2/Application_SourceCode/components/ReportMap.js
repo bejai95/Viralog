@@ -6,6 +6,7 @@ import Link from "next/link";
 import L from "leaflet";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
+import ReportHelp from "./ReportHelp";
 
 const pinIcon = new L.Icon.Default();
 pinIcon.options.shadowSize = [0, 0];
@@ -127,6 +128,7 @@ function generateMarker(groupId, group, hideArticles) {
         <div className={styles.mapPopup}>
           <FontAwesomeIcon className={styles.warn} icon={faTriangleExclamation} size="lg" />
           <h1>Disease Reports in {location}</h1>
+          <ReportHelp />
           <ul className={styles.diseaseLinks}>
             {diseaseLinks}
           </ul>

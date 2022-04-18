@@ -1,0 +1,18 @@
+
+.reportHelp summary {
+    list-style: none;
+}
+
+.reportHelp summary:hover {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.reportHelp svg {
+    transform: translateY(3px);
+}
+
+.reportHelp span {
+    padding-left: 4px;
+    font-size: 1.1em;
+}
