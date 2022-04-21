@@ -5,7 +5,7 @@ import NavBar from "../../components/NavBar";
 import styles from "../../styles/InfoPage.module.scss";
 import DiseaseRiskInfo from "../../components/DiseaseRiskInfo";
 import ReportList from "../../components/ReportList";
-import { useContext, useState, useMemo, useEffect } from "react";
+import { useContext, useState, useMemo, useEffect, useRef } from "react";
 import dynamic from "next/dynamic";
 import DiseaseImage from "../../public/disease-icon.png";
 import Image from "next/image";
@@ -17,6 +17,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faMinus } from "@fortawesome/free-solid-svg-icons";
 import { MdInfoOutline } from "react-icons/md";
 import { IconContext } from "react-icons";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function formatDate(date) {
   return date.toISOString().replace(/\.[0-9]{3}Z$/, "");
@@ -60,6 +62,7 @@ function getDiseaseAliases(disease_id, aliases) {
 
 export default function DiseaseInfoPage({disease, error}) {
   const [watched, setWatched] = useState(false);
+
   const ReportMap = useMemo(() => dynamic(
     () => import("../../components/ReportMap"),
     { 
@@ -77,8 +80,10 @@ export default function DiseaseInfoPage({disease, error}) {
   const toggleWatch = async (disease_id) => {
     let cookie = await JSON.parse(getCookie("watched"))
     if (inList(cookie, disease_id)) {
+      toast.info(`Removed ${disease_id} from dashboard.`)
       setCookies("watched", removeFromList(cookie, disease_id))
     } else {
+      toast.info(`Added ${disease_id} to dashboard!`)
       setCookies("watched", [...cookie, disease_id])
     }
     setWatched(!watched)
@@ -103,6 +108,7 @@ export default function DiseaseInfoPage({disease, error}) {
           }
           {disease &&
             <>
+              <ToastContainer autoClose={2000}/>
               <div className={styles.title}>
                 <div className={styles.leftTitle}>
                   <span className={styles.diseaseIcon}><Image src={DiseaseImage} alt="" width={32} height={31} /></span>
