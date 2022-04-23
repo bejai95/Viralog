@@ -21,6 +21,11 @@
     caption:hover {
         cursor: pointer;
     }
+
+    button span {
+        margin-left: 6px;
+        font-style: italic;
+    }
 }
 
 .expandButton {

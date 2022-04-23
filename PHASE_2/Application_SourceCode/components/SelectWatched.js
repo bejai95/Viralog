@@ -19,12 +19,10 @@ const SelectWatched = ({ watched, setWatched, allDiseases }) => {
     return (
         <div className={styles.watchedContainer}>
             {watched && watched.length == 0 && !expanded && (
-                <div onClick={() => setExpanded(!expanded)}>
-                    <i>
-                        Click me to see some available diseases! Select
-                        some to personalize your dashboard.{" "}
-                    </i>
-                </div>
+                <button className={styles.watchedLabel} onClick={() => setExpanded(!expanded)}>
+                    <FontAwesomeIcon icon={faPlus} size="lg"/>
+                    <span>Add Diseases to Watch</span>
+                </button>
             )}
             {allDiseases &&
                 watched &&

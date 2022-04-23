@@ -54,7 +54,7 @@ async function getPredictions() {
     const url = new URL(`${apiurl}/predictions?min_report_count=5&day_count=90`);
     const res = await fetch(url);
     const predictions = await res.json();
-    return predictions
+    return predictions;
 }
 
 export async function getServerSideProps(context) {
@@ -88,12 +88,11 @@ function getGraphParams(diseases) {
 }
 
 export default function Home({ reports, diseases, predictions }) {
-    const [errMsg, setError] = useState();
     const graphParams = getGraphParams(diseases);
     const [watched, setWatched] = useState([]);
     const [minReportCount, setMinReportCount] = useState(5);
     const [dayCount, setDayCount] = useState(90);
-    const [pred, setPred] = useState(predictions)
+    const [pred, setPred] = useState(predictions);
 
     const possibleDiseases = diseases.map((f) => f.disease_id).sort();
 
@@ -112,12 +111,15 @@ export default function Home({ reports, diseases, predictions }) {
     useEffect(() => {
         const url = new URL(`${apiurl}/predictions?min_report_count=${minReportCount}&day_count=${dayCount}`);
         fetch(url)
-            .then((res) => res.json())
-            .then((result) => {console.log(result); setPred(result)});
-    }, [dayCount, minReportCount])
+            .then(res => res.json())
+            .then(result => {
+                console.log(result);
+                setPred(result);
+            });
+    }, [dayCount, minReportCount]);
 
     const dayOptions = [15, 30, 60, 90, 120, 365];
-    const minReportOptions = [1, 2, 3, 4, 5, 10, 20, 50, 100]
+    const minReportOptions = [1, 2, 3, 4, 5, 10, 20, 50, 100];
 
     return (
         <>
@@ -129,12 +131,6 @@ export default function Home({ reports, diseases, predictions }) {
 
             <div className={styles.contentMain}>
                 <h1 className={styles.mainHeading}>Dashboard</h1>
-
-                {errMsg && (
-                    <div>
-                        <b style={{ color: "red" }}>{errMsg}</b>
-                    </div>
-                )}
 
                 <h2 className={styles.mainHeading}>
                     Graph of Active Diseases in the Past 90 Days
