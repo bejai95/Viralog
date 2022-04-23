@@ -17,8 +17,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faMinus } from "@fortawesome/free-solid-svg-icons";
 import { MdInfoOutline } from "react-icons/md";
 import { IconContext } from "react-icons";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function formatDate(date) {
   return date.toISOString().replace(/\.[0-9]{3}Z$/, "");
@@ -71,23 +71,38 @@ export default function DiseaseInfoPage({disease, error}) {
     }
   ), []);
 
-  useEffect(async () => {
-    // Initialise watched value
-    let cookie = await JSON.parse(getCookie("watched"))
-    setWatched(inList(cookie, disease.disease_id))
-  }, [])
+  useEffect(() => {
+    (async () => {
+      // Initialise watched value
+      const watchedCookie = getCookie("watched");
+      if (watchedCookie) {
+        let cookie = await JSON.parse(watchedCookie);
+        setWatched(inList(cookie, disease.disease_id));
+      }
+      else {
+        setWatched(false);
+      }
+    })();
+  }, [disease.disease_id]);
 
   const toggleWatch = async (disease_id) => {
-    let cookie = await JSON.parse(getCookie("watched"))
-    if (inList(cookie, disease_id)) {
-      toast.info(`Removed ${disease_id} from dashboard.`)
-      setCookies("watched", removeFromList(cookie, disease_id))
-    } else {
-      toast.info(`Added ${disease_id} to dashboard!`)
-      setCookies("watched", [...cookie, disease_id])
+    const watchedCookie = getCookie("watched");
+    if (watchedCookie) {
+      let cookie = await JSON.parse(watchedCookie);
+      if (inList(cookie, disease_id)) {
+        toast.info(`${disease_id} removed from dashboard.`);
+        setCookies("watched", removeFromList(cookie, disease_id));
+      } else {
+        toast.info(`${disease_id} added to dashboard!`);
+        setCookies("watched", [...cookie, disease_id]);
+      }
     }
-    setWatched(!watched)
-  }
+    else {
+      toast.info(`${disease_id} added to dashboard!`);
+      setCookies("watched", [disease_id]);
+    }
+    setWatched(!watched);
+  };
 
   return (
     <>
