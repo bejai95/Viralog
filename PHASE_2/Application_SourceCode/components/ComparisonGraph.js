@@ -14,6 +14,14 @@ import 'chartjs-adapter-moment';
 import { Line } from 'react-chartjs-2';
 import styles from "../styles/FrequencyGraph.module.scss";
 import apiurl from '../utils/apiconn';
+import { randomColor } from '../utils/colours'
+import SelectDiseases from '../components/SelectDiseases'
+import {
+    getCookie,
+    setCookies,
+    checkCookies,
+    removeCookies,
+} from "cookies-next";
 
 ChartJS.register(
     CategoryScale,
@@ -26,28 +34,43 @@ ChartJS.register(
     Legend
 );
 
-const FrequencyGraph = ({ diseaseId }) => {
+const ComparisonGraph = ({ diseases, possibleDiseases }) => {
     var today = new Date();
-
-    // Begin 3 years in the past
-    const [data, setData] = useState([])
-    const [dataPointsInRange, setDataPointsInRange] = useState(data.filter((a) => a.x >= startDate))
+    const [data, setData] = useState({})
+    const [comparison, setComparison] = useState([])
     const [startDate, setStartDate] = useState(new Date().setDate(today.getDate() - 365 * 3))
     const [yMax, setYMax] = useState(0);
 
     useEffect(() => {
-        const reqUrl = `${apiurl}/diseases/` + encodeURIComponent(diseaseId) + '?weekly_reports=true';
-        fetch(reqUrl)
-            .then((res) => res.json())
-            .then((item) => item.reports_by_week.map((item) => ({ x: new Date(item.x), y: item.y })))
-            .then((d) => setData(d))
-    }, [])
+        // This is to just collect cookies on load
+        const cookie = checkCookies("comparison")
+            ? JSON.parse(getCookie("comparison"))
+            : [];
+        setComparison(cookie);
+        console.log("diseases", diseases)
+    }, []);
 
     useEffect(() => {
-        const filtered = data.filter((a) => a.x >= startDate)
+        setCookies("comparison", comparison);
+    }, [comparison]);
 
-        setYMax(((n) => n + (n % 2 == 0 ? 4 : 5))(Math.max(...filtered.map((item) => item.y))))
-        setDataPointsInRange(filtered)
+    useEffect(async () => {
+        let reqs = comparison.map((diseaseId) =>
+            fetch(`${apiurl}/diseases/` + encodeURIComponent(diseaseId) + '?weekly_reports=true')
+                .then((res) => res.json())
+                .then((item) => item.reports_by_week.map((item) => ({ x: new Date(item.x), y: item.y })))
+                .then((item) => ({ [diseaseId]: { points: item, colour: randomColor() } }))
+        );
+        Promise.all(reqs)
+            .then((res) => {
+                let k = {}
+                res.forEach(element => Object.assign(k, element));
+                setData(k)
+            })
+    }, [comparison])
+
+    useEffect(() => {
+        setYMax(((n) => n + (n % 2 == 0 ? 4 : 5))(Math.max(...Object.values(data).map(f => f.points).flat(1).map(f => f.y))))
     }, [startDate, data])
 
     const options = {
@@ -79,35 +102,35 @@ const FrequencyGraph = ({ diseaseId }) => {
             }
         },
         plugins: {
-            legend: { display: false },
             title: {
                 display: true,
-                text: `${diseaseId} reports per week`,
+                text: `Disease report comparision`,
             },
         },
     }
 
     const chartData = {
-        datasets: [
-            {
-                label: `${diseaseId} cases`,
-                data: dataPointsInRange,
-                borderColor: 'rgb(53, 162, 235)',
-                backgroundColor: 'rgba(53, 162, 235, 0.5)',
-                showLine: true,
-                lineTension: 0.4,
-                radius: 2
-            },
-        ],
+        datasets:
+            Object.keys(data).map((diseaseId) => {
+                return {
+                    label: `${diseaseId} cases`,
+                    data: data[diseaseId].points,
+                    borderColor: data[diseaseId].colour,
+                    backgroundColor: data[diseaseId].colour,
+                    showLine: true,
+                    lineTension: 0.4,
+                    radius: 2
+                }
+            })
     };
 
     const updateTimeline = ({ target }) => {
         setStartDate(new Date().setDate(today.getDate() - target.value))
     }
 
-
     return (
         <div className={styles.container}>
+            <SelectDiseases diseases={comparison} setDiseases={setComparison} allDiseases={possibleDiseases} />
             <Line options={options} data={chartData} />
             <i>See reports from previous </i> {" "}
             <select className={styles.dropdown} onChange={updateTimeline} defaultValue={365 * 3}>
@@ -120,8 +143,7 @@ const FrequencyGraph = ({ diseaseId }) => {
                 <option value={365 * 3}>3 years</option>
                 <option value={365 * 5}>5 years</option>
             </select>
-        </div>
-    )
+        </div>)
 }
 
-export default FrequencyGraph
+export default ComparisonGraph

@@ -10,6 +10,7 @@ import DiseaseRiskInfo from "../components/DiseaseRiskInfo";
 import FrequencyGraph from "../components/FrequencyGraph";
 import DiseaseInfo from "../components/DiseaseInfo";
 import HighRiskDiseasesGraph from "../components/HighRiskDiseasesGraph";
+import ComparisonGraph from '../components/ComparisonGraph'
 import {
     getCookie,
     setCookies,
@@ -17,7 +18,7 @@ import {
     removeCookies,
 } from "cookies-next";
 import { inList } from "../utils/lists";
-import SelectWatched from "../components/SelectWatched";
+import SelectDiseases from "../components/SelectDiseases";
 import Dropdown from "../components/Dropdown";
 
 function formatDate(date) {
@@ -90,6 +91,7 @@ function getGraphParams(diseases) {
 export default function Home({ reports, diseases, predictions }) {
     const graphParams = getGraphParams(diseases);
     const [watched, setWatched] = useState([]);
+    const [comparison, setComparison] = useState([])
     const [minReportCount, setMinReportCount] = useState(5);
     const [dayCount, setDayCount] = useState(90);
     const [pred, setPred] = useState(predictions);
@@ -102,6 +104,7 @@ export default function Home({ reports, diseases, predictions }) {
             ? JSON.parse(getCookie("watched"))
             : [];
         setWatched(cookie);
+        console.log("diseases", diseases)
     }, []);
 
     useEffect(() => {
@@ -121,6 +124,7 @@ export default function Home({ reports, diseases, predictions }) {
     const dayOptions = [15, 30, 60, 90, 120, 365];
     const minReportOptions = [1, 2, 3, 4, 5, 10, 20, 50, 100];
 
+
     return (
         <>
             <Head>
@@ -139,13 +143,14 @@ export default function Home({ reports, diseases, predictions }) {
                     xValues={graphParams.xValues}
                     yValues={graphParams.yValues}
                 />
+                <ComparisonGraph diseases={comparison} possibleDiseases={possibleDiseases} />
 
                 {/* ******* WATCHED DISEASES ******* */}
                 <h2 className={styles.mainHeading}>Watched Diseases</h2>
                 <div className={styles.activeList}>
-                    <SelectWatched
-                        watched={watched}
-                        setWatched={setWatched}
+                    <SelectDiseases
+                        diseases={watched}
+                        setDiseases={setWatched}
                         allDiseases={possibleDiseases}
                     />
                     {watched &&
@@ -163,9 +168,9 @@ export default function Home({ reports, diseases, predictions }) {
                 <h2 className={styles.mainHeading}>Active Diseases</h2>
                 <div className={styles.activeSelector}>
                     <p>Find diseases which have had at least</p>
-                    <Dropdown options={minReportOptions} setValue={setMinReportCount} defaultValueIndex={1}/>
+                    <Dropdown options={minReportOptions} setValue={setMinReportCount} defaultValueIndex={1} />
                     <p>reports in the last </p>
-                    <Dropdown options={dayOptions} setValue={setDayCount} defaultValueIndex={1}/>
+                    <Dropdown options={dayOptions} setValue={setDayCount} defaultValueIndex={1} />
                     <p>days.</p>
                 </div>
                 <div className={styles.activeList}>
