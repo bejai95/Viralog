@@ -92,8 +92,8 @@ export default function Home({ reports, diseases, predictions }) {
     const graphParams = getGraphParams(diseases);
     const [watched, setWatched] = useState([]);
     const [comparison, setComparison] = useState([])
-    const [minReportCount, setMinReportCount] = useState(5);
-    const [dayCount, setDayCount] = useState(90);
+    const [minReportCount, setMinReportCount] = useState(2);
+    const [dayCount, setDayCount] = useState(30);
     const [pred, setPred] = useState(predictions);
 
     const possibleDiseases = diseases.map((f) => f.disease_id).sort();
@@ -143,7 +143,6 @@ export default function Home({ reports, diseases, predictions }) {
                     xValues={graphParams.xValues}
                     yValues={graphParams.yValues}
                 />
-                <ComparisonGraph diseases={comparison} possibleDiseases={possibleDiseases} />
 
                 {/* ******* WATCHED DISEASES ******* */}
                 <h2 className={styles.mainHeading}>Watched Diseases</h2>
@@ -162,6 +161,10 @@ export default function Home({ reports, diseases, predictions }) {
                                     disease={disease}
                                 />
                             ))}
+                </div>
+                <h2 className={styles.mainHeading}>Compare Diseases</h2>
+                <div className={styles.activeList}>
+                    <ComparisonGraph diseases={comparison} possibleDiseases={possibleDiseases} />
                 </div>
 
                 {/* ******** ACTIVE DISEASES ******* */}

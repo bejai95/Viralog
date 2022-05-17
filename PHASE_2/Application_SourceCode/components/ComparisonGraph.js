@@ -41,19 +41,6 @@ const ComparisonGraph = ({ diseases, possibleDiseases }) => {
     const [startDate, setStartDate] = useState(new Date().setDate(today.getDate() - 365 * 3))
     const [yMax, setYMax] = useState(0);
 
-    useEffect(() => {
-        // This is to just collect cookies on load
-        const cookie = checkCookies("comparison")
-            ? JSON.parse(getCookie("comparison"))
-            : [];
-        setComparison(cookie);
-        console.log("diseases", diseases)
-    }, []);
-
-    useEffect(() => {
-        setCookies("comparison", comparison);
-    }, [comparison]);
-
     useEffect(async () => {
         let reqs = comparison.map((diseaseId) =>
             fetch(`${apiurl}/diseases/` + encodeURIComponent(diseaseId) + '?weekly_reports=true')
