@@ -13,7 +13,7 @@ const toggleDisease = (disease, diseases, setDiseases) => {
     }
 };
 
-const SelectDiseases = ({ diseases, setDiseases, allDiseases }) => {
+const SelectDiseases = ({ diseases, setDiseases, allDiseases, purpose }) => {
     const [expanded, setExpanded] = useState(false);
 
     return (
@@ -21,7 +21,7 @@ const SelectDiseases = ({ diseases, setDiseases, allDiseases }) => {
             {diseases && diseases.length == 0 && !expanded && (
                 <button className={styles.watchedLabel} onClick={() => setExpanded(!expanded)}>
                     <FontAwesomeIcon icon={faPlus} size="lg" />
-                    <span>Add Diseases to Watch</span>
+                    <span>Add Diseases to {purpose}</span>
                 </button>
             )}
             {allDiseases &&

@@ -3,7 +3,7 @@
   "rules": {
     "semi": ["warn", "always"],
     "quotes": ["warn", "double"],
-    "no-undef": "error",
+    "no-undef": "warn",
     "no-extra-semi": "warn"
   }
 }

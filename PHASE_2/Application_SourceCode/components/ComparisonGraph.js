@@ -117,7 +117,12 @@ const ComparisonGraph = ({ diseases, possibleDiseases }) => {
 
     return (
         <div className={styles.container}>
-            <SelectDiseases diseases={comparison} setDiseases={setComparison} allDiseases={possibleDiseases} />
+            <SelectDiseases
+                diseases={comparison}
+                setDiseases={setComparison}
+                allDiseases={possibleDiseases}
+                purpose={"Compare"}
+            />
             <Line options={options} data={chartData} />
             <i>See reports from previous </i> {" "}
             <select className={styles.dropdown} onChange={updateTimeline} defaultValue={365 * 3}>

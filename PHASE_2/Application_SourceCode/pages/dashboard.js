@@ -151,6 +151,7 @@ export default function Home({ reports, diseases, predictions }) {
                         diseases={watched}
                         setDiseases={setWatched}
                         allDiseases={possibleDiseases}
+                        purpose={"Watch"}
                     />
                     {watched &&
                         diseases
